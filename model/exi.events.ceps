@@ -1,0 +1,27 @@
+kind exi_event;
+exi_event SD, ED, SE, EE, AT, CH, NS, CM, PI, DT, ER, SC;
+
+
+label __4_EXI_Streams title="4. EXI Streams";
+
+
+table{
+    label __4__1_EXI_Events title="Table 4-1 EXI events";
+    th{ td{ "EXI Event Type"; };        td{ "Event Content(Content Items)"; };  td{ "Grammar Notation(Terminal Symbols)"; };    td{ "Information Item"; };};
+    tr{ td{"Start Document";};          td{};                                   td{SD;};                                        td{}; };
+    tr{ td{"End Document";};            td{};                                   td{ED;};                                        td{}; };
+    tr{ td{"Start Element";};           td{qname;};                             td{SE(qname);};                                 td{}; };
+    tr{ td{"Start Element";};           td{qname;};                             td{SE(_*_);};                                   td{}; };
+    tr{ td{"Start Element";};           td{qname;};                             td{SE(uri:_*_);};                               td{}; };
+    tr{ td{"End Element";};             td{};                                   td{EE;};                                        td{}; };
+    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(qname);};                                 td{}; };
+    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(_*_);};                                   td{}; };
+    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(uri:_*_);};                               td{}; };
+    tr{ td{"Characters";};              td{value;};                             td{CH;};                                        td{}; };
+    tr{ td{"Namespace Declaration";};   td{uri;prefix;local_element_ns;};       td{NS;};                                        td{}; };
+    tr{ td{"Comment";};                 td{text;};                              td{CM;};                                        td{}; };
+    tr{ td{"Process Instruction";};     td{name;text;};                         td{PI;};                                        td{}; };
+    tr{ td{"DOCTYPE";};                 td{name;public;system;text;};           td{DT;};                                        td{}; };
+    tr{ td{"Entity Reference";};        td{name;};                              td{ER;};                                        td{}; };
+    tr{ td{"Self Contained";};          td{};                                   td{SC;};                                        td{}; };
+};
