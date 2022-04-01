@@ -113,6 +113,129 @@ macro LEFTHANDSIDE{
  rhs{TERMINAL_6; NONTERMINAL_6; EventCode(i,j+4,1);};
 };
 
+/*
+Unless otherwise specified, the variable i evaluates to the first part of the event code of the production in which the macro non-terminal LeftHandSide_1
+appears on the right-hand side. Similarly, the expression i.j represents the first two parts of the event code of the production in which
+the macro LEFTHANDSIDE_1 appears on the right-hand side.
+
+Non-terminal macros are used in this specification for notational convenience only. They are non-terminals, even though they are used in place of non-terminals.
+Productions that use non-terminal macros on the right-hand side need to be expanded by macro substitution before such productions are interpreted. Therefore, ABigProduction_1
+and ABigProduction_2 shown in the preceding example are quivalen to the following set of productions obtained by expanding the non-terminal maro symbol LEFTHANDSIDE_1 and
+evaluating the variable event codes.
+*/
+
+example{
+    label __8__2_Expanded_productions_equivalent_to_the_productions_used_above title="8.2 Expanded productions equivalent to the productions used above.";
+};
+
+label __8__2_Grammar_Event_Codes title="8.2 Grammar Event Codes";
+
+/*
+Each production rule in the EXI grammar includes an event code value that approximates the likelihood the associated production rule will be matched over the other
+productions with the same left-hand-side non-terminal symbol. Ultimately, the event codes determine the value(s) by which each non-terminal symbol will be 
+represented in the EXI stream.
+
+To understand how a given event code approximates the likelihood a given production will match, it is useful to visualize the event codes for a set of production rules that have
+the same non-terminal symbol on the left-hand side as a tree.
+For example, the following set of productions:
+*/
+
+Grammar{
+    GrammarNonterminal ElementContent;
+    GrammarAnnotation EventCode;
+    lhs{ElementContent;};
+        rhs{EE;EventCode(0);};
+        rhs{SE(_*_); ElementContent;EventCode(1,0);};
+        rhs{CH;ElementContent;EventCode(1,1);};
+        rhs{ER;ElementContent;EventCode(1,2);};
+        rhs{CM;ElementContent;EventCode(1,3,0);};
+        rhs{PI;Elementcontent;EventCode(1,3,2);};
+};
+
+/*
+represents a set of informationm items that might occur as element content after the start tag. Using the production event codes, we can visualize this set of productions as follows:
+*/
+
+figure{
+    Tree(
+        Leaf(EE,0),
+        Tree(
+            Leaf(SE(_*_),0),
+            Leaf(CH,1),
+            Leaf(ER,2),
+            Tree(
+                Leaf(CM,0),
+                Leaf(PI,1),
+                3
+            )            
+            , 1)
+    );
+    caption{"Event code tree for ElementContent grammar";};
+};
+
+/*
+
+where the terminal symbols are represented by the leaf nodes of the tree, and the event code of each production rule defines a path from the root of the tree
+to the node that represents the terminal symbol that is on the right-hand side of the production. We call this the event code tree for a given set of productions.
+
+An event code tree is similar to a Huffman tree in that shorter paths are generally used for symbols that are considered more likely. However, event code
+trees are far simpler and less costly to compute and maintain. Event code trees are shallow and contain at most three levels. In addition, the length of ech event code
+in the event code tree is assigned statically without analyzing the data. This classification provides some of the benefits of a Huffman tree without the cost.
+*/
+
+
+
+label __8__3_Pruning title="8.3 Pruning Unneeded Productions";
+
+/*
+
+As discussed in section [6.3 Fidelity Options], applications MAY provide a set of fidelity options to specify the XML features they require. 
+EXI processors MUST use thesefidelity options to prune the productions of which the terminal symbols represent the events that are not required from the grammars,
+improving compactness and processing efficiency. For example, the following set of productions represent the set of information items that might occur as element
+content after the start tag.
+
+*/
+
+example{
+    label __8__6_Example_Fidelity title="Example 8-6. Example productions with full fidelity";
+    Grammar{
+        GrammarNonterminal ElementContent;
+        lhs{ElementContent;};
+            rhs{EE;ElementContent;EventCode(0);};
+            rhs{SE(_*_);ElementContent;EventCode(1,0);};
+            rhs{CH;ElementContent;EventCode(1,1);};
+            rhs{ER;ElementContent;EventCode(1,2);};
+            rhs{CM;ElementContent;EventCode(1,3,0);};
+            rhs{PI;ElementContent;EventCode(1,3,1);};
+    };
+};
+
+/*
+
+If an application sets the fidelity options Preserve.Comments, Preserve.pis and Preserve.dtd to false, the productionsmatching comment (CM), 
+processing instruction (PI) and entity reference (ER) events are pruned frm the grammar, producing the following set of productions:
+
+*/
+
+example{
+    label __8__7_Example_Fidelity_After_Pruning title="Example 8-7. Example productions after pruning";
+    GrammarNonterminal ElementCount;
+    lhs{ElementCount;};
+        rhs{EE;ElementCount;EventCode(0);};
+        rhs{SE(_*_);ElementCount;EventCode(1,0);};
+        rhs{CH;ElementCount;EventCode(1,1);};
+};
+
+/* 
+
+Removing these productions from the grammar tells EXI processors that comments and processing instructions will never occur in the EXI stream, 
+which reduces the entropy of the stream allowing it to be encoded in fewer bits.
+
+Each time a production is removed from a grammar, the event codes of the other productions with the same nonterminal symbol on the left-hand side MUST be
+adjusted to keep them contguous if its removal has left the remaining productions with non-contiguous event codes.
+
+*/
+
 
 
 
