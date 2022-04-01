@@ -72,7 +72,6 @@ set of productions as symbols so that a symbol can be used in the grammar repres
 represents in place every time it is used.  
 */
 
-
 example{
     label __8__2_Example_productions_using_macros title="Example 8-2. Example productions that use macro non-terminal symbols.";
     GrammarNonterminal ABigProduction_1;
@@ -82,7 +81,38 @@ example{
     GrammarTerminal Terminal_1;
     GrammarTerminal Terminal_2;
     Grammar{
-
+        lhs{ABigProduction_1;};
+            rhs{Terminal_1; NonTerminal_1;EventCode(0);};
+            LEFTHANDSIDE{2;0;};
+        lhs{ABigProduction_2;};
+            rhs{Terminal_1; NonTerminal_1;};
+            LEFTHANDSIDE{1;1;};
+            rhs{Terminal_2; NonTerminal_2;};
     }; 
 };
+
+/*
+Because non-terminal macros are injected into the right-hand side of more than one production, the event codes of
+productions with these macro non-terminals on the left-hand side are not fixed, but will have different event code values depending
+on the context in which the macro non-terminal appears. This specification calls these variable event codes and use variables in place 
+of individual event code parts to indicate the event code parts are determined by the context. Below are some examples of variable event codes.
+
+*/
+
+macro LEFTHANDSIDE{
+ GrammarNonterminal NONTERMINAL_1,NONTERMINAL_2,NONTERMINAL_3,NONTERMINAL_4,NONTERMINAL_5,NONTERMINAL_6;
+ GrammarTerminal TERMINAL_1, TERMINAL_2, TERMINAL_3, TEMINAL_4, TERMINAL_5, TERMINAL_6;
+
+ val i = hd(arglist);
+ val j = hd(tail(arglist));
+ rhs{TERMINAL_1; NONTERMINAL_1; EventCode(i,0);};
+ rhs{TERMINAL_2; NONTERMINAL_2; EventCode(i,1);};
+ rhs{TERMINAL_3; NONTERMINAL_3; EventCode(i,j+2);};
+ rhs{TERMINAL_4; NONTERMINAL_4; EventCode(i,j+3);};
+ rhs{TERMINAL_5; NONTERMINAL_5; EventCode(i,j+4,0);};
+ rhs{TERMINAL_6; NONTERMINAL_6; EventCode(i,j+4,1);};
+};
+
+
+
 
