@@ -26,7 +26,7 @@ include_directories(include/tests)
 link_directories($ENV{CEPSCORE}/bin)
 
 add_library(v2g-guru-exi-plugin SHARED 
-           src/ceps_entrypoint.cpp 
+           src/ceps-plugin-entrypoint.cpp 
            )
 
 target_link_libraries(v2g-guru-exi-plugin cepscore sctp)
@@ -34,4 +34,4 @@ target_link_libraries(v2g-guru-exi-plugin cepscore sctp)
 add_executable( v2g-guru-exi
                 src/exi-standalone.cpp)
 
-target_link_libraries(exi-standalone sctp pthread)
+target_link_libraries(v2g-guru-exi sctp pthread)
