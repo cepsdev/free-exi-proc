@@ -1,0 +1,88 @@
+//Requires exi.events.ceps
+
+label __8_EXI_Grammars title="8. EXI Grammars";
+
+/*
+
+EXI is a knowledge based encoding that uses a set of grammars to determine which events are most likely to occur at any
+given point in an EXI stream and encodes the most likely alternatives in fewer bits. It does this by mapping the stream
+of events to a lower entropy set of reptresentative values and encoding those values using a set of simple variable length 
+codes or an EXI compression algorithm.
+
+The result is a very simple, small algorithm that uniformly handles schema-less encoding, schema-informed encoding,
+schema deviations, and any combination thereof in EXI streams. These variations do not require different algorithms or different parsers,
+they are simply informed by different combinations of grammars.
+
+The following sections describe the grammars used to inform the EXI encoding.
+
+Note:
+
+The grammar semantics in this specification are written for clarity and generality. They do not prescribe a particular implementation approach. 
+
+*/
+
+label __8__1_Grammar_Notation title="8.1 Grammar Notation";
+label __8__1__1_Fixed_Event_Codes title="8.1.1 Fixed Event Codes";
+
+/*
+Each grammar production has an event code, which is represented by a sequence of one to three parts separated by periods (".") [in this ceps specification we use commas (",") instead].
+Each part is an unsigned integer. The following are examples of grammar productions with event codes as theyx appear in this specification.
+
+*/
+
+
+example{
+    label __8__1_Example_productions_fixed_codes title="Example 8-1. Example productions with fixed event codes.";
+    GrammarNonterminal LeftHandSide_1;
+    GrammarNonterminal LeftHandside_2;
+    GrammarTerminal Terminal_1;
+    GrammarTerminal Terminal_2;
+    GrammarTerminal Terminal_3;
+    GrammarTerminal Terminal_4;
+    GrammarTerminal Terminal_5;
+    GrammarTerminal Terminal_6;
+    GrammarAnnotation EventCode;
+
+    Grammar{
+            lhs{LeftHandSide_1;};
+                rhs{Terminal_1; NonTerminal_1;EventCode(0); };
+                rhs{Terminal_2; NonTerminal_2;EventCode(1); };
+                rhs{Terminal_3; NonTerminal_3;EventCode(2,0); };
+                rhs{Terminal_4; NonTerminal_4;EventCode(2,1); };
+                rhs{Terminal_5; NonTerminal_5;EventCode(2,2,0); };
+                rhs{Terminal_6; NonTerminal_6;EventCode(2,2,1); };
+            lhs{LeftHandSide_2;};
+                rhs{Terminal_1; NonTerminal_1;EventCode(0); };
+                rhs{Terminal_2; NonTerminal_2;EventCode(1,0); };
+                rhs{Terminal_3; NonTerminal_3;EventCode(1,1); };
+    };
+};
+
+/*
+The number of parts in a given event code is called the event code's length. 
+No two productions with the same nonterminal Symbolson the left-hand side are permitted to have the same event code.
+*/
+
+label __8__1__2_Variable_Event_Codes title="8.1.2 Variable Event Codes";
+
+/*
+Some non-terminal symbols are used on the right-hand side in a production without a terminal symbol prefixed to them,
+but with a parenthesized event code affixed instead. Such non-terminal symbols are macros amd they are used to capture some recurring
+set of productions as symbols so that a symbol can be used in the grammar representation instead of including all the productions the macro
+represents in place every time it is used.  
+*/
+
+
+example{
+    label __8__2_Example_productions_using_macros title="Example 8-2. Example productions that use macro non-terminal symbols.";
+    GrammarNonterminal ABigProduction_1;
+    GrammarNonterminal ABigProduction_2;
+    GrammarNonterminal NonTerminal_1;
+    GrammarNonterminal NonTerminal_2;
+    GrammarTerminal Terminal_1;
+    GrammarTerminal Terminal_2;
+    Grammar{
+
+    }; 
+};
+

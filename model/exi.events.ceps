@@ -1,13 +1,32 @@
-kind exi_event;
-exi_event SD, ED, SE, EE, AT, CH, NS, CM, PI, DT, ER, SC;
+kind GrammarTerminal;
+kind GrammarNonterminal;
+kind GrammarAnnotation;
+kind XMLEntity;
 
+GrammarTerminal    
+    SD, 
+    ED, 
+    SE, 
+    EE, 
+    AT, 
+    CH, 
+    NS, 
+    CM, 
+    PI, 
+    DT, 
+    ER, 
+    SC;
 
-label __4_EXI_Streams title="4. EXI Streams";
+XMLEntity
+    qname, 
+    uri;
 
+label __4_EXI_Streams title = "4. EXI Streams";
 
 table{
     label __4__1_EXI_Events title="Table 4-1 EXI events";
     th{ td{ "EXI Event Type"; };        td{ "Event Content(Content Items)"; };  td{ "Grammar Notation(Terminal Symbols)"; };    td{ "Information Item"; };};
+
     tr{ td{"Start Document";};          td{};                                   td{SD;};                                        td{}; };
     tr{ td{"End Document";};            td{};                                   td{ED;};                                        td{}; };
     tr{ td{"Start Element";};           td{qname;};                             td{SE(qname);};                                 td{}; };
@@ -24,4 +43,22 @@ table{
     tr{ td{"DOCTYPE";};                 td{name;public;system;text;};           td{DT;};                                        td{}; };
     tr{ td{"Entity Reference";};        td{name;};                              td{ER;};                                        td{}; };
     tr{ td{"Self Contained";};          td{};                                   td{SC;};                                        td{}; };
+};
+
+example{
+    label __6__1_Example_production title="Example 6-1. Example productions with event codes.";
+    GrammarAnnotation EventCode;
+    GrammarNonterminal DocContent, DocEnd;
+
+    Grammar{                           
+            lhs{DocContent;};  
+                rhs{SE("A");    DocEnd;     EventCode(0);};
+                rhs{SE("B");    DocEnd;     EventCode(1);};
+                rhs{SE("C");    DocEnd;     EventCode(2);};
+                rhs{SE("D");    DocEnd;     EventCode(3);};
+                rhs{SE(_*_);    DocEnd;     EventCode(4);};
+                rhs{DT;         DocContent; EventCode(5,0);};
+                rhs{CM;         DocContent; EventCode(5,1,0);};
+                rhs{PI;         DocContent; EventCode(5,1,1);};
+    };
 };
