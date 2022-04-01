@@ -210,6 +210,52 @@ example{
     };
 };
 
+exi_prune(
+    rhs{ER;ElementContent;}, 
+    rhs{CM;ElementContent;}, 
+    rhs{PI;ElementContent;},
+    Grammar{
+        GrammarNonterminal ElementContent;
+        lhs{ElementContent;};
+            rhs{EE;ElementContent;EventCode(0);};
+            rhs{SE(_*_);ElementContent;EventCode(1,0);};
+            rhs{CH;ElementContent;EventCode(1,1);};
+            rhs{ER;ElementContent;EventCode(1,2);};
+            rhs{CM;ElementContent;EventCode(1,3,0);};
+            rhs{PI;ElementContent;EventCode(1,3,1);};
+    }
+);
+
+expect_equality{
+    GrammarNonterminal ElementContent;
+
+exi_prune(
+    args{ // Embarrassing error in ceps' grammar
+        3; 
+        rhs{CM;ElementContent;}; 
+        rhs{PI;ElementContent;};
+        Grammar{
+            lhs{ElementContent;};
+                rhs{EE;ElementContent;EventCode(0);};
+                rhs{SE(_*_);ElementContent;EventCode(1,0);};
+                rhs{CH;ElementContent;EventCode(1,1);};
+                rhs{ER;ElementContent;EventCode(1,2);};
+                rhs{CM;ElementContent;EventCode(1,3,0);};
+                rhs{PI;ElementContent;EventCode(1,3,1);};
+        };
+    }
+);
+
+
+Grammar{
+        GrammarNonterminal ElementCount;
+        lhs{ElementCount;};
+            rhs{EE;ElementCount;EventCode(0);};
+            rhs{SE(_*_);ElementCount;EventCode(1,0);};
+            rhs{CH;ElementCount;EventCode(1,1);};
+};
+};
+
 /*
 
 If an application sets the fidelity options Preserve.Comments, Preserve.pis and Preserve.dtd to false, the productionsmatching comment (CM), 
@@ -219,11 +265,13 @@ processing instruction (PI) and entity reference (ER) events are pruned frm the 
 
 example{
     label __8__7_Example_Fidelity_After_Pruning title="Example 8-7. Example productions after pruning";
-    GrammarNonterminal ElementCount;
-    lhs{ElementCount;};
-        rhs{EE;ElementCount;EventCode(0);};
-        rhs{SE(_*_);ElementCount;EventCode(1,0);};
-        rhs{CH;ElementCount;EventCode(1,1);};
+    Grammar{
+        GrammarNonterminal ElementCount;
+        lhs{ElementCount;};
+            rhs{EE;ElementCount;EventCode(0);};
+            rhs{SE(_*_);ElementCount;EventCode(1,0);};
+            rhs{CH;ElementCount;EventCode(1,1);};
+    };
 };
 
 /* 
@@ -235,7 +283,58 @@ Each time a production is removed from a grammar, the event codes of the other p
 adjusted to keep them contguous if its removal has left the remaining productions with non-contiguous event codes.
 
 */
+    
+label __8__4_Built_in_Grammars title="8.4 Built-in XML Grammars";
 
 
+comment{
+
+"This section describes built-in XML grammars used by EXI when no schema information is available or when available schema information describes \
+only portions of the EXI stream.\n\n"; 
+
+"The built-in XML grammars are dynamic and continuously evolve to reflect knowledge learned while processing an EXI stream. \
+New built-in element grammars are created to describe the content of newly encountered elements and new grammar productions are added \
+to refine existing built-in grammars. Newly learned grammars and productions are used to more efficiently represent subsequent events in the EXI stream. \
+All newly created built-in element grammars are global element grammars.\n\n";
+
+"[Definition:] A global element grammar is a grammar describing the content of an element that has global scope (i.e. a global element). \
+At the onset of processing an EXI stream, the set of global element grammars is the set of all schema-informed element grammars derived from element declarations \
+that have a {scope} property of global. Each built-in element grammar created while processing an EXI stream is added to the set of global element grammars. \
+Each global element grammar has a unique qname.\n\n";
+
+};
+
+label __8__4__1__Built_in_Document_Grammar title="8.4.1 Built-in Document Grammar";
+
+comment{
+"In the absence of schema information describing the content of the EXI stream, the following grammar describes the events that will occur in an EXI document.\n\n";
+};
+
+    Grammar{
+        GrammarNonterminal Document, DocContent, DocEnd;
+        lhs{Document;};
+            rhs{SD; DocContent; EventCode(0);};
+        lhs{DocContent;};
+            rhs{SE(_*_); DocEnd; EventCode(0);};
+            rhs{DT; DocContent; EventCode(1,0);};
+            rhs{CM; DocContent; EventCode(1,1,0);};
+            rhs{PI;DocContent; eventCode(1,1,1);};
+        lhs{DocEnd;};
+            rhs{ED; EventCode(0);};
+            rhs{CM; DocEnd; EventCode(1,0);};
+            rhs{PI; DocEnd; EventCode(1,1);};
+    };
+
+
+comment{
+"\n"; Semantics; "\n";
+"All productions in the built-in document grammars from "; LeftHandSide; " : "; SE(_*_);" "; RightHandSide;
+" are evaluated as follows:\n\n";
+"1. Let "; qname; " be the "; qname; " of the element matched by "; SE(_*_); " i.e "; qname == _*_ ; " \n";
+"2. If a global element grammar does not exist for element ";qname;", create one according to section 8.4.3. Built-in Element Grammar."; " \n";
+"3. Evaluate the element content using the global element grammar for element ";qname; " \n";
+"4. Evaluate the remainder of event sequence using "; RightHandSide; " \n";
+"\n\n";
+};
 
 
