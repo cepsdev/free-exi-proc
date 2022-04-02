@@ -571,6 +571,7 @@ macro schema_informed_document_grammar{
         rhs{CM;DocContent; EventCode(i+1,1,0);};
         rhs{PI;DocContent; EventCode(i+1,1,1);};
         comment{
+            "\n";
             "Note:\n\n\n";
             "- The variable "; as_identifier("i"); " in the grammar above is the number of global elements declared in the schema. arglist represents"; "\n";
             "  all the qnames of global elements sorted lexicographically, first by local-name, then by uri.\n\n";
@@ -595,6 +596,77 @@ comment{
 "4. Evaluate the remainder of event sequence using RightHandSide.\n";
 
 };
+
+
+
+
+label __8__5__2_Schema_Informed_Fragment_Grammar title="8.5.2 Schema-informed Fragment Grammar";
+
+comment{
+"\n";
+"\n";
+"When schema information is availble to describe the contents of an EXI stream, the following grammar describes the events that will occur in an EXI fragment.";
+"\n";
+"\n";
+"\n";
+"Syntax\n\n";
+"\n";
+};
+
+
+macro SchemaInformedFragmentGrammar{
+ Grammar{
+     GrammarNonterminal Fragment, FragmentContent;
+     lhs{Fragment;};
+        rhs{SD; FragmentContent; EventCode(0);};
+     val i = 0;
+     lhs{FragmentContent;};
+        for(F_i : arglist){
+            rhs{SE(F_i); FragmentContent; EventCode(i);};
+            let i = i + 1;
+        }
+        rhs{SE(_*_); FragmentContent; EventCode(i);};
+        rhs{ED; EventCode(i+1);};
+        rhs{CM; FragmentContent; EventCode(i+2,0);};
+        rhs{PI; FragmentContent; EventCode(i+2,1);};
+ };
+};
+
+SchemaInformedFragmentGrammar{F_0;F_1;F_2;};
+
+comment{
+"\n";
+"\n";
+"\n";
+"Note:\n";
+"\n";
+"\n";
+"- The variable i in the grammar above represents the number of unique element qnames declared in the schema. The variables F_0, F_1, ... , F_(i-1) represent these qnames sorted\n";
+"lexicographically, first by local-name, then by uri. If there is more than one element declared with the same qname, the qname is included only once. If all\n";
+"such elements have the same schema type name and {nilable} property value, their content is evaluated according to the specific grammar for that element declaration.\n";
+"Otherwise, their content is evaluated according to the relaxed Element Fragment grammar described in 8.5.3 Schema-informed Element Fragment Grammar. \n";
+"\n";
+"\n";
+"\n";
+"Semantics:\n";
+"\n";
+"\n";
+"In a schema-informed grammar, all productions of the form LeftHandSide: SE(_*_) RightHandSide are evaluated as follows:\n";
+"\n";
+"1. Let qname be the qname of the element matched by SE(_*_)\n";
+"2. If a global element grammar does not exist for element qname, create one according to section 8.4.3 Built-in Element Grammar.\n";
+"3. Evaluate the element content using the global element grammar for element qname.\n";
+"4. Evaluate the remainder of event sequence using RightHandSide.\n";
+"\n";
+"\n";
+"\n";
+"\n";
+
+};
+
+
+
+
 
 
 
