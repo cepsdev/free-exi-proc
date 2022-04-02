@@ -2,33 +2,36 @@
 
 label __8_EXI_Grammars title="8. EXI Grammars";
 
-/*
+comment{
 
-EXI is a knowledge based encoding that uses a set of grammars to determine which events are most likely to occur at any
-given point in an EXI stream and encodes the most likely alternatives in fewer bits. It does this by mapping the stream
-of events to a lower entropy set of reptresentative values and encoding those values using a set of simple variable length 
-codes or an EXI compression algorithm.
+"EXI is a knowledge based encoding that uses a set of grammars to determine which events are most likely to occur at any\n";
+"given point in an EXI stream and encodes the most likely alternatives in fewer bits. It does this by mapping the stream\n";
+"of events to a lower entropy set of reptresentative values and encoding those values using a set of simple variable length\n";
+"codes or an EXI compression algorithm.\n\n\n";
 
-The result is a very simple, small algorithm that uniformly handles schema-less encoding, schema-informed encoding,
-schema deviations, and any combination thereof in EXI streams. These variations do not require different algorithms or different parsers,
-they are simply informed by different combinations of grammars.
+"The result is a very simple, small algorithm that uniformly handles schema-less encoding, schema-informed encoding,\n";
+"schema deviations, and any combination thereof in EXI streams. These variations do not require different algorithms or different parsers,\n";
+"they are simply informed by different combinations of grammars.\n\n\n";
 
-The following sections describe the grammars used to inform the EXI encoding.
+"The following sections describe the grammars used to inform the EXI encoding.\n\n\n";
 
-Note:
+"Note:\n\n\n";
 
-The grammar semantics in this specification are written for clarity and generality. They do not prescribe a particular implementation approach. 
+"The grammar semantics in this specification are written for clarity and generality. They do not prescribe a particular implementation approach.\n";
 
-*/
+};
 
 label __8__1_Grammar_Notation title="8.1 Grammar Notation";
 label __8__1__1_Fixed_Event_Codes title="8.1.1 Fixed Event Codes";
 
-/*
-Each grammar production has an event code, which is represented by a sequence of one to three parts separated by periods (".") [in this ceps specification we use commas (",") instead].
-Each part is an unsigned integer. The following are examples of grammar productions with event codes as theyx appear in this specification.
+comment{
 
-*/
+"\n\n";
+"Each grammar production has an event code, which is represented by a sequence of one to three parts separated by periods (".") [in this ceps specification we use commas (",") instead].\n";
+"Each part is an unsigned integer. The following are examples of grammar productions with event codes as theyx appear in this specification.\n";
+"\n\n";
+
+};
 
 
 example{
@@ -58,19 +61,23 @@ example{
     };
 };
 
-/*
-The number of parts in a given event code is called the event code's length. 
-No two productions with the same nonterminal Symbolson the left-hand side are permitted to have the same event code.
-*/
+comment{
+"\n\n";
+"The number of parts in a given event code is called the event code's length.\n";
+"No two productions with the same nonterminal Symbolson the left-hand side are permitted to have the same event code.\n\n\n";
+
+};
 
 label __8__1__2_Variable_Event_Codes title="8.1.2 Variable Event Codes";
 
-/*
-Some non-terminal symbols are used on the right-hand side in a production without a terminal symbol prefixed to them,
-but with a parenthesized event code affixed instead. Such non-terminal symbols are macros amd they are used to capture some recurring
-set of productions as symbols so that a symbol can be used in the grammar representation instead of including all the productions the macro
-represents in place every time it is used.  
-*/
+comment{
+
+"Some non-terminal symbols are used on the right-hand side in a production without a terminal symbol prefixed to them,\n";
+"but with a parenthesized event code affixed instead. Such non-terminal symbols are macros amd they are used to capture some recurring\n";
+"set of productions as symbols so that a symbol can be used in the grammar representation instead of including all the productions the macro\n\n\n";
+"represents in place every time it is used.\n\n";  
+
+};
 
 example{
     label __8__2_Example_productions_using_macros title="Example 8-2. Example productions that use macro non-terminal symbols.";
@@ -91,13 +98,14 @@ example{
     }; 
 };
 
-/*
-Because non-terminal macros are injected into the right-hand side of more than one production, the event codes of
-productions with these macro non-terminals on the left-hand side are not fixed, but will have different event code values depending
-on the context in which the macro non-terminal appears. This specification calls these variable event codes and use variables in place 
-of individual event code parts to indicate the event code parts are determined by the context. Below are some examples of variable event codes.
+comment{
 
-*/
+"Because non-terminal macros are injected into the right-hand side of more than one production, the event codes of\n";
+"productions with these macro non-terminals on the left-hand side are not fixed, but will have different event code values depending\n";
+"on the context in which the macro non-terminal appears. This specification calls these variable event codes and use variables in place\n";
+"of individual event code parts to indicate the event code parts are determined by the context. Below are some examples of variable event codes.\n\n\n";
+
+};
 
 macro LEFTHANDSIDE{
  GrammarNonterminal NONTERMINAL_1,NONTERMINAL_2,NONTERMINAL_3,NONTERMINAL_4,NONTERMINAL_5,NONTERMINAL_6;
@@ -113,16 +121,18 @@ macro LEFTHANDSIDE{
  rhs{TERMINAL_6; NONTERMINAL_6; EventCode(i,j+4,1);};
 };
 
-/*
-Unless otherwise specified, the variable i evaluates to the first part of the event code of the production in which the macro non-terminal LeftHandSide_1
-appears on the right-hand side. Similarly, the expression i.j represents the first two parts of the event code of the production in which
-the macro LEFTHANDSIDE_1 appears on the right-hand side.
+comment{
+    
+"Unless otherwise specified, the variable i evaluates to the first part of the event code of the production in which the macro non-terminal LeftHandSide_1\n";
+"appears on the right-hand side. Similarly, the expression i.j represents the first two parts of the event code of the production in which\n";
+"the macro LEFTHANDSIDE_1 appears on the right-hand side.\n\n\n";
 
-Non-terminal macros are used in this specification for notational convenience only. They are non-terminals, even though they are used in place of non-terminals.
-Productions that use non-terminal macros on the right-hand side need to be expanded by macro substitution before such productions are interpreted. Therefore, ABigProduction_1
-and ABigProduction_2 shown in the preceding example are quivalen to the following set of productions obtained by expanding the non-terminal maro symbol LEFTHANDSIDE_1 and
-evaluating the variable event codes.
-*/
+"Non-terminal macros are used in this specification for notational convenience only. They are non-terminals, even though they are used in place of non-terminals.\n";
+"Productions that use non-terminal macros on the right-hand side need to be expanded by macro substitution before such productions are interpreted. Therefore, ABigProduction_1\n";
+"and ABigProduction_2 shown in the preceding example are quivalen to the following set of productions obtained by expanding the non-terminal maro symbol LEFTHANDSIDE_1 and\n";
+"evaluating the variable event codes.\n\n\n";
+
+};
 
 example{
     label __8__2_Expanded_productions_equivalent_to_the_productions_used_above title="8.2 Expanded productions equivalent to the productions used above.";
@@ -130,15 +140,17 @@ example{
 
 label __8__2_Grammar_Event_Codes title="8.2 Grammar Event Codes";
 
-/*
-Each production rule in the EXI grammar includes an event code value that approximates the likelihood the associated production rule will be matched over the other
-productions with the same left-hand-side non-terminal symbol. Ultimately, the event codes determine the value(s) by which each non-terminal symbol will be 
-represented in the EXI stream.
+comment{
 
-To understand how a given event code approximates the likelihood a given production will match, it is useful to visualize the event codes for a set of production rules that have
-the same non-terminal symbol on the left-hand side as a tree.
-For example, the following set of productions:
-*/
+"Each production rule in the EXI grammar includes an event code value that approximates the likelihood the associated production rule will be matched over the other\n";
+"productions with the same left-hand-side non-terminal symbol. Ultimately, the event codes determine the value(s) by which each non-terminal symbol will be\n";
+"represented in the EXI stream.\n\n\n";
+
+"To understand how a given event code approximates the likelihood a given production will match, it is useful to visualize the event codes for a set of production rules that have\n";
+"the same non-terminal symbol on the left-hand side as a tree.\n";
+"For example, the following set of productions:\n\n";
+
+};
 
 Grammar{
     GrammarNonterminal ElementContent;
@@ -152,9 +164,11 @@ Grammar{
         rhs{PI;Elementcontent;EventCode(1,3,2);};
 };
 
-/*
-represents a set of informationm items that might occur as element content after the start tag. Using the production event codes, we can visualize this set of productions as follows:
-*/
+comment{
+
+"\n\nrepresents a set of informationm items that might occur as element content after the start tag. Using the production event codes, we can visualize this set of productions as follows:\n\n";
+
+};
 
 figure{
     Tree(
@@ -173,28 +187,30 @@ figure{
     caption{"Event code tree for ElementContent grammar";};
 };
 
-/*
+comment{
 
-where the terminal symbols are represented by the leaf nodes of the tree, and the event code of each production rule defines a path from the root of the tree
-to the node that represents the terminal symbol that is on the right-hand side of the production. We call this the event code tree for a given set of productions.
+"where the terminal symbols are represented by the leaf nodes of the tree, and the event code of each production rule defines a path from the root of the tree\n";
+"to the node that represents the terminal symbol that is on the right-hand side of the production. We call this the event code tree for a given set of productions.\n\n\n";
 
-An event code tree is similar to a Huffman tree in that shorter paths are generally used for symbols that are considered more likely. However, event code
-trees are far simpler and less costly to compute and maintain. Event code trees are shallow and contain at most three levels. In addition, the length of ech event code
-in the event code tree is assigned statically without analyzing the data. This classification provides some of the benefits of a Huffman tree without the cost.
-*/
+"An event code tree is similar to a Huffman tree in that shorter paths are generally used for symbols that are considered more likely. However, event code\n";
+"trees are far simpler and less costly to compute and maintain. Event code trees are shallow and contain at most three levels. In addition, the length of ech event code\n";
+"in the event code tree is assigned statically without analyzing the data. This classification provides some of the benefits of a Huffman tree without the cost.\n\n\n";
+
+};
 
 
 
 label __8__3_Pruning title="8.3 Pruning Unneeded Productions";
 
-/*
 
-As discussed in section [6.3 Fidelity Options], applications MAY provide a set of fidelity options to specify the XML features they require. 
-EXI processors MUST use thesefidelity options to prune the productions of which the terminal symbols represent the events that are not required from the grammars,
-improving compactness and processing efficiency. For example, the following set of productions represent the set of information items that might occur as element
-content after the start tag.
+comment{
 
-*/
+"As discussed in section [6.3 Fidelity Options], applications MAY provide a set of fidelity options to specify the XML features they require.\n"; 
+"EXI processors MUST use thesefidelity options to prune the productions of which the terminal symbols represent the events that are not required from the grammars,\n";
+"improving compactness and processing efficiency. For example, the following set of productions represent the set of information items that might occur as element\n";
+"content after the start tag.\n\n\n";
+
+};
 
 example{
     label __8__6_Example_Fidelity title="Example 8-6. Example productions with full fidelity";
@@ -256,12 +272,13 @@ Grammar{
 };
 };
 
-/*
 
-If an application sets the fidelity options Preserve.Comments, Preserve.pis and Preserve.dtd to false, the productionsmatching comment (CM), 
-processing instruction (PI) and entity reference (ER) events are pruned frm the grammar, producing the following set of productions:
+comment{
 
-*/
+"If an application sets the fidelity options Preserve.Comments, Preserve.pis and Preserve.dtd to false, the productionsmatching comment (CM),\n"; 
+"processing instruction (PI) and entity reference (ER) events are pruned frm the grammar, producing the following set of productions:\n\n\n";
+
+};
 
 example{
     label __8__7_Example_Fidelity_After_Pruning title="Example 8-7. Example productions after pruning";
@@ -274,15 +291,15 @@ example{
     };
 };
 
-/* 
+comment{
 
-Removing these productions from the grammar tells EXI processors that comments and processing instructions will never occur in the EXI stream, 
-which reduces the entropy of the stream allowing it to be encoded in fewer bits.
+"Removing these productions from the grammar tells EXI processors that comments and processing instructions will never occur in the EXI stream,\n"; 
+"which reduces the entropy of the stream allowing it to be encoded in fewer bits.\n\n\n";
 
-Each time a production is removed from a grammar, the event codes of the other productions with the same nonterminal symbol on the left-hand side MUST be
-adjusted to keep them contguous if its removal has left the remaining productions with non-contiguous event codes.
+"Each time a production is removed from a grammar, the event codes of the other productions with the same nonterminal symbol on the left-hand side MUST be\n";
+"adjusted to keep them contguous if its removal has left the remaining productions with non-contiguous event codes.\n\n\n";
 
-*/
+};
     
 label __8__4_Built_in_Grammars title="8.4 Built-in XML Grammars";
 
@@ -310,8 +327,8 @@ comment{
 "In the absence of schema information describing the content of the EXI stream, the following grammar describes the events that will occur in an EXI document.\n\n";
 };
 
-    Grammar{
-        GrammarNonterminal Document, DocContent, DocEnd;
+Grammar{
+    GrammarNonterminal Document, DocContent, DocEnd;
         lhs{Document;};
             rhs{SD; DocContent; EventCode(0);};
         lhs{DocContent;};
@@ -323,7 +340,7 @@ comment{
             rhs{ED; EventCode(0);};
             rhs{CM; DocEnd; EventCode(1,0);};
             rhs{PI; DocEnd; EventCode(1,1);};
-    };
+};
 
 
 comment{
@@ -336,5 +353,65 @@ comment{
 "4. Evaluate the remainder of event sequence using "; RightHandSide; " \n";
 "\n\n";
 };
+
+
+label __8__4__2__Built_in_Fragment_Grammar title="8.4.2 Built-in Fragment Grammar";
+
+comment{
+
+"In the absence of schema information describing the contents of an EXI stream, the following grammar describes the events that may occur\n";
+"in an EXI fragment. The grammar below represents the initial set of productions in the built-in fragment grammar at the start of EXI stream\n"; 
+"processing. The associated semantics explain how the built-in fragment grammar evolves to more efficiently represent subsequent events in the EXI stream.\n\n\n";  
+
+};
+
+Grammar{
+    GrammarNonterminal Fragment, FragmentContent;
+    lhs{Fragment;};
+        rhs{SD; FragmentContent; EventCode(0);};
+    lhs{FragmentContent;};
+        rhs{SE(_*_); FragmentContent; EventCode(0); };
+        rhs{ED; EventCode(1);};
+        rhs{CM; FragmentContent; EventCode(2,0);};
+        rhs{PI; FragmentContent; EventCode(2,1);};
+};
+comment{
+
+"\n\n";
+"Semantics:\n";
+"\n\n";"\n\n";
+"All productions in the built-in fragment grammars of the form LeftHandSide: ";SE(_*_);" RightHandSide are evaluated as folows:\n";
+"\n\n";
+"1. Let qname be the qname of the element matched by ";SE(_*_);" \n";
+"2. If a global element grammar does not exist for element ";qname;", create one according to section 8.4.3 Built-in Element Grammar.\n";
+"3. Create a production of the form LeftHandSide: ";SE(qname);" RightHandSide with event code ";0;".\n";
+"4. Increment the first part of the event code of each production in the current grammar with the non-terminal LeftHandSide on the left-hand side.\n";
+"5. Add the production created in step 3 to the grammar\n";
+"6. Evaluate the element content using the global element grammar for element ";qname;" .\n";
+"7. Evaluate the remainder of event sequence using RihgtHandSide.\n";
+"\n\n";
+"All productions of the form LeftHandSide : ";SE(qname);" RightHandSide that were previously added to the grammar upon the first occurence of the element that\n";
+"has ";qname;" qname are evaluated as follows when they are matched.\n";
+"\n\n";
+"1. Evaluate the element content using the global element grammar for element ";qname;" \n";
+"2. Evaluate the remainder of event sequence using RightHandSide.\n";
+"\n\n";
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
