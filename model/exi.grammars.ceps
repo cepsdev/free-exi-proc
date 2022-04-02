@@ -519,8 +519,82 @@ comment{
 };
 
 
+label __8__5__Schema_Informed_Grammars title="8.5 Schema-informed Grammars";
+
+comment{
+"\n";
+"\n";
+"This section describes the schema-informed grammars used by EXI when schema infaormation is available to describe the contents of the EXI stream.\n";
+"Schema information used for processing an EXI stream is either indicated by the header option schemaId, or communicated out-of-band in the absence of schemaId.\n";
+"\n";
+"\n";
+"Schema-informed grammars accept all XML documents and fragments regardless of whether and how closely they match the schema. The EXI stream encoder encodes individual events\n";
+"using schema-informed grammars where they are available and falls back to the built-in XML grammars where they are not. In general, events for which a achema-informed grammar exists will be \n";
+"encoded more efficiently.\n";
+"\n";
+"\n";
+"Unlike built-in XML grammars, schema-informed grammars are static and do not evolve, which permits the reuse of schema-informed gram,mars across the processing of multiple EXI streams.\n";
+"This is a single outstanding difference between the two grammar systems.\n";
+"\n";
+"\n";
+"It is important to note that schema-informed and built-in grammars are often used together within the context of a single EXI stream. While processing a schema-informed grammar, built-in grammars\n";
+"may be created to represent schema deviations or elements that match wildcards declared in the schema. Even though these built-in grammars occur in the context of a schema-informed stream, they are\n";
+"still dynamic and evolve to represent content learned while processing the EXI stream as described in 8.4 Built-in XML Grammars.\n";
+"\n";
+"\n";
+};
+
+label __8__5__1_Schema_Informed_Document_Grammar title="8.5.1 Schema-informed Document Grammar";
 
 
+comment{
+"When schema information is available to describe the contents of an EXI stream, the following grammar describes the events that will occur in an EXI document.\n";
+"\n";
+"\n";
+"Syntax\n\n\n\n";
+};
+
+macro schema_informed_document_grammar{
+    val global_elements = arglist;
+    Grammar{
+        GrammarNonterminal Document, DocContent, DocEnd;
+        lhs{Document;};
+            rhs{SD; DocContent; EventCode(0);};
+        lhs{DocContent;};
+        val i = 0;
+        for(e : global_elements){
+            rhs{SE ( e );DocEnd; EventCode(i);};
+            let i = i + 1;            
+        }
+        rhs{SE ( _*_ );DocEnd; EventCode(i);};
+        rhs{DT; DocContent; EventCode(i+1,0);};
+        rhs{CM;DocContent; EventCode(i+1,1,0);};
+        rhs{PI;DocContent; EventCode(i+1,1,1);};
+        comment{
+            "Note:\n\n\n";
+            "- The variable "; as_identifier("i"); " in the grammar above is the number of global elements declared in the schema. arglist represents"; "\n";
+            "  all the qnames of global elements sorted lexicographically, first by local-name, then by uri.\n\n";
+        };
+        lhs{DocEnd;};
+            rhs{ED; EventCode(0);};
+            rhs{CM; DocEnd; EventCode(1,0);};
+            rhs{PI; DocEnd; EventCode(1,1);};
+    };
+};
+
+schema_informed_document_grammar{GrammarTerminal G_0,G_1,G_2,G_3; G_0;G_1;G_2;G_3;};
+
+comment{
+"\n";
+"\n";
+"Semantics:\n\n\n";
+"In a schema-informed grammar, all productions of the form LeftHandSide:SE(_*_) RightHandSide are evaluated as follows:\n\n\n";
+"1. Let qname be the qname of the element matched by SE(_*_)\n";
+"2. If a global element grammar does not exist for element qname, create one according to section 8.4.3. Built-in Element Grammar.\n";
+"3. Evaluate the element content using the global element grammar for element qname.\n";
+"4. Evaluate the remainder of event sequence using RightHandSide.\n";
+
+};
 
 
 
