@@ -666,6 +666,62 @@ comment{
 
 
 
+label __8__5__3_Schema_Informed_Element_Fragment_Grammar title="8.5.3 Schema-informed Element Fragment Grammar";
+
+comment{
+"\n";
+"\n";
+"[Definition:] When schema information is available to describe the contents of an EXI stream and more than one element is declared with the same qname, but not all\n";
+"such elements have the same type name and {nilable} property value, the Schema-informed Element Fragment Grammar are used for processing the events that may occur\n";
+"in such elements when they occur inside an EXI fragment or EXI Element Fragment. The schema-informed element fragment grammar consists of ElementFragment anf ElementFragmentTypeEmpty\n";
+"which are defined below. ElementFragment is a grammar that accounts both element declarations and attribute declarations in schemas, whereas ElementFragmentTypeEmpty is a grammar\n";
+"that regards only attribute delarations.\n";
+"\n";
+"\n";
+};
+
+macro SchemaInformedElementFragmentGrammar{
+    Grammar{
+        GrammarNonterminal ElementFragment_0, ElementFragment_1, ElementFragment_2, ElementFragmentTypeEmpty_0, ElementFragmentTypeEmpty_1;
+
+        val As = as_nodeset(hd(arglist));
+        val Fs = as_nodeset(hd(tail(arglist)));
+
+        lhs{ElementFragment_0;};
+        val i = 0;
+        for(A_i : As){
+            rhs{AT(A_i); ElementFragment_0; EventCode(i);};
+            let i = i + 1; 
+        }
+        rhs{AT(_*_); ElementFragment_0;};
+        
+        lhs{ElementFragment_1;};
+        lhs{ElementFragment_2;};
+        lhs{ElementFragmentTypeEmpty_0;};
+        lhs{ElementFragmentTypeEmpty_1;};
+
+        for(F_j : Fs){
+            F_j;
+        }  
+    };
+};
+
+SchemaInformedElementFragmentGrammar{{A_0;A_1;A_2;} {F_0;F_1;} };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
