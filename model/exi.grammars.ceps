@@ -399,6 +399,130 @@ comment{
 
 };
 
+label __8__4__3__Built_in_Element_Grammar title="8.4.3 Built-in Element Grammar";
+
+/*
+
+[Definition:] When no grammar exists for an element occuring in an EXI stream, a built-in element grammar is
+created for that element- Built-in element grammars are initially generic and are progressively refined as the specific
+content for the associated element is learned. All built-in element grammars are global element grammars and can be
+uniquely identified by the qname of the global element they describe. At the outset of processing an EXI stream, the set of
+built-in element grammars is empty.
+
+Below is the initial set of productions used for all newly created built-in element grammars. The semantics describe how productions
+are added to each built-in element grammar as the content of the associated element is learned.
+
+*/
+
+macro ChildContentItems{
+    GrammarNonterminal ElementContent;
+    val i = hd(arglist);
+    val j = hd(tail(arglist));
+    rhs{SE(_*_); ElementContent; EventCode(i,j);};
+    rhs{CH; ElementContent; EventCode(i,j+1);};
+    rhs{ER; ElementContent; EventCode(i,j+2);};
+    rhs{CM; ElementContent; EventCode(i,j+3,0);};
+    rhs{PI; ElementContent; EventCode(i,j+3,1);};
+};
+
+Grammar{
+    GrammarNonterminal StartTagContent, ElementContent;
+    lhs{StartTagContent;};
+        rhs{EE; EventCode(0,0);};
+        rhs{AT(_*_); StartTagContent; EventCode(0,1);};
+        rhs{NS; StartTagContent; EventCode(0,2);};
+        rhs{SC;Fragment;EventCode(0,3);};
+        ChildContentItems{0;4;};        
+    lhs{ElementContent;};
+        rhs{EE; EventCode(0);};
+        ChildContentItems{1;0;};  
+};
+
+comment{
+"\n";
+"\n";
+"Note:\n";
+"\n";
+"-   When the value of the selfContained option is false, the production with the terminal symbol SC on the rihgt-hand side is absent from the above grammar,\n";
+"    and the use of the non-terminal macro ChildContentItems that has StartTagContent non-terminaö on the left-hand side (shown in bold above) gets expanded with variable values 0;3;\n";
+"    instead of 0;4; used above.\n";
+"-   When xsi:type attribute appears in an element where the built-in grammar is in effect, it MUST occur before any AT events of the sane element unless it is known that xsi:type \n";
+"    attribute will not impact grammar selection.\n";
+"-   When xsi:nil attribute appears in an element where the built-in element grammar is in effect, it does not impact grammar selection and is not strictly required to occur before other\n";
+"    AT events of the same element.\n";
+"\n";
+"\n";
+"Semantics:\n";
+"\n";
+"All productions in the built-in element grammar of the form LeftHandSide AT(_*_) RightHandSide are evaluated as follows:\n";
+"\n";
+"1. Let qname be the qname of the attribute matched by AT(_*_)\n";
+"2. If qname is not xsi:type or if a production of the form LeftHandSide : AT(xsi:type) with an event code of length does not exist in the current element grammar, create a production\n";
+"   of the form LeftHandSide : AT(qname) RightHandSide with an event code 0 and increment the first part of the event code of each production in the current grammar with the non-terminal\n";
+"   LeftHandSide on the left-hand side. Add this production to the grammar.\n";
+"3. If qname is xsi:type, let target-type be the value of the xsi:type attribute and assign it the QName datatype representation (see 7.1.7 QName). \n";
+"   If there is no namespace in scope for the specified qname prefix, set the uri of target-type to empty (\"\") and the localName to the full lexical value of the QName, including the prefix.\n";
+"   Encode target-type according to section 7. Representing Event Content. If a grammar can be found for the target-type using the encoded target-type representation, evaluate the element contents using the\n";
+"   grammar for target-type instead of RightHandSide.\n";
+"\n";
+"\n";
+"The production of the form LeftHandSide : AT(xsi:type) RihghtHandSide that was previously added to the grammar upon the first occurence of the xsi:type attribute is evaluated as follows when it is matched:\n";
+"\n";
+"1. Let target-type be the value of the xsi:type attribute and assign it the QName datatype representation (see 7.1.7 QName).\n";
+"2. If there is no namespace in scope for the specified qname prefix, set the uri of target-type to empty(\"\") and the localName to the full lexical value of the QName, including the prefix.\n";
+"3. Represent the value of target-type according to section 7.Representing Event Content.\n";
+"4. If a grammar can be found for the target-type type using the encoded target-type representation, evaluate the element contents using the grammar for target-type type instead of RightHandSide.\n";
+"\n";
+"All productions of the form LeftHandSide: SC Fragment are evaluated as follows:\n";
+"\n";
+"1. Save the string table, grammars and any implementation-specific state learned while processing this EXI Body.\n";
+"2. Initialize the string table, grammars and any implementation-specific state learned while processing EXI Body to the state they held just prior to processing this EXI Body.\n";
+"3. Skip to the next byte-aligned boundary in the stream if it is not already at such a boundary.\n";
+"4. Let qname be the qname of the SE event immediately preceding this SC event.\n";
+"5. Let content be the sequence of events following this SC event that match the grammar for element qname, up to and including the terminating EE event.\n";
+"6. Evaluate the sequence of events (SD, SE(qname), content, ED) according to the Fragment grammar (see 8.4.2 Built-in Fragment Grammar).\n";
+"7. Skip to the next byte-aligned boundary in the stream if it is not already at such a boundary.\n";
+"8. Restore the string table, grammars and implementation-specific state learned while processing this EXI Body to that saved in step 1 above.\n";
+"\n";
+"All productions in the built-in element grammar of the form LeftHandSide : SE(*) RightHandSide are evaluated as follows:\n";
+"\n";
+"1. Let qname be the qname of the element matched by SE(_*_)\n";
+"2. If a global element grammar does not exist for element qname, create one according to section 8.4.3. Built-in Element Grammar.\n";
+"3. Create a production of the form LeftHandSide : SE (qname) RightHandSide with an event code 0\n";
+"4. Increment the first part of the event code of each production in the current grammar with the non-terminal LeftHandSide on the left-hand side.\n";
+"5. Add the production created in step 3 to the grammar\n";
+"6. Evaluate the element content using the global element grammar for element qname.\n";
+"7. Evaluate the remainder of event sequence using RightHandSide.\n";
+"\n";
+"All productions of the form LeftHandSide : SE (qname) RightHandSide that were previously added to the grammar upon the first occurence of the element that has\n";
+"the qname qname are evaluated as follows when they are matched:\n";
+"\n";
+"1. Evaluate the element content using the global element grammar for element qname\n";
+"2. Evaluate the remaoinder of event sequence using RightHandSide\n";
+"\n";
+"All productions in the built-in grammar of the form LeftHandSide : CH RightHandSide are evaluated as follows:\n";
+"\n";
+"1. If a production of the form, LeftHandSide : CH RightHandSide with an event code of length 1 does not exist in the current element grammar, create one with \n";
+"   event code 0 ad increment the first part of the event code of each production in the current grammar with the non-terminal LeftHandSide on the left-hand side.\n";
+"2. Add the production created in step 1 to the grammar.\n";
+"3. Evaluate the remainder of the event sequence using RightHandSide.\n";
+"\n";
+"All productions in the built-in elemen grammar of the form LeftHandSide : EE are evaluated as follows:\n";
+"\n";
+"1. If a production of the form, LeftHandSide : EE with an event code of length 1 does not exist in the current element grammar, create\n";
+"   one with event code 0 and increment the first part of the event code of each production in the current grammar with non-terminal LeftHandSide\n";
+"   on the left-hand side.\n";
+"2. Add the production created in step 1 to the grammar.\n";
+"\n";
+
+
+};
+
+
+
+
+
+
 
 
 
