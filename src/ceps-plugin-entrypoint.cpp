@@ -38,12 +38,22 @@
 #include "ceps_ast.hh"
 #include "core/include/state_machine_simulation_core.hpp"
 
-static Ism4ceps_plugin_interface* plugin_master = nullptr;
-static const std::string version_info = "v2g-guru-exi v0.1"; 
+namespace v2g_guru_exi{
+    static Ism4ceps_plugin_interface* plugin_master = nullptr;
+    static const std::string version_info = "v2g-guru-exi v0.1";
+    static constexpr bool print_debug_info{true}; 
+    ceps::ast::node_t plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params);
+}
+
+ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params){
+    std::cerr << "***Warning: function exi_processor_add_start_grammar(Grammar{...}) not implemented yet.\n"; 
+    return nullptr;
+}
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
-  std::cout << version_info << " registered.\n";
-  plugin_master = smc->get_plugin_interface();
+  v2g_guru_exi::plugin_master = smc->get_plugin_interface();
+  v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_start_grammar", v2g_guru_exi::plugin_entrypoint_add_start_grammar);
+  if(v2g_guru_exi::print_debug_info) std::cout << v2g_guru_exi::version_info << " registered.\n";
 }
 
