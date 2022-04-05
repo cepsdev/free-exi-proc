@@ -53,9 +53,11 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::n
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
     if("Grammar" != name(ceps_struct)) return nullptr;
-
-    std::cout << ceps_struct << std::endl;
-
+    Grammar g{data};
+    //std::cout << ceps_struct << std::endl;
+    auto v_lhs = g.left_hand_sides();
+    for(auto p:v_lhs) std::cout <<name(as_symbol_ref(p)) << "\n";
+    auto v_rhs = g.right_hand_sides(v_lhs[0]);
     return nullptr;
 }
 

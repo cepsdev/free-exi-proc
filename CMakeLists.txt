@@ -27,6 +27,7 @@ link_directories($ENV{CEPSCORE}/bin)
 
 add_library(v2g-guru-exi-plugin SHARED 
            src/ceps-plugin-entrypoint.cpp 
+           src/v2g-guru-exi-grammar.cpp
            )
 
 target_link_libraries(v2g-guru-exi-plugin cepscore sctp)
