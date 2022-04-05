@@ -35,8 +35,8 @@
 #include <algorithm>
 #include <future>
 #include <netinet/sctp.h> 
-#include "ceps_ast.hh"
-#include "core/include/state_machine_simulation_core.hpp"
+
+#include "v2g-guru-exi.h"
 
 namespace v2g_guru_exi{
     static Ism4ceps_plugin_interface* plugin_master = nullptr;
@@ -46,7 +46,16 @@ namespace v2g_guru_exi{
 }
 
 ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params){
-    std::cerr << "***Warning: function exi_processor_add_start_grammar(Grammar{...}) not implemented yet.\n"; 
+    //std::cerr << "***Warning: function exi_processor_add_start_grammar(Grammar{...}) not implemented yet.\n"; 
+    //Grammar g;
+    auto data = get_first_child(params);
+    
+    if (!is<Ast_node_kind::structdef>(data)) return nullptr;
+    auto& ceps_struct = *as_struct_ptr(data);
+    if("Grammar" != name(ceps_struct)) return nullptr;
+
+    std::cout << ceps_struct << std::endl;
+
     return nullptr;
 }
 

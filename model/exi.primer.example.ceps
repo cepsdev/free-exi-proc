@@ -45,4 +45,7 @@ exi_input_stream{
     EOF;  
 };
 
-exi_processor_add_start_grammar(root.Grammar.contains_symbol("EXIBuiltInDocumentGrammar"));
+exi_processor_add_start_grammar(root.Grammar.contains_symbol("EXIBuiltInDocumentGrammar") # "Search through the list of all global Grammar structures and pick the ones marked as 'EXIBuiltInDocumentGrammar'.");
+
+
+
