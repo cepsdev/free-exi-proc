@@ -34,9 +34,8 @@ GrammarTerminal
     PI, 
     DT, 
     ER, 
-    SC,
-    EOF;
-
+    SC;
+    
 XMLEntity
     qname, 
     uri;
