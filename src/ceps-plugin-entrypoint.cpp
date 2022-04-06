@@ -41,30 +41,54 @@
 namespace v2g_guru_exi{
     static Ism4ceps_plugin_interface* plugin_master = nullptr;
     static const std::string version_info = "v2g-guru-exi v0.1";
-    static constexpr bool print_debug_info{true}; 
+    static constexpr bool print_debug_info{true};
+    static processor exi_processor; 
     ceps::ast::node_t plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t plugin_entrypoint_encode (ceps::ast::node_callparameters_t params);
 }
 
 ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params){
-    //std::cerr << "***Warning: function exi_processor_add_start_grammar(Grammar{...}) not implemented yet.\n"; 
-    //Grammar g;
     auto data = get_first_child(params);
     
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
     if("Grammar" != name(ceps_struct)) return nullptr;
     Grammar g{data};
-    //std::cout << ceps_struct << std::endl;
-    auto v_lhs = g.left_hand_sides();
-    for(auto p:v_lhs) std::cout <<name(as_symbol_ref(p)) << "\n";
-    auto v_rhs = g.right_hand_sides(v_lhs[0]);
+
+    if(v2g_guru_exi::print_debug_info){
+        std::cout << "plugin_entrypoint_add_start_grammar(G) where G = { \n";
+        auto v_lhs = g.left_hand_sides();
+        for(auto p : v_lhs) {
+            std::cout << "  " << p.name() << ":\n";
+            auto v_rhs = g.right_hand_sides(p);
+            for(auto pp : v_rhs)
+                std::cout << "    " << *pp << "\n";
+        }
+        std::cout << "\n}\n"; 
+    }
+    
+    exi_processor.set_start_grammar(g);
+
     return nullptr;
+}
+
+ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_encode (ceps::ast::node_callparameters_t params){
+    auto data = get_first_child(params);
+    auto result = mk_struct("encoding");
+    
+    if (!is<Ast_node_kind::structdef>(data)) return result;
+    auto& ceps_struct = *as_struct_ptr(data);
+    if("exi_event_stream" != name(ceps_struct)) return result;
+    
+    return result;
 }
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   v2g_guru_exi::plugin_master = smc->get_plugin_interface();
   v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_start_grammar", v2g_guru_exi::plugin_entrypoint_add_start_grammar);
+  v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_encode", v2g_guru_exi::plugin_entrypoint_encode);
+
   if(v2g_guru_exi::print_debug_info) std::cout << v2g_guru_exi::version_info << " registered.\n";
 }
 

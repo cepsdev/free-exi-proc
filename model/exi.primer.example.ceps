@@ -18,7 +18,7 @@
 
 
 
-exi_input_stream{
+exi_event_stream{
     SD;
     SE("notebook");
     AT(date = "2007-09-12");
@@ -46,6 +46,32 @@ exi_input_stream{
 };
 
 exi_processor_add_start_grammar(root.Grammar.contains_symbol("EXIBuiltInDocumentGrammar") # "Search through the list of all global Grammar structures and pick the ones marked as 'EXIBuiltInDocumentGrammar'.");
-
-
-
+print("\n",
+    exi_processor_encode(
+        events{
+            SD;
+            SE("notebook");
+            AT(date = "2007-09-12");
+            SE("note");
+            AT(categpory = "EXI");
+            AT(date = "2007-07-23");
+            SE("subject");
+            CH("EXI");
+            EE("subject");
+            SE("body");
+            CH("Do not forget it!");
+            EE("body");
+            EE("note");
+            SE("note");
+            AT(date = "2007-09-12");
+            SE("subject");
+            CH("Shopping List");
+            EE("subject");
+            SE("body");
+            CH("milk,honey");
+            EE("body");
+            EE("note");
+            EE("notebook");
+            EOF;  
+        }   
+    ), "\n");

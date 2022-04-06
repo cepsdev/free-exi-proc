@@ -21,29 +21,57 @@
 
 namespace v2g_guru_exi{
 
-bool Grammar::is_lhs(grammar_elem_t p) const {
-    if (!is<Ast_node_kind::structdef>(p)) return false;
-    if (name(as_struct_ref(p)) != "lhs") return false;
-    return true;
+std::string Grammar::NonTerminal::name() const{
+    return ceps::ast::name(as_symbol_ref(rep));
+}
+
+std::optional<Grammar::NonTerminal> Grammar::is_lhs(grammar_elem_t p) const {
+    if (!is<Ast_node_kind::structdef>(p)) return {};
+    if (name(as_struct_ref(p)) != "lhs") return {};
+    for(auto pp : children(as_struct_ref(p))){
+        if (!is<Ast_node_kind::symbol>(pp)) continue;
+        if (kind(as_symbol_ref(pp))!="GrammarNonterminal") continue;
+        return NonTerminal{pp};
+    }
+    return {};
 }
 
 Grammar::lhs_vec_t Grammar::left_hand_sides(){
     lhs_vec_t r{};
     foreach_grammar_element([&](grammar_elem_t p){
-        if(!is_lhs(p)) return;
-        for(auto pp : children(as_struct_ref(p))){
-         if (!is<Ast_node_kind::symbol>(pp)) continue;
-         if (kind(as_symbol_ref(pp))!="GrammarNonterminal") continue;
-         r.push_back(pp);
-         break;
-        }
+        auto res = is_lhs(p);
+        if (!res) return;
+        r.push_back(*res);
     });
     return r;
 }
-Grammar::rhs_vec_t Grammar::right_hand_sides(lhs_t lhs){
-    rhs_vec_t r{};
 
+Grammar::rhs_vec_t Grammar::right_hand_sides(NonTerminal lhs){
+    rhs_vec_t r{};
+    auto nt{NonTerminal{lhs}};
+    bool gather_rhs{};
+    foreach_grammar_element([&](grammar_elem_t p){
+        auto nonterminal = is_lhs(p);
+        if (gather_rhs){
+            if (nonterminal){
+                 gather_rhs = (*nonterminal == lhs);
+                 return;
+            }
+            if (is<Ast_node_kind::structdef>(p) && name(as_struct_ref(p)) == "rhs" ) 
+                r.push_back(p);
+            return;
+        }
+        else if (nonterminal && *nonterminal == lhs) gather_rhs = true;
+    });
     return r;
+}
+
+bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){
+    return lhs.name() == rhs.name();
+}
+
+bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){
+    return !(lhs == rhs);
 }
 
 }
