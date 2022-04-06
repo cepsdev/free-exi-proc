@@ -18,30 +18,13 @@
 
 #include "v2g-guru-exi.h"
 
-
 namespace v2g_guru_exi{
- 
-    void Processor::set_start_grammar(Grammar g){
-        grammars = stack<Grammar>{};
-        grammars.push(g);
+    EventStream::EventStream(event_stream_rep_t event_stream_rep):ev_stream_rep{event_stream_rep} {
+        
     }
-    
-    void Processor::set_event_stream(EventStream ev_stream){
-        event_stream = ev_stream;
-    }
-
-    void Processor::encode(){
-        std::cout << "Processor::encode():\n";
-        while(grammars.size()){
-            auto current_grammar = grammars.top();
-            grammars.pop();
-            auto tok = event_stream.get_event();
-            std::cout << "  fetched event.\n";
-            if (tok){
-                std::cout << "  fetched event is valid.\n";
-                if (tok.is_SD()) std::cout << "  fetched event is SD.\n";
-            }            
-        }
-        std::cout << "Processor::encode(): exit.\n";
+    Event EventStream::get_event(){
+        Event r{};
+        if (next_ev_idx >= ev_stream_rep.size()) return r;
+        return ev_stream_rep[next_ev_idx++];        
     }
 }

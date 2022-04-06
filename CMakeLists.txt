@@ -29,6 +29,8 @@ add_library(v2g-guru-exi-plugin SHARED
            src/ceps-plugin-entrypoint.cpp 
            src/v2g-guru-exi-grammar.cpp
            src/v2g-guru-exi-processor.cpp
+           src/v2g-guru-exi-event-stream.cpp
+           src/v2g-guru-exi-event.cpp
            )
 
 target_link_libraries(v2g-guru-exi-plugin cepscore sctp)

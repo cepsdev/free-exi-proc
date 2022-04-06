@@ -32,7 +32,7 @@ namespace v2g_guru_exi{
             using grammar_elem_t = node_t;
 
             class NonTerminal{
-                node_t rep;
+                node_t rep{};
                 public:
                 NonTerminal(grammar_elem_t rep) : rep{rep} {}
                 string name() const; 
@@ -48,7 +48,7 @@ namespace v2g_guru_exi{
             using lhs_vec_t = vector<NonTerminal>;
 
         private:
-            grammar_rep_t grammar_rep;
+            grammar_rep_t grammar_rep{};
 
             std::optional<NonTerminal> is_lhs(grammar_elem_t) const;
 
@@ -66,20 +66,36 @@ namespace v2g_guru_exi{
 
     class Event{
         public:
-
+            using event_rep_t = node_t;
+            Event() = default;
+            Event(event_rep_t);
+            operator bool(){
+                return valid;
+            }
+            bool is_SD();
+        private:
+            event_rep_t ev_rep{};
+            bool valid{};
     };
 
-    class EventStream{
+    class EventStream{      
         public:
+            using event_stream_rep_t = std::vector<node_t>;
+            EventStream() = default;
+            explicit EventStream(event_stream_rep_t);
             Event get_event();
+        private:
+            event_stream_rep_t ev_stream_rep;
+            size_t next_ev_idx = 0;
     };
 
-    class processor{
+    class Processor{
         EventStream event_stream;
         stack<Grammar> grammars;
-        
         public:
+            Processor() = default;
             void set_start_grammar(Grammar g);
+            void set_event_stream(EventStream ev_stream);
             void encode();            
     };
 

@@ -20,28 +20,8 @@
 
 
 namespace v2g_guru_exi{
- 
-    void Processor::set_start_grammar(Grammar g){
-        grammars = stack<Grammar>{};
-        grammars.push(g);
-    }
-    
-    void Processor::set_event_stream(EventStream ev_stream){
-        event_stream = ev_stream;
-    }
-
-    void Processor::encode(){
-        std::cout << "Processor::encode():\n";
-        while(grammars.size()){
-            auto current_grammar = grammars.top();
-            grammars.pop();
-            auto tok = event_stream.get_event();
-            std::cout << "  fetched event.\n";
-            if (tok){
-                std::cout << "  fetched event is valid.\n";
-                if (tok.is_SD()) std::cout << "  fetched event is SD.\n";
-            }            
-        }
-        std::cout << "Processor::encode(): exit.\n";
+    Event::Event(event_rep_t event_rep) : ev_rep{event_rep}, valid{true} {}
+    bool Event::is_SD(){
+        return is<Ast_node_kind::symbol>(ev_rep) && kind(as_symbol_ref(ev_rep)) == "GrammarTerminal" && name(as_symbol_ref(ev_rep)) == "SD" ;
     }
 }

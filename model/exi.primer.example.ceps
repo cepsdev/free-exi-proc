@@ -72,6 +72,5 @@ print("\n",
             EE("body");
             EE("note");
             EE("notebook");
-            EOF;  
         }   
     ), "\n");

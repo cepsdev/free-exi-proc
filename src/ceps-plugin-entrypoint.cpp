@@ -42,7 +42,7 @@ namespace v2g_guru_exi{
     static Ism4ceps_plugin_interface* plugin_master = nullptr;
     static const std::string version_info = "v2g-guru-exi v0.1";
     static constexpr bool print_debug_info{true};
-    static processor exi_processor; 
+    static Processor exi_processor; 
     ceps::ast::node_t plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t plugin_entrypoint_encode (ceps::ast::node_callparameters_t params);
 }
@@ -68,7 +68,7 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::n
     }
     
     exi_processor.set_start_grammar(g);
-
+    
     return nullptr;
 }
 
@@ -78,8 +78,10 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_encode (ceps::ast::node_callpa
     
     if (!is<Ast_node_kind::structdef>(data)) return result;
     auto& ceps_struct = *as_struct_ptr(data);
-    if("exi_event_stream" != name(ceps_struct)) return result;
-    
+    if("events" != name(ceps_struct)) return result;
+
+    exi_processor.set_event_stream(EventStream{children(ceps_struct)});
+    exi_processor.encode();
     return result;
 }
 
