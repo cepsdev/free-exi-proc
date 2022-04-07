@@ -27,7 +27,7 @@ bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
         if (kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" || kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" ) return false;    
         return name(as_symbol_ref(lhs.get_rep())) == name(as_symbol_ref(rhs.get_rep()));
     } else if (is<Ast_node_kind::func_call>(lhs.get_rep()) && is<Ast_node_kind::func_call>(rhs.get_rep())){
-        std::cout << "!!!!!!!\n";
+       
     }
     std::cout << "??? " <<*lhs.get_rep() << " " << *rhs.get_rep() << "\n"; 
     return false;
