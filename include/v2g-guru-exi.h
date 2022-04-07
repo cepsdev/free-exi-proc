@@ -112,6 +112,7 @@ namespace v2g_guru_exi{
             EventStream() = default;
             explicit EventStream(event_stream_rep_t);
             Event get_event();
+            operator bool() {return ev_stream_rep.size() > next_ev_idx; }
         private:
             event_stream_rep_t ev_stream_rep;
             size_t next_ev_idx = 0;

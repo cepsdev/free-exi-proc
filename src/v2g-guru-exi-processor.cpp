@@ -35,6 +35,7 @@ namespace v2g_guru_exi{
         while(grammars.size()){
             auto current_grammar = grammars.top();
             grammars.pop();
+            if (!event_stream) break;
             auto tok = event_stream.get_event();
             //std::cout << "  fetched event.\n";
             if (tok){
