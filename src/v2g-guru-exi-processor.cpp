@@ -36,10 +36,16 @@ namespace v2g_guru_exi{
             auto current_grammar = grammars.top();
             grammars.pop();
             auto tok = event_stream.get_event();
-            std::cout << "  fetched event.\n";
+            //std::cout << "  fetched event.\n";
             if (tok){
-                std::cout << "  fetched event is valid.\n";
-                if (tok.is_SD()) std::cout << "  fetched event is SD.\n";
+                //std::cout << "  fetched event is valid.\n";
+                //if (tok.is_SD()) std::cout << "  fetched event is SD.\n";
+                auto production = current_grammar.find_production_starting_with(tok.as_terminal());
+                if (!production){
+                    std::cerr << "*** Error [v2g_guru_exi::Processor::encode()]: Unexpected EXI-Event\n";
+                } else {
+                    //std::cout << production->get_lhs().name() <<" : " <<  *(production->get_rhs_rep()) << "\n";
+                }
             }            
         }
         std::cout << "Processor::encode(): exit.\n";

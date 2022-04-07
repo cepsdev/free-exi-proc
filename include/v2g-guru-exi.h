@@ -32,14 +32,33 @@ namespace v2g_guru_exi{
             using grammar_elem_t = node_t;
 
             class NonTerminal{
-                node_t rep{};
+                grammar_elem_t rep{};
                 public:
+                NonTerminal() = default;
                 NonTerminal(grammar_elem_t rep) : rep{rep} {}
-                string name() const; 
+                string name() const;
+                grammar_elem_t get_rep() const {return rep;} 
             };
 
             class Terminal{
+                grammar_elem_t rep{};
+                public:
+                    Terminal() = default;
+                    Terminal(grammar_elem_t rep_arg) {
+                        if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) rep = rep_arg;
+                    }
+                    bool valid() const { return rep != nullptr;}
+                    grammar_elem_t get_rep() const {return rep;}
+            };
 
+            class Production{
+                NonTerminal lhs{};
+                grammar_elem_t rep_rhs{};
+                public:
+                    Production() = default;
+                    Production(NonTerminal lhs, grammar_elem_t rep_rhs) : lhs{lhs}, rep_rhs{rep_rhs} {}
+                    NonTerminal get_lhs() {return lhs;}
+                    grammar_elem_t get_rhs_rep() {return rep_rhs;}
             };
 
             using lhs_t = node_t;
@@ -58,13 +77,20 @@ namespace v2g_guru_exi{
                     f(p);
                 }
             }
+            template<typename F> void foreach_grammar_element_until(F f) {
+                auto& g = as_struct_ref(grammar_rep);
+                for(auto p : children(g) ){
+                    if(!f(p)) return;
+                }
+            }
         public:
             Grammar(node_t grammar_rep): grammar_rep{grammar_rep} {}
             lhs_vec_t left_hand_sides();
             rhs_vec_t right_hand_sides(NonTerminal lhs);
+            optional<Production> find_production_starting_with(Terminal);
     };
 
-    class Event{
+    class Event {
         public:
             using event_rep_t = node_t;
             Event() = default;
@@ -72,7 +98,9 @@ namespace v2g_guru_exi{
             operator bool(){
                 return valid;
             }
+            Grammar::Terminal as_terminal() const { return Grammar::Terminal{ev_rep}; }
             bool is_SD();
+            event_rep_t get_rep() { return ev_rep;}
         private:
             event_rep_t ev_rep{};
             bool valid{};
@@ -101,4 +129,5 @@ namespace v2g_guru_exi{
 
     bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
     bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
+    bool operator == (Grammar::Terminal const &, Grammar::Terminal const & );
 }
