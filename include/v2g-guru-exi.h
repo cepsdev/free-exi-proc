@@ -30,7 +30,10 @@ namespace v2g_guru_exi{
         public:
             using grammar_rep_t = node_t;
             using grammar_elem_t = node_t;
-
+            using lhs_t = node_t;
+            using rhs_t = node_t;
+            using rhs_vec_t = vector<grammar_elem_t>;
+            
             class NonTerminal{
                 grammar_elem_t rep{};
                 public:
@@ -40,12 +43,17 @@ namespace v2g_guru_exi{
                 grammar_elem_t get_rep() const {return rep;} 
             };
 
+            using lhs_vec_t = vector<NonTerminal>;
+
             class Terminal{
                 grammar_elem_t rep{};
                 public:
                     Terminal() = default;
                     Terminal(grammar_elem_t rep_arg) {
                         if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) rep = rep_arg;
+                        else if (rep_arg && is<Ast_node_kind::func_call>(rep_arg) && is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
+                                kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarTerminal"  ) rep = rep_arg;
+                        else rep = nullptr;
                     }
                     bool valid() const { return rep != nullptr;}
                     grammar_elem_t get_rep() const {return rep;}
@@ -59,12 +67,57 @@ namespace v2g_guru_exi{
                     Production(NonTerminal lhs, grammar_elem_t rep_rhs) : lhs{lhs}, rep_rhs{rep_rhs} {}
                     NonTerminal get_lhs() {return lhs;}
                     grammar_elem_t get_rhs_rep() {return rep_rhs;}
+
+                    struct rhs_elem_t{
+                        grammar_elem_t rep{};
+                        rhs_elem_t() = default;
+                        rhs_elem_t(grammar_elem_t rep): rep{rep} {}
+                        bool is_terminal() const {
+                            return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarTerminal";
+                        }
+                        bool is_nonterminal() const {
+                            return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarNonterminal";
+                        }
+                        bool is_annotation() const {
+                            return rep != nullptr && !is_terminal() && !is_nonterminal();
+                        }
+                        Grammar::Terminal as_terminal() const {
+                            return {rep};
+                        }
+                    };
+
+                    class iterator_t{
+                        rhs_vec_t rep_rhs{};
+                        size_t pos = 0;
+                        public:
+                        iterator_t() = default;
+                        iterator_t(rhs_vec_t rep_rhs, size_t pos) : rep_rhs{rep_rhs}, pos{pos} {}
+
+                        operator bool() {
+                            return pos < rep_rhs.size();
+                        }
+
+                        rhs_elem_t operator *() {
+                            return rhs_elem_t{rep_rhs[pos]};
+                        }
+
+                        iterator_t& operator ++ () {
+                            if (pos < rep_rhs.size()) ++pos;
+                            return *this;
+                        }
+
+                        bool operator == (iterator_t const & rhs) const {
+                            return pos == rhs.pos;
+                        }
+                        bool operator != (iterator_t const & rhs) const {
+                            return pos != rhs.pos;
+                        }
+                    };
+
+                    iterator_t begin() {return iterator_t{ children(as_struct_ref(rep_rhs)), {} }; }
+                    iterator_t end() {return iterator_t{{},children(as_struct_ref(rep_rhs)).size()}; }
             };
 
-            using lhs_t = node_t;
-            using rhs_t = node_t;
-            using rhs_vec_t = vector<grammar_elem_t>;
-            using lhs_vec_t = vector<NonTerminal>;
 
         private:
             grammar_rep_t grammar_rep{};
@@ -112,6 +165,7 @@ namespace v2g_guru_exi{
             EventStream() = default;
             explicit EventStream(event_stream_rep_t);
             Event get_event();
+            Event peek();
             operator bool() {return ev_stream_rep.size() > next_ev_idx; }
         private:
             event_stream_rep_t ev_stream_rep;
@@ -121,6 +175,7 @@ namespace v2g_guru_exi{
     class Processor{
         EventStream event_stream;
         stack<Grammar> grammars;
+        bool match(Grammar::Terminal);
         public:
             Processor() = default;
             void set_start_grammar(Grammar g);

@@ -22,6 +22,13 @@ namespace v2g_guru_exi{
     EventStream::EventStream(event_stream_rep_t event_stream_rep):ev_stream_rep{event_stream_rep} {
         
     }
+    
+    Event EventStream::peek(){
+        Event r{};
+        if (next_ev_idx >= ev_stream_rep.size()) return r;
+        return ev_stream_rep[next_ev_idx];        
+    }
+
     Event EventStream::get_event(){
         Event r{};
         if (next_ev_idx >= ev_stream_rep.size()) return r;

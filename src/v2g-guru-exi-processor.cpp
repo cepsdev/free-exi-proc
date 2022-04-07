@@ -30,24 +30,49 @@ namespace v2g_guru_exi{
         event_stream = ev_stream;
     }
 
+    bool  Processor::match(Grammar::Terminal terminal){
+         auto tok = event_stream.get_event().as_terminal();
+         return tok == terminal;                 
+    }
+
     void Processor::encode(){
+        bool error_occured{};
         std::cout << "Processor::encode():\n";
-        while(grammars.size()){
+        while(grammars.size() && !error_occured){
             auto current_grammar = grammars.top();
             grammars.pop();
-            if (!event_stream) break;
-            auto tok = event_stream.get_event();
-            //std::cout << "  fetched event.\n";
-            if (tok){
-                //std::cout << "  fetched event is valid.\n";
-                //if (tok.is_SD()) std::cout << "  fetched event is SD.\n";
-                auto production = current_grammar.find_production_starting_with(tok.as_terminal());
-                if (!production){
-                    std::cerr << "*** Error [v2g_guru_exi::Processor::encode()]: Unexpected EXI-Event\n";
-                } else {
-                    //std::cout << production->get_lhs().name() <<" : " <<  *(production->get_rhs_rep()) << "\n";
-                }
-            }            
+            for (;event_stream && !error_occured;){
+                auto tok = event_stream.peek();
+                //std::cout << "  fetched event.\n";
+                if (tok){
+                    //std::cout << "  fetched event is valid.\n";
+                    //if (tok.is_SD()) std::cout << "  fetched event is SD.\n";
+                    std::cout << *tok.get_rep() << std::endl;
+                    auto production = current_grammar.find_production_starting_with(tok.as_terminal());
+                    
+                    if (!production){
+                        error_occured = true;
+                        std::cerr << "*** Error [v2g_guru_exi::Processor::encode()]: Unexpected EXI-Event\n";
+                    } else {
+                        std::cout << "  production!\n";
+                        std::cout << production->get_lhs().name() <<" : " <<  *(production->get_rhs_rep()) << "\n";
+                        for(auto rhs_elem: *production ){
+                            std::cout << *rhs_elem.rep << "\n";
+                            if (rhs_elem.is_terminal()){
+                                if (!match(rhs_elem.as_terminal())) {
+                                    error_occured = true;
+                                    std::cerr << "*** Error [v2g_guru_exi::Processor::encode()]: ...\n";
+                                    break;
+                                }
+                            } else if (rhs_elem.is_nonterminal()) {
+
+                            } else if (rhs_elem.is_annotation()){
+
+                            }
+                        }
+                    }
+                } else break;        
+            }    
         }
         std::cout << "Processor::encode(): exit.\n";
     }

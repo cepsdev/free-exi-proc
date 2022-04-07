@@ -26,7 +26,10 @@ bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
     if ( is<Ast_node_kind::symbol>(lhs.get_rep()) && is<Ast_node_kind::symbol>(rhs.get_rep()) ){
         if (kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" || kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" ) return false;    
         return name(as_symbol_ref(lhs.get_rep())) == name(as_symbol_ref(rhs.get_rep()));
+    } else if (is<Ast_node_kind::func_call>(lhs.get_rep()) && is<Ast_node_kind::func_call>(rhs.get_rep())){
+        std::cout << "!!!!!!!\n";
     }
+    std::cout << "??? " <<*lhs.get_rep() << " " << *rhs.get_rep() << "\n"; 
     return false;
 }
 
@@ -78,6 +81,7 @@ Grammar::rhs_vec_t Grammar::right_hand_sides(NonTerminal lhs){
 optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Terminal term) {
     NonTerminal current_nt{};
     Grammar::Production result{};
+    bool found{};
 
     foreach_grammar_element_until([&](grammar_elem_t elem) -> bool{
         auto new_nt = is_lhs(elem);
@@ -87,13 +91,15 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
             auto& rhs = as_struct_ref(elem);
             if (!children(rhs).size()) return true;
             if (term == Grammar::Terminal{children(rhs)[0]}){
+                found = true;
                 result = Grammar::Production{current_nt, elem};
                 return false;
             }
         }
         return true;
     });   
-    return result;
+    if (found) return result;
+    return {};
 }
 
 bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){
