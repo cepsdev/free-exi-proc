@@ -66,6 +66,7 @@ namespace v2g_guru_exi{
                                 }
                             } else if (rhs_elem.is_nonterminal()) {
 
+                                return;
                             } else if (rhs_elem.is_annotation()){
 
                             }

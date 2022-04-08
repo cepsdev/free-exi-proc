@@ -19,6 +19,8 @@
 
 #include "v2g-guru-exi.h"
 
+extern std::optional<bool> equality(ceps::ast::Nodebase_ptr lhs, ceps::ast::Nodebase_ptr rhs);
+
 namespace v2g_guru_exi{
 
 bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
@@ -27,9 +29,41 @@ bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
         if (kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" || kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" ) return false;    
         return name(as_symbol_ref(lhs.get_rep())) == name(as_symbol_ref(rhs.get_rep()));
     } else if (is<Ast_node_kind::func_call>(lhs.get_rep()) && is<Ast_node_kind::func_call>(rhs.get_rep())){
-       
+         auto& fl = as_func_call_ref(lhs.get_rep());
+         auto& fr = as_func_call_ref(lhs.get_rep());
+         auto ftargetl = children(fl)[0];
+         auto ftargetr = children(fr)[0];
+         if (ftargetl->kind() != ftargetr->kind()) return false;
+         if (is<Ast_node_kind::identifier>(ftargetl)){
+             auto namel = name(as_id_ref(ftargetl));
+             auto namer = name(as_id_ref(ftargetr));
+             if (namer != namel) return false;
+         } else if(is<Ast_node_kind::symbol>(ftargetl)){
+             auto kindl = kind(as_symbol_ref(ftargetl));
+             auto kindr = kind(as_symbol_ref(ftargetr));
+             if (kindr != kindl) return false;
+             auto namel = name(as_symbol_ref(ftargetl));
+             auto namer = name(as_symbol_ref(ftargetr));
+             if (namel != namer) return false;
+         } else return false;
+        auto paramsl = &as_call_params_ref( children(fl)[1]);
+        auto paramsr = &as_call_params_ref( children(fr)[1]);
+        if (children(*paramsr).size() != children(*paramsl).size()) return false;
+        if (children(*paramsr).size() == 0) return true;
+
+        if (is<Ast_node_kind::binary_operator>(children(*paramsr)[0]) || is<Ast_node_kind::binary_operator>(children(*paramsl)[0])){
+            auto& op = is<Ast_node_kind::binary_operator>(children(*paramsr)[0]) ? as_binop_ref(children(*paramsr)[0]) : as_binop_ref(children(*paramsl)[0]);
+            if (op_val(op) != "*") {
+                auto eq = equality(children(*paramsr)[0], children(*paramsl)[0]);
+                if (eq.has_value()) return *eq;
+                return false;
+            } else return true;
+        } else {
+            auto eq = equality(children(*paramsr)[0], children(*paramsl)[0]);
+            if (eq.has_value()) return *eq;
+            return false;
+        } 
     }
-    std::cout << "??? " <<*lhs.get_rep() << " " << *rhs.get_rep() << "\n"; 
     return false;
 }
 
