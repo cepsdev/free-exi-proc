@@ -67,13 +67,17 @@ namespace v2g_guru_exi{
                     Production(NonTerminal lhs, grammar_elem_t rep_rhs) : lhs{lhs}, rep_rhs{rep_rhs} {}
                     NonTerminal get_lhs() {return lhs;}
                     grammar_elem_t get_rhs_rep() {return rep_rhs;}
+                    size_t size() const { if (rep_rhs ==  nullptr) return 0; return children(as_struct_ref(rep_rhs)).size(); }
 
                     struct rhs_elem_t{
                         grammar_elem_t rep{};
                         rhs_elem_t() = default;
                         rhs_elem_t(grammar_elem_t rep): rep{rep} {}
                         bool is_terminal() const {
-                            return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarTerminal";
+                            return rep != nullptr && 
+                                          ( (is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarTerminal") || 
+                                            (is<Ast_node_kind::func_call>(rep) && is<Ast_node_kind::symbol>(children(as_func_call_ref(rep))[0]) && kind(as_symbol_ref(children(as_func_call_ref(rep))[0])) == "GrammarTerminal" ) 
+                                          );
                         }
                         bool is_nonterminal() const {
                             return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarNonterminal";
@@ -82,6 +86,10 @@ namespace v2g_guru_exi{
                             return rep != nullptr && !is_terminal() && !is_nonterminal();
                         }
                         Grammar::Terminal as_terminal() const {
+                            return {rep};
+                        }
+
+                        Grammar::NonTerminal as_nonterminal() const {
                             return {rep};
                         }
                     };
@@ -118,7 +126,7 @@ namespace v2g_guru_exi{
                     iterator_t end() {return iterator_t{{},children(as_struct_ref(rep_rhs)).size()}; }
             };
 
-
+           
         private:
             grammar_rep_t grammar_rep{};
 
@@ -139,7 +147,7 @@ namespace v2g_guru_exi{
         public:
             Grammar(node_t grammar_rep): grammar_rep{grammar_rep} {}
             lhs_vec_t left_hand_sides();
-            rhs_vec_t right_hand_sides(NonTerminal lhs);
+            vector<Production> right_hand_sides(NonTerminal lhs);
             optional<Production> find_production_starting_with(Terminal);
     };
 
@@ -177,10 +185,13 @@ namespace v2g_guru_exi{
         stack<Grammar> grammars;
         bool match(Grammar::Terminal);
         public:
+            struct parser_exception{std::string msg;};
             Processor() = default;
             void set_start_grammar(Grammar g);
             void set_event_stream(EventStream ev_stream);
-            void encode();            
+            void encode();
+            void parse(Grammar& g);
+            void parse(Grammar& g, Grammar::Production prod);                     
     };
 
     bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);

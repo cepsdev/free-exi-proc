@@ -61,8 +61,10 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::n
         for(auto p : v_lhs) {
             std::cout << "  " << p.name() << ":\n";
             auto v_rhs = g.right_hand_sides(p);
-            for(auto pp : v_rhs)
-                std::cout << "    " << *pp << "\n";
+            /*if (v_rhs.size()){ 
+                for(auto pp : v_rhs)
+                    std::cout << "    " << pp.get_lhs().name() << "\n";
+            }*/
         }
         std::cout << "\n}\n"; 
     }

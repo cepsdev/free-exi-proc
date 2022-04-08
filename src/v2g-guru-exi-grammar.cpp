@@ -92,10 +92,11 @@ Grammar::lhs_vec_t Grammar::left_hand_sides(){
     return r;
 }
 
-Grammar::rhs_vec_t Grammar::right_hand_sides(NonTerminal lhs){
+vector<Grammar::Production> Grammar::right_hand_sides(NonTerminal lhs){
     rhs_vec_t r{};
     auto nt{NonTerminal{lhs}};
     bool gather_rhs{};
+    bool found{};
     foreach_grammar_element([&](grammar_elem_t p){
         auto nonterminal = is_lhs(p);
         if (gather_rhs){
@@ -107,9 +108,14 @@ Grammar::rhs_vec_t Grammar::right_hand_sides(NonTerminal lhs){
                 r.push_back(p);
             return;
         }
-        else if (nonterminal && *nonterminal == lhs) gather_rhs = true;
+        else if (nonterminal && *nonterminal == lhs) { found = gather_rhs = true;}
     });
-    return r;
+    if (!found) return {};
+    vector<Grammar::Production> result;
+    for(auto rep : r){
+        result.push_back(Production{lhs, rep});
+    }
+    return result;    
 }
 
 optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Terminal term) {
@@ -135,6 +141,7 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
     if (found) return result;
     return {};
 }
+
 
 bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){
     return lhs.name() == rhs.name();
