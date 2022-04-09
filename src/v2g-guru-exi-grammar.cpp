@@ -67,6 +67,12 @@ bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
     return false;
 }
 
+string Grammar::Terminal::as_str() const{
+    if (!rep) return "";
+    stringstream ss;
+    ss << *rep; return ss.str();
+} 
+
 std::string Grammar::NonTerminal::name() const{
     return ceps::ast::name(as_symbol_ref(rep));
 }
