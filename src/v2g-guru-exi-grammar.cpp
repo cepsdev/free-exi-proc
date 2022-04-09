@@ -189,6 +189,19 @@ string GenericGrammar::pattern_to_str(){
     ss << *pattern;
     pattern_str_cache = ss.str();
     return pattern_str_cache;
-}        
+}
+
+ostream& operator << (ostream& os, Grammar::EventCode const & ev){
+    if (!ev.valid()) os << "Invalid EventCode";
+    else {
+        os << "EventCode(";
+        for(size_t i = 0; i < ev.dim; ++i){
+            os << ev.code[i];
+            if (i+1 < ev.dim) os << ",";
+        }
+        os << ")";
+    } 
+    return os;   
+}
 
 }

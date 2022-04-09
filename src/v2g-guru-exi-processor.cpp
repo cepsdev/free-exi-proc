@@ -35,14 +35,30 @@ namespace v2g_guru_exi{
         event_stream = ev_stream;
     }
 
-    bool  Processor::match(Grammar::Terminal terminal){
+    bool Processor::match(Grammar::Terminal terminal){
          auto tok = event_stream.get_event().as_terminal();
          return tok == terminal;                 
     }
 
-    void Processor::parse(Grammar& g, Grammar::Production prod){
+    void Processor::emit_eventcode(Grammar& g, Grammar::Production prod){
+
+        for(auto it = prod.begin(); it != prod.end(); ++it){
+            if (!(*it).is_eventcode()) continue;
+            auto ev_code{(*it).as_eventcode()};
+            std::cout << ev_code <<" " << *(*it).rep<< "\n";
+            break;
+        }
+    }
+
+    void Processor::parse(Grammar& g, Grammar::Production prod) {
+        if (debug_output) std::cout << "Processor::parse(Grammar& g, Grammar::Production prod):\n";
+        if (debug_output) std::cout << *prod.get_lhs().get_rep() << ": " << *prod.get_rhs_rep() << "\n"; 
+        
+        emit_eventcode(g, prod);
+
         for(auto it = prod.begin(); it != prod.end(); ++it) {
             auto rhs_elem = *it;
+            if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";
             if (rhs_elem.is_terminal()){                
                 if (!match(rhs_elem.as_terminal())) throw parser_exception{};
             } else if (rhs_elem.is_nonterminal()){
@@ -58,9 +74,16 @@ namespace v2g_guru_exi{
                             if (entry.is_nonterminal()) break;
                             if (entry.as_terminal() == lookahead.as_terminal()){
                                 match(entry.as_terminal());
-                                prod_found = true;
-                                std::cout << entry.as_terminal().as_str() << std::endl;
-                                
+                                auto it_gg = generic_grammars.find(entry.as_terminal().as_str());
+                                if (it_gg != generic_grammars.end()) {
+                                    auto slookahead = lookahead.as_terminal().as_str();
+                                    auto it_global_g = global_grammars.find(slookahead);
+                                    if (it_global_g == global_grammars.end()){
+                                        global_grammars[slookahead] = Grammar{it_gg->second};
+                                        it_global_g = global_grammars.find(slookahead);
+                                    }
+                                    parse(it_global_g->second); 
+                                } prod_found = true;
                                 break;                                
                             }
                         }
@@ -69,17 +92,20 @@ namespace v2g_guru_exi{
                             break;
                         }
                     }
-                    if (!prod_found) throw parser_exception{"Missing rule.(A)"};
-                    
+                    if (!prod_found) throw parser_exception{"Missing rule.(A)"};                    
                 } else throw parser_exception{"Missing rule.(B)"};
             }
         }
     }
 
     void Processor::parse(Grammar& g){
+        if (debug_output)std::cout << "Processor::parse(Grammar& g)\n";
+        if (debug_output)std::cout << "G=\n";
+        if (debug_output)std::cout << *g.grammar_rep << std::endl;
         for (;event_stream;){
              auto tok = event_stream.peek();
              if (!tok) throw parser_exception{};
+             if (debug_output) std::cout << "tok=" << *tok.get_rep() << "\n";
              auto production = g.find_production_starting_with(tok.as_terminal());
              if (!production) break;
              parse(g,*production);
@@ -88,7 +114,7 @@ namespace v2g_guru_exi{
 
     void Processor::encode(){
         bool error_occured{};
-        std::cout << "Processor::encode():\n";
+        if (debug_output)std::cout << "Processor::encode():\n";
         while(grammars.size() && !error_occured){
             auto current_grammar = grammars.top();
             grammars.pop();
@@ -98,53 +124,7 @@ namespace v2g_guru_exi{
                 std::cerr << "*** Fatal Error [EXI Processor]: " << pe.msg << std::endl;
                 error_occured = true;
             }
-           /* for (;event_stream && !error_occured;){
-                auto tok = event_stream.peek();
-                //std::cout << "  fetched event.\n";
-                if (!tok) break;
-                    //std::cout << "  fetched event is valid.\n";
-                    //if (tok.is_SD()) std::cout << "  fetched event is SD.\n";
-                    std::cout << *tok.get_rep() << std::endl;
-                    auto production = current_grammar.find_production_starting_with(tok.as_terminal());
-                    
-                    if (!production){
-                        error_occured = true;
-                        std::cerr << "*** Error [v2g_guru_exi::Processor::encode()]: Unexpected EXI-Event\n";
-                    } else {
-                        std::cout << "  production!\n";
-                        std::cout << production->get_lhs().name() <<" : " <<  *(production->get_rhs_rep()) << "\n";
-                        auto cur_prod = *production;
-                        for(auto it = cur_prod.begin(); it != cur_prod.end(); ++it ){
-                            auto rhs_elem = *it;
-                            std::cout << *rhs_elem.rep << "\n";
-                            if (rhs_elem.is_terminal()){
-                                if (!match(rhs_elem.as_terminal())) {
-                                    error_occured = true;
-                                    std::cerr << "*** Error [v2g_guru_exi::Processor::encode()]: ...\n";
-                                    break;
-                                }
-                            } else if (rhs_elem.is_nonterminal()) {
-                                auto nt = rhs_elem.as_nonterminal();
-                                auto nt_rhs = current_grammar.right_hand_sides(nt);
-                                if (nt_rhs.size()){
-                                    auto lookahead = event_stream.peek();
-                                    for(size_t i = 0; i < nt_rhs.size(); ++i ){
-                                        std::cout << *nt_rhs[i] << std::endl;
-                                    }
-                                    //cur_prod = Grammar::Production{nt};
-                                    exit(0);                                    
-                                } else {
-
-                                }
-
-                                //return;
-                            } else if (rhs_elem.is_annotation()){
-
-                            }
-                        }
-                    }
-            }// for each event*/
         }
-        std::cout << "Processor::encode(): exit.\n";
+        if (debug_output) std::cout << "Processor::encode(): exit.\n";
     }
 }

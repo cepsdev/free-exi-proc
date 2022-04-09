@@ -61,6 +61,30 @@ namespace v2g_guru_exi{
                     string as_str() const;
             };
 
+            class EventCode{
+                grammar_elem_t rep{};
+                public:
+                int code[3] = {0,0,0};
+                int dim = 0;
+                EventCode() = default;
+                EventCode(grammar_elem_t rep_arg){
+                    if(!rep_arg) return;
+                    string func_id;
+                    std::vector<node_t> args;
+                    if (!is_a_simple_funccall(  rep_arg,
+				                                func_id,
+                                                args)) return;
+                    if (func_id != "EventCode") return;
+                    dim = args.size();
+                    size_t j = 0;
+                    for (size_t i = 0; i < args.size(); ++i)
+                        if (is<Ast_node_kind::int_literal>(args[i]))
+                            code[min(j++,2UL)] = value(as_int_ref(args[i]));
+                    rep = rep_arg;
+                }
+                bool valid() const{ return rep != nullptr;}
+            };
+
             class Production{
                 NonTerminal lhs{};
                 grammar_elem_t rep_rhs{};
@@ -87,6 +111,13 @@ namespace v2g_guru_exi{
                         bool is_annotation() const {
                             return rep != nullptr && !is_terminal() && !is_nonterminal();
                         }
+
+                        bool is_eventcode() const {
+                            return rep !=   nullptr && 
+                                            (is<Ast_node_kind::func_call>(rep) && is<Ast_node_kind::identifier>(children(as_func_call_ref(rep))[0]) && name(as_id_ref(children(as_func_call_ref(rep))[0])) == "EventCode" ) 
+                                          ;
+                        }
+
                         Grammar::Terminal as_terminal() const {
                             return {rep};
                         }
@@ -94,6 +125,11 @@ namespace v2g_guru_exi{
                         Grammar::NonTerminal as_nonterminal() const {
                             return {rep};
                         }
+                        
+                        Grammar::EventCode as_eventcode() const {
+                            return {rep};
+                        }
+
                     };
 
                     class iterator_t{
@@ -148,6 +184,11 @@ namespace v2g_guru_exi{
             }
             Grammar() = default;
             Grammar(node_t grammar_rep): grammar_rep{grammar_rep} {}
+            Grammar(Grammar const & g){
+                if (!g.grammar_rep) grammar_rep = nullptr;
+                else grammar_rep = g.grammar_rep->clone();                
+            }
+
             lhs_vec_t left_hand_sides();
             vector<Production> right_hand_sides(NonTerminal lhs);
             optional<Production> find_production_starting_with(Terminal);
@@ -194,14 +235,20 @@ namespace v2g_guru_exi{
             size_t next_ev_idx = 0;
     };
 
+    class Emitter{ 
+        public:
+        virtual void emit(EventCode) = 0;
+    }
+
     class Processor{
         EventStream event_stream;
         stack<Grammar> grammars;
         map<string,Grammar> global_grammars;
         map<string,Grammar> generic_grammars;
-
-        
+        bool debug_output = false;        
         bool match(Grammar::Terminal);
+        //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
+        Emitter* emitter;
         public:
             struct parser_exception{std::string msg;};
             Processor() = default;
@@ -210,10 +257,12 @@ namespace v2g_guru_exi{
             void encode();
             void parse(Grammar& g);
             void parse(Grammar& g, Grammar::Production prod);
-            void insert(GenericGrammar);                     
+            void insert(GenericGrammar);
+            void emit_eventcode(Grammar& g, Grammar::Production prod);
     };
 
     bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
     bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
     bool operator == (Grammar::Terminal const &, Grammar::Terminal const & );
+    ostream& operator << (ostream& os, Grammar::EventCode const &);
 }
