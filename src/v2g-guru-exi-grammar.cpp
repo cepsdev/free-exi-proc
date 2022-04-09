@@ -26,11 +26,11 @@ namespace v2g_guru_exi{
 bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
     if (!lhs.valid() || !lhs.valid()) return false;
     if ( is<Ast_node_kind::symbol>(lhs.get_rep()) && is<Ast_node_kind::symbol>(rhs.get_rep()) ){
-        if (kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" || kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" ) return false;    
+        if (kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" || kind(as_symbol_ref(rhs.get_rep()))!="GrammarTerminal" ) return false;    
         return name(as_symbol_ref(lhs.get_rep())) == name(as_symbol_ref(rhs.get_rep()));
     } else if (is<Ast_node_kind::func_call>(lhs.get_rep()) && is<Ast_node_kind::func_call>(rhs.get_rep())){
          auto& fl = as_func_call_ref(lhs.get_rep());
-         auto& fr = as_func_call_ref(lhs.get_rep());
+         auto& fr = as_func_call_ref(rhs.get_rep());
          auto ftargetl = children(fl)[0];
          auto ftargetr = children(fr)[0];
          if (ftargetl->kind() != ftargetr->kind()) return false;
@@ -130,8 +130,10 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
     bool found{};
 
     foreach_grammar_element_until([&](grammar_elem_t elem) -> bool{
+        std::cout << *elem << "\n";
         auto new_nt = is_lhs(elem);
-        if (new_nt)
+        std::cout << new_nt.has_value() << "\n";
+        if (new_nt.has_value())
             current_nt = *new_nt;
         else if (is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem)) == "rhs" ) {
             auto& rhs = as_struct_ref(elem);

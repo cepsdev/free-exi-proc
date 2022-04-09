@@ -71,21 +71,21 @@ print("\n",
             AT(date = "2007-07-23");
             SE("subject");
             CH("EXI");
-            EE("subject");
+            EE/*("subject")*/;
             SE("body");
             CH("Do not forget it!");
-            EE("body");
-            EE("note");
+            EE/*("body")*/;
+            EE/*("note")*/;
             SE("note");
             AT(date = "2007-09-12");
             SE("subject");
             CH("Shopping List");
-            EE("subject");
+            EE/*("subject")*/;
             SE("body");
             CH("milk,honey");
-            EE("body");
-            EE("note");
-            EE("notebook");
+            EE/*("body")*/;
+            EE/*("note")*/;
+            EE/*("notebook")*/;
             ED;
         }   
     ), "\n");

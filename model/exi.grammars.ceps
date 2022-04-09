@@ -503,7 +503,7 @@ macro ChildContentItems{
     val i = hd(arglist);
     val j = hd(tail(arglist));
     rhs{SE(_*_); ElementContent; EventCode(i,j);};
-    rhs{CH; ElementContent; EventCode(i,j+1);};
+    rhs{CH(_*_); ElementContent; EventCode(i,j+1);};
     rhs{ER; ElementContent; EventCode(i,j+2);};
     rhs{CM; ElementContent; EventCode(i,j+3,0);};
     rhs{PI; ElementContent; EventCode(i,j+3,1);};

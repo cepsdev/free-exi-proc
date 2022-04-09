@@ -237,18 +237,25 @@ namespace v2g_guru_exi{
 
     class Emitter{ 
         public:
-        virtual void emit(EventCode) = 0;
-    }
+        virtual void emit(Grammar::EventCode) = 0;
+    };
+
+    class ceps_emitter: public Emitter {
+        node_t encoding_result{};
+        public:
+        ceps_emitter(node_t encoding_result):encoding_result{encoding_result}{}
+        void emit(Grammar::EventCode) override;
+    };
 
     class Processor{
         EventStream event_stream;
         stack<Grammar> grammars;
         map<string,Grammar> global_grammars;
         map<string,Grammar> generic_grammars;
-        bool debug_output = false;        
+        bool debug_output = true;        
         bool match(Grammar::Terminal);
         //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
-        Emitter* emitter;
+        Emitter* emitter{};
         public:
             struct parser_exception{std::string msg;};
             Processor() = default;
@@ -259,6 +266,7 @@ namespace v2g_guru_exi{
             void parse(Grammar& g, Grammar::Production prod);
             void insert(GenericGrammar);
             void emit_eventcode(Grammar& g, Grammar::Production prod);
+            void set_emitter(Emitter* an_emitter) {emitter = an_emitter;}
     };
 
     bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);

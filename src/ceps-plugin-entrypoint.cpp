@@ -82,7 +82,9 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_encode (ceps::ast::node_callpa
     if (!is<Ast_node_kind::structdef>(data)) return result;
     auto& ceps_struct = *as_struct_ptr(data);
     if("events" != name(ceps_struct)) return result;
+    ceps_emitter emitter{result};
 
+    exi_processor.set_emitter(&emitter);
     exi_processor.set_event_stream(EventStream{children(ceps_struct)});
     exi_processor.encode();
     return result;
@@ -99,6 +101,50 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_generic_grammar(ceps::ast:
     exi_processor.insert(GenericGrammar{data});
     return nullptr;
 }
+
+void v2g_guru_exi::ceps_emitter::emit(Grammar::EventCode ev) {
+    if (!encoding_result) return;
+    if (ev.dim == 0)
+        children(as_struct_ref(encoding_result)).push_back(
+            new Func_call(
+                new Identifier("EventCode",nullptr,nullptr,nullptr),
+                new Call_parameters()        
+            )
+        );
+    else if (ev.dim == 1)
+        children(as_struct_ref(encoding_result)).push_back(
+            new Func_call(
+                new Identifier("EventCode",nullptr,nullptr,nullptr),
+                new Call_parameters(ceps::interpreter::mk_int_node(ev.code[0]))        
+            )
+        );
+     else if (ev.dim == 2)
+        children(as_struct_ref(encoding_result)).push_back(
+            new Func_call(
+                new Identifier("EventCode",nullptr,nullptr,nullptr),
+                new Call_parameters(
+                   ceps::interpreter::mk_bin_op ( ',', 
+                        ceps::interpreter::mk_int_node(ev.code[0]),
+                        ceps::interpreter::mk_int_node(ev.code[1]),"")
+                )        
+            )
+        );
+     else if (ev.dim >= 3)
+        children(as_struct_ref(encoding_result)).push_back(
+            new Func_call(
+                new Identifier("EventCode",nullptr,nullptr,nullptr),
+                new Call_parameters(
+                   ceps::interpreter::mk_bin_op (',',
+                    ceps::interpreter::mk_bin_op ( ',', 
+                            ceps::interpreter::mk_int_node(ev.code[0]),
+                            ceps::interpreter::mk_int_node(ev.code[1]),""
+                    ),ceps::interpreter::mk_int_node(ev.code[2]),"")
+
+                )        
+            )
+        );
+}
+
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
