@@ -33,6 +33,7 @@ namespace v2g_guru_exi{
             using lhs_t = node_t;
             using rhs_t = node_t;
             using rhs_vec_t = vector<grammar_elem_t>;
+            using grammar_pattern_rep_t = grammar_rep_t;
             
             class NonTerminal{
                 grammar_elem_t rep{};
@@ -57,6 +58,7 @@ namespace v2g_guru_exi{
                     }
                     bool valid() const { return rep != nullptr;}
                     grammar_elem_t get_rep() const {return rep;}
+                    string as_str() const;
             };
 
             class Production{
@@ -127,28 +129,40 @@ namespace v2g_guru_exi{
             };
 
            
-        private:
+        public:
             grammar_rep_t grammar_rep{};
 
             std::optional<NonTerminal> is_lhs(grammar_elem_t) const;
 
-            template<typename F> void foreach_grammar_element(F f) {
+            template<typename F>  void foreach_grammar_element(F f) {
                 auto& g = as_struct_ref(grammar_rep);
                 for(auto p : children(g) ){
                     f(p);
                 }
             }
-            template<typename F> void foreach_grammar_element_until(F f) {
+            template<typename F>  void foreach_grammar_element_until(F f) {
                 auto& g = as_struct_ref(grammar_rep);
                 for(auto p : children(g) ){
                     if(!f(p)) return;
                 }
             }
-        public:
+            Grammar() = default;
             Grammar(node_t grammar_rep): grammar_rep{grammar_rep} {}
             lhs_vec_t left_hand_sides();
             vector<Production> right_hand_sides(NonTerminal lhs);
             optional<Production> find_production_starting_with(Terminal);
+    };
+
+    class GenericGrammar{
+        Grammar g = {};
+        Grammar::grammar_pattern_rep_t pattern = {};
+        mutable bool pattern_str_cache_valid {false};
+        string pattern_str_cache;
+        public:
+        GenericGrammar() = default;
+        GenericGrammar(Grammar::grammar_elem_t);
+        string pattern_to_str();
+        Grammar get_grammar() const {return g;}        
     };
 
     class Event {
@@ -183,6 +197,10 @@ namespace v2g_guru_exi{
     class Processor{
         EventStream event_stream;
         stack<Grammar> grammars;
+        map<string,Grammar> global_grammars;
+        map<string,Grammar> generic_grammars;
+
+        
         bool match(Grammar::Terminal);
         public:
             struct parser_exception{std::string msg;};
@@ -191,7 +209,8 @@ namespace v2g_guru_exi{
             void set_event_stream(EventStream ev_stream);
             void encode();
             void parse(Grammar& g);
-            void parse(Grammar& g, Grammar::Production prod);                     
+            void parse(Grammar& g, Grammar::Production prod);
+            void insert(GenericGrammar);                     
     };
 
     bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);

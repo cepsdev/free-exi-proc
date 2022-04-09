@@ -20,6 +20,11 @@
 
 
 namespace v2g_guru_exi{
+    
+    void Processor::insert(GenericGrammar g){
+        generic_grammars[g.pattern_to_str()] = g.get_grammar();
+
+    }                     
  
     void Processor::set_start_grammar(Grammar g){
         grammars = stack<Grammar>{};
@@ -52,7 +57,10 @@ namespace v2g_guru_exi{
                             if (entry.is_annotation()) continue;
                             if (entry.is_nonterminal()) break;
                             if (entry.as_terminal() == lookahead.as_terminal()){
+                                match(entry.as_terminal());
                                 prod_found = true;
+                                std::cout << entry.as_terminal().as_str() << std::endl;
+                                
                                 break;                                
                             }
                         }

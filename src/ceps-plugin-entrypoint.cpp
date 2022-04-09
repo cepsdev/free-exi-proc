@@ -45,6 +45,7 @@ namespace v2g_guru_exi{
     static Processor exi_processor; 
     ceps::ast::node_t plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t plugin_entrypoint_encode (ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t plugin_entrypoint_add_generic_grammar(ceps::ast::node_callparameters_t params);
 }
 
 ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::node_callparameters_t params){
@@ -87,11 +88,24 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_encode (ceps::ast::node_callpa
     return result;
 }
 
+ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_generic_grammar(ceps::ast::node_callparameters_t params){
+    auto data = get_first_child(params);    
+    if (!is<Ast_node_kind::structdef>(data)) return nullptr;
+    auto& ceps_struct = *as_struct_ptr(data);
+    if("GenericGrammar" != name(ceps_struct)) {
+        std::cerr << "*** Error (v2g-guru-exi processor: add_generic_grammar()): Invalid argument. Expect GenericGrammar{Pattern{...}; Grammar{...};}.\n"; 
+        return nullptr;
+    }
+    exi_processor.insert(GenericGrammar{data});
+    return nullptr;
+}
+
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   v2g_guru_exi::plugin_master = smc->get_plugin_interface();
   v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_start_grammar", v2g_guru_exi::plugin_entrypoint_add_start_grammar);
   v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_encode", v2g_guru_exi::plugin_entrypoint_encode);
+  v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_generic_grammar", v2g_guru_exi::plugin_entrypoint_add_generic_grammar);
 
   if(v2g_guru_exi::print_debug_info) std::cout << v2g_guru_exi::version_info << " registered.\n";
 }

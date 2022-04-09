@@ -42,10 +42,24 @@ exi_event_stream{
     EE("body");
     EE("note");
     EE("notebook");
-    EOF;  
+    ED;  
 };
 
-exi_processor_add_start_grammar(root.Grammar.contains_symbol("EXIBuiltInDocumentGrammar") # "Search through the list of all global Grammar structures and pick the ones marked as 'EXIBuiltInDocumentGrammar'.");
+exi_processor_add_start_grammar(
+    root.Grammar.contains_symbol("EXIBuiltInDocumentGrammar") 
+    # "Search through the list of all global Grammar structures, 
+       pick the ones marked as 'EXIBuiltInDocumentGrammar'."
+);
+
+exi_processor_add_generic_grammar(
+    GenericGrammar{
+        Pattern{
+            SE(_*_);
+        };
+        root.Grammar.contains_symbol("BuiltInElementGrammar");
+    }
+);
+
 print("\n",
     exi_processor_encode(
         events{

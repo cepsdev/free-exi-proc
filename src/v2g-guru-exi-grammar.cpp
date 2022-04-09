@@ -151,4 +151,38 @@ bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const &
     return !(lhs == rhs);
 }
 
+template<typename F>  void foreach_grammarrep_element_until(F f, Grammar::grammar_rep_t grammar_rep) {
+    auto& g = as_struct_ref(grammar_rep);
+    for(auto p : children(g) )f(p);
+}
+
+
+GenericGrammar::GenericGrammar(Grammar::grammar_elem_t generic_raw){
+    if (generic_raw == nullptr) return;
+    if (!is<Ast_node_kind::structdef>(generic_raw)) return;
+    auto ceps_struct = as_struct_ptr(generic_raw);
+    //std::cout << "!!!" << *generic_raw << std::endl;
+    foreach_grammarrep_element_until  ([&](Grammar::grammar_rep_t elem){
+        if(!is<Ast_node_kind::structdef>(elem)) return true;
+        auto& data = as_struct_ref(elem);
+        if (name(data) == "Pattern") {
+            auto& v = children(data);
+            if (v.size() == 0) return true;
+            pattern = v[0];
+        }
+        if (name(data) == "Grammar") g = Grammar{elem};
+        return true;
+    },generic_raw);
+}
+
+string GenericGrammar::pattern_to_str(){
+    if (pattern_str_cache_valid) return pattern_str_cache;
+    pattern_str_cache_valid = true;
+    if (pattern == nullptr) pattern_str_cache = "";
+    stringstream ss;
+    ss << *pattern;
+    pattern_str_cache = ss.str();
+    return pattern_str_cache;
+}        
+
 }
