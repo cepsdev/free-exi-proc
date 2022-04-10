@@ -130,9 +130,7 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
     bool found{};
 
     foreach_grammar_element_until([&](grammar_elem_t elem) -> bool{
-        std::cout << *elem << "\n";
         auto new_nt = is_lhs(elem);
-        std::cout << new_nt.has_value() << "\n";
         if (new_nt.has_value())
             current_nt = *new_nt;
         else if (is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem)) == "rhs" ) {
@@ -169,7 +167,6 @@ GenericGrammar::GenericGrammar(Grammar::grammar_elem_t generic_raw){
     if (generic_raw == nullptr) return;
     if (!is<Ast_node_kind::structdef>(generic_raw)) return;
     auto ceps_struct = as_struct_ptr(generic_raw);
-    //std::cout << "!!!" << *generic_raw << std::endl;
     foreach_grammarrep_element_until  ([&](Grammar::grammar_rep_t elem){
         if(!is<Ast_node_kind::structdef>(elem)) return true;
         auto& data = as_struct_ref(elem);

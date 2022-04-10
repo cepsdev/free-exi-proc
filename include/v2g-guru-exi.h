@@ -252,7 +252,7 @@ namespace v2g_guru_exi{
         stack<Grammar> grammars;
         map<string,Grammar> global_grammars;
         map<string,Grammar> generic_grammars;
-        bool debug_output = true;        
+        bool debug_output = false;        
         bool match(Grammar::Terminal);
         //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
         Emitter* emitter{};

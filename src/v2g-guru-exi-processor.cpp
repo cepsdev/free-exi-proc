@@ -46,79 +46,87 @@ namespace v2g_guru_exi{
             if (!(*it).is_eventcode()) continue;
             auto ev_code{(*it).as_eventcode()};
             emitter->emit(ev_code);
-            std::cout << "    EMIT: " << ev_code << "\n"; 
+            if (debug_output)std::cout << "    EMIT: " << ev_code << "\n"; 
             break;
         }
     }
 
     void Processor::parse(Grammar& g, Grammar::Production prod) {
-        if (debug_output) std::cout << "Processor::parse(Grammar& g, Grammar::Production prod):\n";
-        if (debug_output) std::cout << "  " << *prod.get_lhs().get_rep() << ": " << *prod.get_rhs_rep() << "\n"; 
-        if (debug_output) std::cout << "  peek = " <<  *event_stream.peek().get_rep() << "\n\n\n";
-        
+        auto prologue = [&](){
+            if (debug_output) std::cout << "Processor::parse(Grammar& g, Grammar::Production prod):\n";
+            if (debug_output) std::cout << "  " << *prod.get_lhs().get_rep() << ": " << *prod.get_rhs_rep() << "\n"; 
+            if (debug_output) std::cout << "  peek = " <<  *event_stream.peek().get_rep() << "\n\n\n";
+        };
+
+        auto find_production_starting_with_lookahead = [&](Grammar::NonTerminal nt) -> optional< pair<Grammar::Production, Grammar::Terminal>  > {
+                auto nt_rhs = g.right_hand_sides(nt);
+                if (nt_rhs.size() == 0) return {};
+                auto lookahead = event_stream.peek();
+                if (!lookahead) throw parser_exception{};                
+                for(auto prod : nt_rhs){
+                    for(auto entry : prod){
+                        if (entry.is_annotation()) continue;
+                        if (entry.is_nonterminal()) break;
+                        if (entry.as_terminal() == lookahead.as_terminal()) return make_pair(prod,entry.as_terminal());
+                    }
+                }
+                return {};
+        };
+
+        auto gen_err_text = [&](Event lookahead, Grammar::Production prod) -> string {
+            stringstream ss;
+
+            ss << "\n   Details:\n";
+            ss << "     lookahead         = " << *lookahead.get_rep() << "\n";
+            ss << "     Active production = " << prod.get_lhs().name() << " : " << *prod.get_rhs_rep() << "\n"; 
+            ss << "     Grammar           = " << *g.grammar_rep << "\n"; 
+
+            
+            return ss.str();
+        };
+
+        prologue();
         emit_eventcode(g, prod);
 
-        for(auto it = prod.begin(); it != prod.end(); ++it) {
-            auto rhs_elem = *it;
+        for(auto rhs_elem : prod){             
             if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";
+            auto lookahead = event_stream.peek();
             if (rhs_elem.is_terminal()){  
-                auto lookahead = event_stream.peek();
                 if (debug_output) std::cout << "match("<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
                 if (!match(rhs_elem.as_terminal())) throw parser_exception{"match failed."};
             } else if (rhs_elem.is_nonterminal()){
                 auto nt = rhs_elem.as_nonterminal();
-                auto nt_rhs = g.right_hand_sides(nt);
-                if (nt_rhs.size()){
-                    auto lookahead = event_stream.peek();
-                    if (debug_output) std::cout << " lookahead = " << *lookahead.get_rep() << "\n";
-                    if (!lookahead) throw parser_exception{};
-                    bool prod_found{};
-                    for(auto prod : nt_rhs){
-                        std::cout << "--- Is this one right? " << *prod.get_rhs_rep() << "\n";
-                        for(auto entry : prod){
-                            if (entry.is_annotation()) continue;
-                            if (entry.is_nonterminal()) break;
-                            if (entry.as_terminal() == lookahead.as_terminal()){
-                                if (debug_output) std::cout << " Found rhs with entry = " << *entry.rep << "\n";
-                                auto it_gg = generic_grammars.find(entry.as_terminal().as_str());
-                                if (it_gg != generic_grammars.end()) {
-                                    if (debug_output) std::cout << "Generic grammar found" << "\n";
-                                    auto slookahead = lookahead.as_terminal().as_str();
-                                    auto it_global_g = global_grammars.find(slookahead);
-                                    if (it_global_g == global_grammars.end()){
-                                        global_grammars[slookahead] = Grammar{it_gg->second};
-                                        it_global_g = global_grammars.find(slookahead);
-                                    }
-                                    if (!match(entry.as_terminal())) throw parser_exception{"match failed (B)."};
-                                    emit_eventcode(g, prod);
-                                    parse(it_global_g->second); 
-                                } prod_found = true;
-                                break;                                
-                            }
-                        }
-                        if (prod_found) {
-                            parse(g, prod);
-                            break;
-                        }
+                auto mp = find_production_starting_with_lookahead(nt);
+                if (!mp) throw parser_exception{"Rule missing."+gen_err_text(lookahead,prod)};
+
+                auto matching_production = mp->first;
+                auto matching_production_leading_terminal = mp->second;
+
+                auto it_gg = generic_grammars.find(matching_production_leading_terminal.as_str());
+                if (it_gg != generic_grammars.end()) {
+                    auto slookahead = lookahead.as_terminal().as_str();
+                    auto it_global_g = global_grammars.find(slookahead);
+                    if (it_global_g == global_grammars.end()){
+                        global_grammars[slookahead] = Grammar{it_gg->second};
+                        it_global_g = global_grammars.find(slookahead);
                     }
-                    if (!prod_found) throw parser_exception{"Missing rule.(A)"};                    
-                } else throw parser_exception{"Missing rule.(B)"};
+                    if (!match(matching_production_leading_terminal)) throw parser_exception{"match failed (B)."};
+                    emit_eventcode(g, prod);
+                    parse(it_global_g->second); 
+                } else parse(g, matching_production);
             }
         }
     }
 
     void Processor::parse(Grammar& g){
         if (debug_output)std::cout << "Processor::parse(Grammar& g)\n";
-        //if (debug_output)std::cout << "G=\n";
-        //if (debug_output)std::cout << *g.grammar_rep << std::endl;
+        if (debug_output)std::cout << "G=\n";
+        if (debug_output)std::cout << *g.grammar_rep << std::endl;
         for (;event_stream;){
              auto tok = event_stream.peek();
              if (!tok) throw parser_exception{};
              if (debug_output) std::cout << "tok=" << *tok.get_rep() << "\n";
-             std::cout << "-------------------\n";
              auto production = g.find_production_starting_with(tok.as_terminal());
-             //std::cout << *g.grammar_rep << "\n";
-             std::cout << "-------------------\n";
              if (!production) throw parser_exception{"parse(G): No rule found."};
              parse(g,*production);
         }
