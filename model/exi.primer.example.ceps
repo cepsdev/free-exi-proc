@@ -56,6 +56,7 @@ exi_processor_add_generic_grammar(
         Pattern{
             SE(_*_);
         };
+        
         root.Grammar.contains_symbol("BuiltInElementGrammar");
     }
 );
