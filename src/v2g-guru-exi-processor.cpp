@@ -46,15 +46,17 @@ namespace v2g_guru_exi{
             if (!(*it).is_eventcode()) continue;
             auto ev_code{(*it).as_eventcode()};
             emitter->emit(ev_code);
-            if (debug_output)std::cout << "    EMIT: " << ev_code << "\n"; 
+            if (debug_output_emit_eventcode)std::cout << "    EMIT: " << ev_code << "\n"; 
             break;
         }
     }
 
     void Processor::parse(Grammar& g, Grammar::Production prod) {
         auto prologue = [&](){
-            if (debug_output) std::cout << "Processor::parse(Grammar& g, Grammar::Production prod):\n";
-            if (debug_output) std::cout << "  " << *prod.get_lhs().get_rep() << ": " << *prod.get_rhs_rep() << "\n"; 
+            //if (debug_output) 
+                std::cout << "Processor::parse(Grammar& g, Grammar::Production prod):\n";
+            //if (debug_output) 
+                std::cout << "  " << *prod.get_lhs().get_rep() << ": " << *prod.get_rhs_rep() << "\n"; 
             if (debug_output) std::cout << "  peek = " <<  *event_stream.peek().get_rep() << "\n\n\n";
         };
 
@@ -92,28 +94,35 @@ namespace v2g_guru_exi{
             if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";
             auto lookahead = event_stream.peek();
             if (rhs_elem.is_terminal()){  
-                if (debug_output) std::cout << "match("<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
+                /*if (debug_output)*/ std::cout << "match( lookahead="<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
                 if (!match(rhs_elem.as_terminal())) throw parser_exception{"match failed."};
+                if (g.has_global_id() && g.is_modifiable() && prod.has_add_clause()){
+
+
+
+                } else {
+                    auto it_gg = generic_grammars.find(rhs_elem.as_terminal().as_str());
+                    if (it_gg != generic_grammars.end() ){
+                        // We found a generic grammar:
+                        // An example of a generic grammar is the BuiltinElementGrammar it has the id SE(_*_)
+                        // We instantiate the generic grammar with the current event stored in lookahead.
+                        auto sgrammar_id = lookahead.as_terminal().as_str();
+                        auto it_global_g = global_grammars.find(sgrammar_id);
+                        if (it_global_g == global_grammars.end()){
+                            Grammar new_g{it_gg->second};
+                            new_g.global_id() = sgrammar_id;
+                            global_grammars[sgrammar_id] = new_g;
+                            it_global_g = global_grammars.find(sgrammar_id);
+                        }
+                        parse(it_global_g->second);
+                    }
+                }
             } else if (rhs_elem.is_nonterminal()){
                 auto nt = rhs_elem.as_nonterminal();
                 auto mp = find_production_starting_with_lookahead(nt);
                 if (!mp) throw parser_exception{"Rule missing."+gen_err_text(lookahead,prod)};
-
                 auto matching_production = mp->first;
-                auto matching_production_leading_terminal = mp->second;
-
-                auto it_gg = generic_grammars.find(matching_production_leading_terminal.as_str());
-                if (it_gg != generic_grammars.end()) {
-                    auto slookahead = lookahead.as_terminal().as_str();
-                    auto it_global_g = global_grammars.find(slookahead);
-                    if (it_global_g == global_grammars.end()){
-                        global_grammars[slookahead] = Grammar{it_gg->second};
-                        it_global_g = global_grammars.find(slookahead);
-                    }
-                    if (!match(matching_production_leading_terminal)) throw parser_exception{"match failed (B)."};
-                    emit_eventcode(g, prod);
-                    parse(it_global_g->second); 
-                } else parse(g, matching_production);
+                parse(g, matching_production);
             }
         }
     }

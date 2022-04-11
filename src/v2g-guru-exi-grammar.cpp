@@ -203,4 +203,19 @@ ostream& operator << (ostream& os, Grammar::EventCode const & ev){
     return os;   
 }
 
+/// Grammar::Production
+
+bool Grammar::Production::has_add_clause() const{
+    if (!get_rhs_rep()) return false;
+    auto result = false;
+    foreach_grammarrep_element_until(
+        [&](Grammar::grammar_rep_t elem){
+            if(!is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") { result = true; return false;}
+        }
+        ,get_rhs_rep()
+    );
+
+    return result;
+}
+
 }

@@ -502,7 +502,12 @@ macro ChildContentItems{
     GrammarNonterminal ElementContent;
     val i = hd(arglist);
     val j = hd(tail(arglist));
-    rhs{SE(_*_); ElementContent; EventCode(i,j);};
+    rhs{SE(_*_); ElementContent; EventCode(i,j);
+        add_if_matched{
+            SE(_*_); ElementContent; EventCode(0);                
+        };
+    };
+
     rhs{CH(_*_); ElementContent; EventCode(i,j+1);};
     rhs{ER; ElementContent; EventCode(i,j+2);};
     rhs{CM; ElementContent; EventCode(i,j+3,0);};
@@ -517,7 +522,12 @@ Grammar{
     GrammarNonterminal StartTagContent, ElementContent;
     lhs{StartTagContent;};
         rhs{EE; EventCode(0,0);};
-        rhs{AT(_*_); StartTagContent; EventCode(0,1);};
+        rhs{
+            AT(_*_); StartTagContent; EventCode(0,1);
+            add_if_matched{
+                AT(_*_); StartTagContent; EventCode(0);                
+            };
+        };
         rhs{NS; StartTagContent; EventCode(0,2);};
         rhs{SC;Fragment;EventCode(0,3);};
         ChildContentItems{0;4;};        

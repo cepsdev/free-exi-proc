@@ -90,3 +90,30 @@ val encode_result =     exi_processor_encode(
 
 print("\nencode_result = ",encode_result, "\n\n\n");
 print("Number of exi-events generated (should be 24): ",encode_result.encoding.content().size(),"\n" ); 
+
+print(expected_encoding{
+        0;
+        0;
+        0,1;
+        1,2;
+        0,1;
+        1,1;
+        2,2;
+        0,3;
+        0;
+        1,0;
+        0,3;
+        0;
+        1;
+        1,0;
+        1;
+        0;
+        0;
+        0;
+        0;
+        0;
+        0;
+        1;
+        1;
+        0;
+},"\n");

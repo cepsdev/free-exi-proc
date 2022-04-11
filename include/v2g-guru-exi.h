@@ -27,6 +27,8 @@ namespace v2g_guru_exi{
     using namespace ceps::ast;
     using namespace std;
     class Grammar{
+            string global_id_{};
+            bool modifiable_{true};
         public:
             using grammar_rep_t = node_t;
             using grammar_elem_t = node_t;
@@ -34,6 +36,13 @@ namespace v2g_guru_exi{
             using rhs_t = node_t;
             using rhs_vec_t = vector<grammar_elem_t>;
             using grammar_pattern_rep_t = grammar_rep_t;
+
+            bool has_global_id() const {return global_id_.length() > 0;}
+            string global_id() const {return global_id_;}
+            string& global_id()  {return global_id_;}
+
+            bool is_modifiable() const {return modifiable_;}
+            bool& modifiable()  {return modifiable_;}           
             
             class NonTerminal{
                 grammar_elem_t rep{};
@@ -92,8 +101,9 @@ namespace v2g_guru_exi{
                     Production() = default;
                     Production(NonTerminal lhs, grammar_elem_t rep_rhs) : lhs{lhs}, rep_rhs{rep_rhs} {}
                     NonTerminal get_lhs() {return lhs;}
-                    grammar_elem_t get_rhs_rep() {return rep_rhs;}
+                    grammar_elem_t get_rhs_rep() const {return rep_rhs;}
                     size_t size() const { if (rep_rhs ==  nullptr) return 0; return children(as_struct_ref(rep_rhs)).size(); }
+                    bool has_add_clause() const;
 
                     struct rhs_elem_t{
                         grammar_elem_t rep{};
@@ -252,7 +262,8 @@ namespace v2g_guru_exi{
         stack<Grammar> grammars;
         map<string,Grammar> global_grammars;
         map<string,Grammar> generic_grammars;
-        bool debug_output = false;        
+        bool debug_output = false;
+        bool debug_output_emit_eventcode = true;        
         bool match(Grammar::Terminal);
         //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
         Emitter* emitter{};
