@@ -103,7 +103,8 @@ namespace v2g_guru_exi{
                     NonTerminal get_lhs() {return lhs;}
                     grammar_elem_t get_rhs_rep() const {return rep_rhs;}
                     size_t size() const { if (rep_rhs ==  nullptr) return 0; return children(as_struct_ref(rep_rhs)).size(); }
-                    bool has_add_clause() const;
+                    bool is_generic() const;
+                    optional<Production> instantiate(Terminal term) const;
 
                     struct rhs_elem_t{
                         grammar_elem_t rep{};

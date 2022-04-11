@@ -24,7 +24,7 @@ extern std::optional<bool> equality(ceps::ast::Nodebase_ptr lhs, ceps::ast::Node
 namespace v2g_guru_exi{
 
 bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
-    if (!lhs.valid() || !lhs.valid()) return false;
+    if (!lhs.valid() || !rhs.valid()) return false;
     if ( is<Ast_node_kind::symbol>(lhs.get_rep()) && is<Ast_node_kind::symbol>(rhs.get_rep()) ){
         if (kind(as_symbol_ref(lhs.get_rep()))!="GrammarTerminal" || kind(as_symbol_ref(rhs.get_rep()))!="GrammarTerminal" ) return false;    
         return name(as_symbol_ref(lhs.get_rep())) == name(as_symbol_ref(rhs.get_rep()));
@@ -205,17 +205,50 @@ ostream& operator << (ostream& os, Grammar::EventCode const & ev){
 
 /// Grammar::Production
 
-bool Grammar::Production::has_add_clause() const{
+bool Grammar::Production::is_generic() const{
     if (!get_rhs_rep()) return false;
     auto result = false;
     foreach_grammarrep_element_until(
         [&](Grammar::grammar_rep_t elem){
-            if(!is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") { result = true; return false;}
+            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") { result = true; return false;}
+            return true;
         }
         ,get_rhs_rep()
     );
 
     return result;
+}
+
+optional<Grammar::Production> Grammar::Production::instantiate(Terminal term) const{
+    if (!get_rhs_rep()) return {};
+    bool success = false;
+    Production new_prod{};
+    node_t new_rhs_rep = nullptr;
+    foreach_grammarrep_element_until(
+        [&](Grammar::grammar_rep_t elem){
+            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") {
+                new_rhs_rep = mk_struct("rhs");
+                auto& new_rhs_rep_children = children(as_struct_ref(new_rhs_rep));
+                foreach_grammarrep_element_until(
+                    [&](Grammar::grammar_rep_t e)
+                    {
+                        if (term == Terminal{e}){
+                            new_rhs_rep_children.push_back(term.get_rep()->clone());
+                        } else {
+                            new_rhs_rep_children.push_back(elem->clone());
+                        }
+                        return true;
+                    }, elem
+                );
+                return false;                
+            }
+            return true;
+        }
+        ,get_rhs_rep()
+    );
+    //return success;
+    std::cout<<"\n\n\n hkjhkjh " << *new_rhs_rep << "\n\n";
+    return {};
 }
 
 }

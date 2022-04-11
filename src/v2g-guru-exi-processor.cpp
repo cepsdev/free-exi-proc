@@ -96,10 +96,12 @@ namespace v2g_guru_exi{
             if (rhs_elem.is_terminal()){  
                 /*if (debug_output)*/ std::cout << "match( lookahead="<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
                 if (!match(rhs_elem.as_terminal())) throw parser_exception{"match failed."};
-                if (g.has_global_id() && g.is_modifiable() && prod.has_add_clause()){
-
-
-
+                if (g.has_global_id() && g.is_modifiable() && prod.is_generic()){
+                    std::cout << "\n\n\ngeneric rule\n\n\n\n";
+                    auto new_prod = prod.instantiate(lookahead.as_terminal());
+                    if (new_prod){
+                        
+                    }
                 } else {
                     auto it_gg = generic_grammars.find(rhs_elem.as_terminal().as_str());
                     if (it_gg != generic_grammars.end() ){
