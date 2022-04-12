@@ -100,7 +100,7 @@ namespace v2g_guru_exi{
                 public:
                     Production() = default;
                     Production(NonTerminal lhs, grammar_elem_t rep_rhs) : lhs{lhs}, rep_rhs{rep_rhs} {}
-                    NonTerminal get_lhs() {return lhs;}
+                    NonTerminal get_lhs() const {return lhs;}
                     grammar_elem_t get_rhs_rep() const {return rep_rhs;}
                     size_t size() const { if (rep_rhs ==  nullptr) return 0; return children(as_struct_ref(rep_rhs)).size(); }
                     bool is_generic() const;
@@ -173,6 +173,7 @@ namespace v2g_guru_exi{
 
                     iterator_t begin() {return iterator_t{ children(as_struct_ref(rep_rhs)), {} }; }
                     iterator_t end() {return iterator_t{{},children(as_struct_ref(rep_rhs)).size()}; }
+                    optional<EventCode> get_eventcode();
             };
 
            
@@ -203,6 +204,7 @@ namespace v2g_guru_exi{
             lhs_vec_t left_hand_sides();
             vector<Production> right_hand_sides(NonTerminal lhs);
             optional<Production> find_production_starting_with(Terminal);
+            void insert(Production prod);
     };
 
     class GenericGrammar{
@@ -274,8 +276,8 @@ namespace v2g_guru_exi{
             void set_start_grammar(Grammar g);
             void set_event_stream(EventStream ev_stream);
             void encode();
-            void parse(Grammar& g);
-            void parse(Grammar& g, Grammar::Production prod);
+            void parse(Grammar g);
+            void parse(Grammar g, Grammar::Production prod);
             void insert(GenericGrammar);
             void emit_eventcode(Grammar& g, Grammar::Production prod);
             void set_emitter(Emitter* an_emitter) {emitter = an_emitter;}
@@ -285,4 +287,5 @@ namespace v2g_guru_exi{
     bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
     bool operator == (Grammar::Terminal const &, Grammar::Terminal const & );
     ostream& operator << (ostream& os, Grammar::EventCode const &);
+    ostream& operator << (ostream& os, Grammar::Production const &);
 }

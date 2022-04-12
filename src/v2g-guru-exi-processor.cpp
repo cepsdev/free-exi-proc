@@ -51,7 +51,7 @@ namespace v2g_guru_exi{
         }
     }
 
-    void Processor::parse(Grammar& g, Grammar::Production prod) {
+    void Processor::parse(Grammar g, Grammar::Production prod) {
         auto prologue = [&](){
             //if (debug_output) 
                 std::cout << "Processor::parse(Grammar& g, Grammar::Production prod):\n";
@@ -99,9 +99,12 @@ namespace v2g_guru_exi{
                 if (g.has_global_id() && g.is_modifiable() && prod.is_generic()){
                     std::cout << "\n\n\ngeneric rule\n\n\n\n";
                     auto new_prod = prod.instantiate(lookahead.as_terminal());
-                    if (new_prod){
-                        
-                    }
+                    if (!new_prod) continue;
+                     std::cout << *new_prod << "\n\n\n";
+                    auto ev = new_prod->get_eventcode();
+                    if (!ev) continue;
+                    g.insert(*new_prod);
+
                 } else {
                     auto it_gg = generic_grammars.find(rhs_elem.as_terminal().as_str());
                     if (it_gg != generic_grammars.end() ){
@@ -129,7 +132,7 @@ namespace v2g_guru_exi{
         }
     }
 
-    void Processor::parse(Grammar& g){
+    void Processor::parse(Grammar g){
         if (debug_output)std::cout << "Processor::parse(Grammar& g)\n";
         if (debug_output)std::cout << "G=\n";
         if (debug_output)std::cout << *g.grammar_rep << std::endl;

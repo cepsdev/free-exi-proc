@@ -148,6 +148,10 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
     return {};
 }
 
+void Grammar::insert(Grammar::Production prod) {
+    
+}
+
 
 bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){
     return lhs.name() == rhs.name();
@@ -234,8 +238,9 @@ optional<Grammar::Production> Grammar::Production::instantiate(Terminal term) co
                     {
                         if (term == Terminal{e}){
                             new_rhs_rep_children.push_back(term.get_rep()->clone());
+                            success = true;
                         } else {
-                            new_rhs_rep_children.push_back(elem->clone());
+                            new_rhs_rep_children.push_back(e->clone());
                         }
                         return true;
                     }, elem
@@ -246,9 +251,24 @@ optional<Grammar::Production> Grammar::Production::instantiate(Terminal term) co
         }
         ,get_rhs_rep()
     );
-    //return success;
-    std::cout<<"\n\n\n hkjhkjh " << *new_rhs_rep << "\n\n";
+    if (!success) {
+        delete new_rhs_rep;
+        return {};
+    }        
+    return Production{lhs, new_rhs_rep };
+}
+
+optional<Grammar::EventCode> Grammar::Production::get_eventcode(){
+    for(auto e : *this){
+        if (e.is_eventcode())
+            return e.as_eventcode();
+    }    
     return {};
+}
+
+ostream& operator << (ostream& os, Grammar::Production const & p){
+    std::cout << p.get_lhs().name() << ": " << *p.get_rhs_rep() << "\n";
+    return os;
 }
 
 }
