@@ -72,6 +72,7 @@ namespace v2g_guru_exi{
 
             class EventCode{
                 grammar_elem_t rep{};
+                grammar_elem_t code_rep[3] = {nullptr, nullptr, nullptr};
                 public:
                 int code[3] = {0,0,0};
                 int dim = 0;
@@ -88,10 +89,11 @@ namespace v2g_guru_exi{
                     size_t j = 0;
                     for (size_t i = 0; i < args.size(); ++i)
                         if (is<Ast_node_kind::int_literal>(args[i]))
-                            code[min(j++,2UL)] = value(as_int_ref(args[i]));
+                            code[min(j++,2UL)] = value(as_int_ref(code_rep[i] = args[i]));
                     rep = rep_arg;
                 }
                 bool valid() const{ return rep != nullptr;}
+                grammar_elem_t* get_code_rep() {return code_rep;}
             };
 
             class Production{
@@ -105,6 +107,7 @@ namespace v2g_guru_exi{
                     size_t size() const { if (rep_rhs ==  nullptr) return 0; return children(as_struct_ref(rep_rhs)).size(); }
                     bool is_generic() const;
                     optional<Production> instantiate(Terminal term) const;
+                    void incr_ev_pos(int delta, int pos);
 
                     struct rhs_elem_t{
                         grammar_elem_t rep{};
@@ -289,9 +292,11 @@ namespace v2g_guru_exi{
     bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
     bool operator == (Grammar::Terminal const &, Grammar::Terminal const & );
     ostream& operator << (ostream& os, Grammar::EventCode const &);
-    ostream& operator << (ostream& os, Grammar::Production const &);
+    ostream& operator << (ostream& os, Grammar::Production );
     ostream& operator << (ostream& os, Grammar );
     ostream& operator << (ostream& os, Grammar::NonTerminal );
     ostream& operator << (ostream& os, Grammar::Terminal );
+
+    bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs); 
  
 }

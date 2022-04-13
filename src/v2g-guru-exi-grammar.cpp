@@ -149,8 +149,71 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
 }
 
 void Grammar::insert(Grammar::Production prod) {
-    
+
+    bool in_scope = false;
+    size_t insert_pos = 0;
+    auto cur_ev = prod.get_eventcode();
+    vector<int> positions;
+    int lhs_pos = 0;
+
+    foreach_grammar_element_until([&](grammar_elem_t elem) -> bool{
+        if (is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem)) == "lhs" ) {
+            lhs_pos = insert_pos;
+            ++insert_pos;
+            auto& lhs = as_struct_ref(elem);
+            if (!children(lhs).size()) return true;
+            if (prod.get_lhs() == NonTerminal{children(lhs)[0]}) in_scope = true;
+            else in_scope = false;            
+            return true;
+        } else if (is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem)) == "rhs" && in_scope){
+            positions.push_back(insert_pos);
+        }
+        ++insert_pos;
+        return true;
+    });
+    if (positions.size()){
+        auto to_insert = prod.get_rhs_rep()->clone();
+        auto& v = children(as_struct_ref(grammar_rep));
+        if (!cur_ev) insert_pos = 0;
+        else {
+            insert_pos = positions.size() - 1;
+            for(size_t i = 0; i < positions.size(); ++i){
+                auto cur_prod = Production{prod.get_lhs(), v[positions[i]] };
+                auto ev = cur_prod.get_eventcode();
+                if (!ev) continue;
+                if (*cur_ev <= *ev) {
+                    if (i > 0) insert_pos = i - 1;
+                    else insert_pos = 0;
+                    break;
+                }
+            }            
+        }
+
+        for(size_t i = insert_pos; i < positions.size(); ++i)
+             Production{prod.get_lhs(), v[positions[i]] }.incr_ev_pos(1,0);
+        v.insert(v.begin() + positions[insert_pos] , to_insert);        
+    }
 }
+
+void Grammar::Production::incr_ev_pos(int delta, int pos){
+    for(auto e : *this){
+        if (!e.is_eventcode()) continue;
+        //std::cout << *e.rep << " --- \n";
+        auto ev = e.as_eventcode();
+        if (ev.dim < pos) continue;
+        value(as_int_ref(ev.get_code_rep()[pos])) += delta;
+        break;
+    }
+}
+
+bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs){
+    auto n = min(lhs.dim, rhs.dim);
+    for(int i = 0; i < n; ++i)
+     if (lhs.code[i] > rhs.code[i]) return false;
+    if (lhs.dim > rhs.dim) return false;
+    return true;
+} 
+
 
 
 bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){
@@ -180,13 +243,12 @@ ostream& operator << (ostream& os, Grammar::Terminal term){
     
         os << name(as_symbol_ref(func_call_target(as_func_call_ref(term.get_rep())))) << "(";
         auto& f = as_func_call_ref(term.get_rep());
-        auto ftarget = children(f)[0];
         auto params = &as_call_params_ref( children(f)[1]);
         if (children(*params).size()){
             auto print_expr = [&](node_t e){
-                if (is<Ast_node_kind::identifier>) os << name(as_id_ref(e));
-                else if (is<Ast_node_kind::string_literal>) os << "\"" <<  value(as_string_ref(e)) << "\"";
-                else if (is<Ast_node_kind::int_literal>) os << value(as_int_ref(e));
+                if (is<Ast_node_kind::identifier>(e)) os << name(as_id_ref(e));
+                else if (is<Ast_node_kind::string_literal>(e)) os << "\"" <<  value(as_string_ref(e)) << "\"";
+                else if (is<Ast_node_kind::int_literal>(e)) os << value(as_int_ref(e));
             };
             if (is<Ast_node_kind::binary_operator>(children(*params)[0])){
                 auto& op = as_binop_ref(children(*params)[0]);
@@ -207,7 +269,7 @@ ostream& operator << (ostream& os, Grammar::NonTerminal nt ){
 
 ostream& operator << (ostream& os, Grammar g){
     os << "Grammar ";
-    if (g.has_global_id()) os << "'"<< g.global_id() << "'"; 
+    if (g.has_global_id()) os << "id = '"<< g.global_id() << "'"; 
     os << ":\n\n";
     for (auto lhs : g.left_hand_sides()){
         os << "    " << lhs << " ==>\n";
@@ -233,11 +295,28 @@ ostream& operator << (ostream& os, Grammar g){
 }
 
 
+ostream& operator << (ostream& os, Grammar::Production  p){
+    os << p.get_lhs().name() << ": " ;
+
+    for (auto e: p){
+                if (e.is_eventcode()) {
+                    auto ev = e.as_eventcode();
+                    os << ev << "   ";
+                } else if (e.is_nonterminal()){
+                     auto nt = e.as_nonterminal();
+                     os << nt << "   ";
+                } else if (e.is_terminal()){
+                    os << e.as_terminal()<< "   ";
+                }
+    }
+    os << "\n";
+
+    return os;
+}
 
 GenericGrammar::GenericGrammar(Grammar::grammar_elem_t generic_raw){
     if (generic_raw == nullptr) return;
     if (!is<Ast_node_kind::structdef>(generic_raw)) return;
-    auto ceps_struct = as_struct_ptr(generic_raw);
     foreach_grammarrep_element_until  ([&](Grammar::grammar_rep_t elem){
         if(!is<Ast_node_kind::structdef>(elem)) return true;
         auto& data = as_struct_ref(elem);
@@ -265,9 +344,9 @@ ostream& operator << (ostream& os, Grammar::EventCode const & ev){
     if (!ev.valid()) os << "Invalid EventCode";
     else {
         os << "EventCode(";
-        for(size_t i = 0; i < ev.dim; ++i){
+        for(size_t i = 0; i < (size_t)ev.dim; ++i){
             os << ev.code[i];
-            if (i+1 < ev.dim) os << ",";
+            if (i+1 < (size_t)ev.dim) os << ",";
         }
         os << ")";
     } 
@@ -333,9 +412,5 @@ optional<Grammar::EventCode> Grammar::Production::get_eventcode(){
     return {};
 }
 
-ostream& operator << (ostream& os, Grammar::Production const & p){
-    os << p.get_lhs().name() << ": " << *p.get_rhs_rep() << "\n";
-    return os;
-}
 
 }
