@@ -167,6 +167,73 @@ template<typename F>  void foreach_grammarrep_element_until(F f, Grammar::gramma
 }
 
 
+
+/// Grammar
+
+ostream& operator << (ostream& os, Grammar::Terminal term){
+    if (!term.get_rep()) return os;
+    if(is<Ast_node_kind::symbol>(term.get_rep()) && kind(as_symbol_ref(term.get_rep())) == "GrammarTerminal"){
+        os << name(as_symbol_ref(term.get_rep()));
+    } else if (is<Ast_node_kind::func_call>(term.get_rep()) && 
+               is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(term.get_rep()))) && 
+               kind(as_symbol_ref(func_call_target(as_func_call_ref(term.get_rep())))) == "GrammarTerminal"){
+    
+        os << name(as_symbol_ref(func_call_target(as_func_call_ref(term.get_rep())))) << "(";
+        auto& f = as_func_call_ref(term.get_rep());
+        auto ftarget = children(f)[0];
+        auto params = &as_call_params_ref( children(f)[1]);
+        if (children(*params).size()){
+            auto print_expr = [&](node_t e){
+                if (is<Ast_node_kind::identifier>) os << name(as_id_ref(e));
+                else if (is<Ast_node_kind::string_literal>) os << "\"" <<  value(as_string_ref(e)) << "\"";
+                else if (is<Ast_node_kind::int_literal>) os << value(as_int_ref(e));
+            };
+            if (is<Ast_node_kind::binary_operator>(children(*params)[0])){
+                auto& op = as_binop_ref(children(*params)[0]);
+                print_expr(op.left());
+                os << " " << op_val(op) << " "; 
+                print_expr(op.right());
+            } else print_expr(children(*params)[0]);
+        }
+        os << ")";
+    }
+    return os;
+}
+ 
+ostream& operator << (ostream& os, Grammar::NonTerminal nt ){
+    os << nt.name();
+    return os;
+}
+
+ostream& operator << (ostream& os, Grammar g){
+    os << "Grammar ";
+    if (g.has_global_id()) os << "'"<< g.global_id() << "'"; 
+    os << ":\n\n";
+    for (auto lhs : g.left_hand_sides()){
+        os << "    " << lhs << " ==>\n";
+        auto prods = g.right_hand_sides(lhs);
+        for (auto prod : prods){
+            os << "        ";
+            for (auto e: prod){
+                if (e.is_eventcode()) {
+                    auto ev = e.as_eventcode();
+                    os << ev << "   ";
+                } else if (e.is_nonterminal()){
+                     auto nt = e.as_nonterminal();
+                     os << nt << "   ";
+                } else if (e.is_terminal()){
+                    os << e.as_terminal()<< "   ";
+                }
+            }
+            os << "\n";
+        }
+    }
+    os << "\n\n";
+    return os; 
+}
+
+
+
 GenericGrammar::GenericGrammar(Grammar::grammar_elem_t generic_raw){
     if (generic_raw == nullptr) return;
     if (!is<Ast_node_kind::structdef>(generic_raw)) return;
@@ -267,7 +334,7 @@ optional<Grammar::EventCode> Grammar::Production::get_eventcode(){
 }
 
 ostream& operator << (ostream& os, Grammar::Production const & p){
-    std::cout << p.get_lhs().name() << ": " << *p.get_rhs_rep() << "\n";
+    os << p.get_lhs().name() << ": " << *p.get_rhs_rep() << "\n";
     return os;
 }
 

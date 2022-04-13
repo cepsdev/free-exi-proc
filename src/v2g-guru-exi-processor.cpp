@@ -94,17 +94,26 @@ namespace v2g_guru_exi{
             if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";
             auto lookahead = event_stream.peek();
             if (rhs_elem.is_terminal()){  
-                /*if (debug_output)*/ std::cout << "match( lookahead="<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
+                /*if (debug_output)*/ std::cout << "=======> match( lookahead="<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
                 if (!match(rhs_elem.as_terminal())) throw parser_exception{"match failed."};
-                if (g.has_global_id() && g.is_modifiable() && prod.is_generic()){
-                    std::cout << "\n\n\ngeneric rule\n\n\n\n";
+
+                std::cout << "g.has_global_id(): " << g.has_global_id() << " g.is_modifiable(): " << g.is_modifiable() << " prod.is_generic(): "<< prod.is_generic() << "\n";
+                if (g.has_global_id() && g.is_modifiable() ){
+                    std::cout << "\n\n\n=========>generic rule\n\n\n\n";
                     auto new_prod = prod.instantiate(lookahead.as_terminal());
                     if (!new_prod) continue;
                      std::cout << *new_prod << "\n\n\n";
                     auto ev = new_prod->get_eventcode();
                     if (!ev) continue;
+                    
+                    std::cout << "\n\n\n\n Original:"<< "\n******************************************************************************************\n\n";
+                    std::cout << g << "\n\n\n\n";
+                    
                     g.insert(*new_prod);
 
+                    std::cout << "\n\n\n\n Modified:"<< "\n******************************************************************************************\n\n";
+                    std::cout << g << "\n\n\n\n";
+                    exit(1);
                 } else {
                     auto it_gg = generic_grammars.find(rhs_elem.as_terminal().as_str());
                     if (it_gg != generic_grammars.end() ){
@@ -116,6 +125,7 @@ namespace v2g_guru_exi{
                         if (it_global_g == global_grammars.end()){
                             Grammar new_g{it_gg->second};
                             new_g.global_id() = sgrammar_id;
+                            std::cout << "new_g.global_id() = >>> " << new_g.global_id() << "<<< \n"; 
                             global_grammars[sgrammar_id] = new_g;
                             it_global_g = global_grammars.find(sgrammar_id);
                         }

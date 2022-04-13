@@ -198,7 +198,9 @@ namespace v2g_guru_exi{
             Grammar(node_t grammar_rep): grammar_rep{grammar_rep} {}
             Grammar(Grammar const & g){
                 if (!g.grammar_rep) grammar_rep = nullptr;
-                else grammar_rep = g.grammar_rep->clone();                
+                else grammar_rep = g.grammar_rep->clone();
+                global_id_ = g.global_id_;
+                modifiable_ = g.modifiable_;   
             }
 
             lhs_vec_t left_hand_sides();
@@ -288,4 +290,8 @@ namespace v2g_guru_exi{
     bool operator == (Grammar::Terminal const &, Grammar::Terminal const & );
     ostream& operator << (ostream& os, Grammar::EventCode const &);
     ostream& operator << (ostream& os, Grammar::Production const &);
+    ostream& operator << (ostream& os, Grammar );
+    ostream& operator << (ostream& os, Grammar::NonTerminal );
+    ostream& operator << (ostream& os, Grammar::Terminal );
+ 
 }
