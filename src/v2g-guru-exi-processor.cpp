@@ -37,6 +37,8 @@ namespace v2g_guru_exi{
 
     bool Processor::match(Grammar::Terminal terminal){
          auto tok = event_stream.get_event().as_terminal();
+         if (debug_output)  
+            cout << " match( " << terminal << "," << tok <<")="<< ( tok == terminal)<< "\n";
          return tok == terminal;                 
     }
 
@@ -46,12 +48,12 @@ namespace v2g_guru_exi{
             if (!(*it).is_eventcode()) continue;
             auto ev_code{(*it).as_eventcode()};
             emitter->emit(ev_code);
-            if (debug_output_emit_eventcode)std::cout << "    EMIT: " << ev_code << "\n"; 
+            if (debug_output_emit_eventcode)std::cout << "    EMIT: " << ev_code << "\n" ; //<< g << "\n"; 
             break;
         }
     }
 
-    void Processor::parse(Grammar g, Grammar::Production prod) {
+    bool Processor::parse(Grammar g, Grammar::Production prod) {
         auto prologue = [&](){
             if (debug_output) 
                 std::cout << "Processor::parse(Grammar& g, Grammar::Production prod):\n";
@@ -94,36 +96,49 @@ namespace v2g_guru_exi{
             if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";
             auto lookahead = event_stream.peek();
             if (rhs_elem.is_terminal()){  
-                if (debug_output) std::cout << "=======> match( lookahead="<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
+                if (debug_output) 
+                  std::cout << "=======> match( lookahead="<< *lookahead.get_rep() << ", " << *rhs_elem.rep << ")\n";
                 if (!match(rhs_elem.as_terminal())) throw parser_exception{"match failed."};
 
                 //std::cout << "g.has_global_id(): " << g.has_global_id() << " g.is_modifiable(): " << g.is_modifiable() << " prod.is_generic(): "<< prod.is_generic() << "\n";
-                if (g.has_global_id() && g.is_modifiable() && prod.is_generic()){
+                //std::cout << *prod.get_rhs_rep()<<"\n";
+                int gen_type = 0;
+                if (g.has_global_id() && g.is_modifiable() && prod.is_generic(gen_type)){
                     //std::cout << "\n\n\n=========>generic rule\n\n\n\n";
-                    auto new_prod = prod.instantiate(lookahead.as_terminal());
-                    if (!new_prod) continue;
-                    //std::cout << *new_prod << "\n\n\n";
-                    auto ev = new_prod->get_eventcode();
-                    if (!ev) continue;
-                    
-                    //std::cout << "\n\n\n\n Original:"<< "\n******************************************************************************************\n\n";
-                    //std::cout << g << "\n\n\n\n";
-                    
-                    g.insert(*new_prod);
-                    global_grammars[g.global_id()] = g;
+                    bool perform_instantiation = false;
+                    if (gen_type == Grammar::Production::GENERIC_IF_EVCODE_LEN_NOT_ONE){
+                        auto ev = prod.get_eventcode();
+                        if (!ev) perform_instantiation = true;
+                        else{
+                            if (ev->dim <= 1) perform_instantiation = true;
+                        }
+                    } perform_instantiation = true;
+                    if (perform_instantiation){
+                        auto new_prod = prod.instantiate(lookahead.as_terminal());
+                        if (!new_prod) continue;
+                        //std::cout << *new_prod << "\n\n\n";
+                        auto ev = new_prod->get_eventcode();
+                        if (!ev) continue;
+                        
+                        //std::cout << "\n\n\n\n Original:"<< "\n******************************************************************************************\n\n";
+                        //std::cout << g << "\n\n\n\n";
+                        
+                        g.insert(*new_prod);
+                        global_grammars[g.global_id()] = g;
 
-                    //std::cout << "\n\n\n\n Modified:"<< "\n******************************************************************************************\n\n";
-                    //std::cout << g << "\n\n\n\n";
+                        //std::cout << "\n\n\n\n Modified:"<< "\n******************************************************************************************\n\n";
+                        //std::cout << g << "\n\n\n\n";
+                    }
                 }  
                 
 
                 { /*handle cases like SE(*)*/
+                    auto sgrammar_id = lookahead.as_terminal().as_str();
                     auto it_gg = generic_grammars.find(rhs_elem.as_terminal().as_str());
                     if (it_gg != generic_grammars.end() ){
                         // We found a generic grammar:
                         // An example of a generic grammar is the BuiltinElementGrammar it has the id SE(_*_)
                         // We instantiate the generic grammar with the current event stored in lookahead.
-                        auto sgrammar_id = lookahead.as_terminal().as_str();
                         auto it_global_g = global_grammars.find(sgrammar_id);
                         if (it_global_g == global_grammars.end()){
                             Grammar new_g{it_gg->second};
@@ -133,6 +148,10 @@ namespace v2g_guru_exi{
                             it_global_g = global_grammars.find(sgrammar_id);
                         }
                         parse(it_global_g->second);
+                    } else {
+                        auto it_global_g = global_grammars.find(sgrammar_id);
+                        if (it_global_g != global_grammars.end())
+                         parse(it_global_g->second);
                     }
                 }
             } else if (rhs_elem.is_nonterminal()){
@@ -140,11 +159,12 @@ namespace v2g_guru_exi{
                 auto mp = find_production_starting_with_lookahead(nt);
                 if (!mp) throw parser_exception{"Rule for '"+nt.name()+"' missing. "+gen_err_text(lookahead,prod)};
                 auto matching_production = mp->first;
-                parse(g, matching_production);
+                if (!parse(g, matching_production)) return false;
             } else if (rhs_elem.is_action()){
-                if(rhs_elem.as_action().action_name() == "PopGrammar") return;
+                if(rhs_elem.as_action().action_name() == "PopGrammar") return false;
             }
         }
+        return true;
     }
 
     void Processor::parse(Grammar g){
@@ -167,7 +187,7 @@ namespace v2g_guru_exi{
              if (debug_output) std::cout << "tok=" << *tok.get_rep() << "\n";
              auto production = g.find_production_starting_with(tok.as_terminal());
              if (!production) return;//throw parser_exception{"parse(G): No rule found. " + gen_err_text()};
-             parse(g,*production);
+             if(!parse(g,*production)) break;
         }
     }
 

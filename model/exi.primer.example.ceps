@@ -17,6 +17,41 @@
 */
 
 
+macro ChildContentItemsMinimal{
+    GrammarNonterminal ElementContent;
+    val i = hd(arglist);
+    val j = hd(tail(arglist));
+    rhs{SE(_*_); ElementContent; EventCode(i,j);
+        add_if_matched{
+            SE(_*_); ElementContent; EventCode(0);                
+        };
+    };
+    rhs{CH(_*_); ElementContent; EventCode(i,j+1);
+        add_if_matched_and_matched_event_code_length_is_not_one{
+            do_not_replace{CH(_*_);}; ElementContent; EventCode(0);                
+        };
+    };
+};
+
+kind EXIBuiltInElementGrammarMinimal;
+EXIBuiltInElementGrammarMinimal BuiltInElementGrammarMinimal;
+
+Grammar{
+    BuiltInElementGrammarMinimal;
+    GrammarNonterminal StartTagContent, ElementContent;
+    lhs{StartTagContent;};
+        rhs{EE; EventCode(0,0);PopGrammar;};
+        rhs{
+            AT(_*_); StartTagContent; EventCode(0,1);
+            add_if_matched{
+                AT(_*_); StartTagContent; EventCode(0);                
+            };
+        };     
+        ChildContentItemsMinimal{0;2;};        
+    lhs{ElementContent;};
+        rhs{EE; EventCode(0); PopGrammar;};
+        ChildContentItemsMinimal{1;0;};  
+};
 
 exi_event_stream{
     SD;
@@ -57,7 +92,7 @@ exi_processor_add_generic_grammar(
             SE(_*_);
         };
         
-        root.Grammar.contains_symbol("BuiltInElementGrammar");
+        root.Grammar.contains_symbol("BuiltInElementGrammarMinimal");
     }
 );
 

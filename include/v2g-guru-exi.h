@@ -121,11 +121,15 @@ namespace v2g_guru_exi{
                 NonTerminal lhs{};
                 grammar_elem_t rep_rhs{};
                 public:
+                    static constexpr int GENERIC_DEFAULT = 0;
+                    static constexpr int GENERIC_IF_EVCODE_LEN_NOT_ONE = 1;
+
                     Production() = default;
                     Production(NonTerminal lhs, grammar_elem_t rep_rhs) : lhs{lhs}, rep_rhs{rep_rhs} {}
                     NonTerminal get_lhs() const {return lhs;}
                     grammar_elem_t get_rhs_rep() const {return rep_rhs;}
                     size_t size() const { if (rep_rhs ==  nullptr) return 0; return children(as_struct_ref(rep_rhs)).size(); }
+                    bool is_generic(int&) const;
                     bool is_generic() const;
                     optional<Production> instantiate(Terminal term) const;
                     void incr_ev_pos(int delta, int pos);
@@ -309,7 +313,7 @@ namespace v2g_guru_exi{
             void set_event_stream(EventStream ev_stream);
             void encode();
             void parse(Grammar g);
-            void parse(Grammar g, Grammar::Production prod);
+            bool parse(Grammar g, Grammar::Production prod);
             void insert(GenericGrammar);
             void emit_eventcode(Grammar& g, Grammar::Production prod);
             void set_emitter(Emitter* an_emitter) {emitter = an_emitter;}

@@ -50,8 +50,20 @@ bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
         auto paramsr = &as_call_params_ref( children(fr)[1]);
         if (children(*paramsr).size() != children(*paramsl).size()) return false;
         if (children(*paramsr).size() == 0) return true;
+        
+        if (is<Ast_node_kind::binary_operator>(children(*paramsr)[0]) && is<Ast_node_kind::binary_operator>(children(*paramsl)[0])){
+            if ( op_val(as_binop_ref(children(*paramsl)[0])) == "*" || op_val(as_binop_ref(children(*paramsr)[0])) == "*" ) return true;
+            if ( op_val(as_binop_ref(children(*paramsl)[0])) != op_val(as_binop_ref(children(*paramsr)[0])) ) return false;
+            auto lhsl = as_binop_ref(children(*paramsl)[0]).left();
+            auto lhsr = as_binop_ref(children(*paramsr)[0]).left();
+            if (lhsl->kind() != lhsr->kind()) return false;
+            if ( is<Ast_node_kind::identifier>(lhsl) ) return name(as_id_ref(lhsl)) == name(as_id_ref(lhsr));
+            if ( is<Ast_node_kind::string_literal>(lhsl) ) return value(as_string_ref(lhsl)) == value(as_string_ref(lhsr));
+            if ( is<Ast_node_kind::symbol>(lhsl) ) return (name(as_symbol_ref(lhsl)) == name(as_symbol_ref(lhsr))) && (kind(as_symbol_ref(lhsl)) == kind(as_symbol_ref(lhsr)));
 
-        if (is<Ast_node_kind::binary_operator>(children(*paramsr)[0]) || is<Ast_node_kind::binary_operator>(children(*paramsl)[0])){
+            return false;
+        }
+        else if (is<Ast_node_kind::binary_operator>(children(*paramsr)[0]) || is<Ast_node_kind::binary_operator>(children(*paramsl)[0])){
             auto& op = is<Ast_node_kind::binary_operator>(children(*paramsr)[0]) ? as_binop_ref(children(*paramsr)[0]) : as_binop_ref(children(*paramsl)[0]);
             if (op_val(op) != "*") {
                 auto eq = equality(children(*paramsr)[0], children(*paramsl)[0]);
@@ -355,12 +367,15 @@ ostream& operator << (ostream& os, Grammar::EventCode const & ev){
 
 /// Grammar::Production
 
-bool Grammar::Production::is_generic() const{
+bool Grammar::Production::is_generic(int& type) const{
     if (!get_rhs_rep()) return false;
     auto result = false;
     foreach_grammarrep_element_until(
         [&](Grammar::grammar_rep_t elem){
-            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") { result = true; return false;}
+            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") { type = GENERIC_DEFAULT; result = true; return false;}
+            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched_and_matched_event_code_length_is_not_one") { 
+                type=GENERIC_IF_EVCODE_LEN_NOT_ONE; result = true; return false;
+            }
             return true;
         }
         ,get_rhs_rep()
@@ -369,20 +384,30 @@ bool Grammar::Production::is_generic() const{
     return result;
 }
 
+bool Grammar::Production::is_generic() const{
+    int type;
+    return is_generic(type);
+}
+
 optional<Grammar::Production> Grammar::Production::instantiate(Terminal term) const{
     if (!get_rhs_rep()) return {};
     bool success = false;
     Production new_prod{};
     node_t new_rhs_rep = nullptr;
     foreach_grammarrep_element_until(
-        [&](Grammar::grammar_rep_t elem){
-            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") {
+        [&](Grammar::grammar_rep_t elem){            
+            if(is<Ast_node_kind::structdef>(elem) && 
+              (name(as_struct_ref(elem))=="add_if_matched" || name(as_struct_ref(elem))=="add_if_matched_and_matched_event_code_length_is_not_one"  ) ) {
                 new_rhs_rep = mk_struct("rhs");
                 auto& new_rhs_rep_children = children(as_struct_ref(new_rhs_rep));
                 foreach_grammarrep_element_until(
                     [&](Grammar::grammar_rep_t e)
                     {
-                        if (term == Terminal{e}){
+                        if (is<Ast_node_kind::structdef>(e) && name(as_struct_ref(e)) == "do_not_replace") {
+                            if (children(as_struct_ref(e)).size())
+                                new_rhs_rep_children.push_back( children(as_struct_ref(e))[0]->clone() ); 
+                            success = true;                         
+                        } else if (term == Terminal{e}){
                             new_rhs_rep_children.push_back(term.get_rep()->clone());
                             success = true;
                         } else {
