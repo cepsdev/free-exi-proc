@@ -521,7 +521,7 @@ Grammar{
     BuiltInElementGrammar;
     GrammarNonterminal StartTagContent, ElementContent;
     lhs{StartTagContent;};
-        rhs{EE; EventCode(0,0);};
+        rhs{EE; EventCode(0,0);PopGrammar;};
         rhs{
             AT(_*_); StartTagContent; EventCode(0,1);
             add_if_matched{
@@ -532,7 +532,7 @@ Grammar{
         rhs{SC;Fragment;EventCode(0,3);};
         ChildContentItems{0;4;};        
     lhs{ElementContent;};
-        rhs{EE; EventCode(0);};
+        rhs{EE; EventCode(0); PopGrammar;};
         ChildContentItems{1;0;};  
 };
 

@@ -141,11 +141,23 @@ namespace v2g_guru_exi{
                 if (!mp) throw parser_exception{"Rule for '"+nt.name()+"' missing. "+gen_err_text(lookahead,prod)};
                 auto matching_production = mp->first;
                 parse(g, matching_production);
+            } else if (rhs_elem.is_action()){
+                if(rhs_elem.as_action().action_name() == "PopGrammar") return;
             }
         }
     }
 
     void Processor::parse(Grammar g){
+        auto gen_err_text = [&]() -> string {
+            stringstream ss;
+
+            ss << "\n   Details:\n";
+            ss << "     lookahead         = " << *event_stream.peek().get_rep() << "\n";
+            ss << "    " << g << "\n"; 
+
+            return ss.str();
+        };
+
         if (debug_output)std::cout << "Processor::parse(Grammar& g)\n";
         if (debug_output)std::cout << "G=\n";
         if (debug_output)std::cout << *g.grammar_rep << std::endl;
@@ -154,7 +166,7 @@ namespace v2g_guru_exi{
              if (!tok) throw parser_exception{};
              if (debug_output) std::cout << "tok=" << *tok.get_rep() << "\n";
              auto production = g.find_production_starting_with(tok.as_terminal());
-             if (!production) throw parser_exception{"parse(G): No rule found."};
+             if (!production) return;//throw parser_exception{"parse(G): No rule found. " + gen_err_text()};
              parse(g,*production);
         }
     }

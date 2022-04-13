@@ -20,6 +20,8 @@
 kind GrammarTerminal;
 kind GrammarNonterminal;
 kind GrammarAnnotation;
+kind GrammarAction;
+
 kind XMLEntity;
 
 GrammarTerminal    
@@ -35,7 +37,10 @@ GrammarTerminal
     DT, 
     ER, 
     SC;
-    
+
+GrammarAction 
+ PopGrammar;
+
 XMLEntity
     qname, 
     uri;

@@ -70,6 +70,27 @@ namespace v2g_guru_exi{
                     string as_str() const;
             };
 
+            class Action{
+                grammar_elem_t rep{};
+                string action_name_;
+                public:
+                    Action() = default;
+                    Action(grammar_elem_t rep_arg) {
+                        if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarAction" ) {
+                            rep = rep_arg;
+                            action_name_ = name(as_symbol_ref(rep_arg));
+                        } else if (rep_arg && is<Ast_node_kind::func_call>(rep_arg) && is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
+                                kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarAction"  ) {
+                                    rep = rep_arg;
+                                    action_name_ = name(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg))));
+                        }
+                        else rep = nullptr;
+                    }
+                    bool valid() const { return rep != nullptr;}
+                    grammar_elem_t get_rep() const {return rep;}
+                    string action_name() const { return action_name_; }
+            };
+
             class EventCode{
                 grammar_elem_t rep{};
                 grammar_elem_t code_rep[3] = {nullptr, nullptr, nullptr};
@@ -122,8 +143,11 @@ namespace v2g_guru_exi{
                         bool is_nonterminal() const {
                             return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarNonterminal";
                         }
+                        bool is_action() const {
+                            return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarAction";
+                        }
                         bool is_annotation() const {
-                            return rep != nullptr && !is_terminal() && !is_nonterminal();
+                            return rep != nullptr && !is_terminal() && !is_nonterminal() && !is_action();
                         }
 
                         bool is_eventcode() const {
@@ -144,6 +168,9 @@ namespace v2g_guru_exi{
                             return {rep};
                         }
 
+                        Grammar::Action as_action() const {
+                            return {rep};
+                        }
                     };
 
                     class iterator_t{
