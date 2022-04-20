@@ -24,6 +24,24 @@ kind GrammarAnnotation;
 kind GrammarAction;
 
 
+grammar_under_test{
+    Grammar{
+            lhs{A;};
+                rhs{SD; ED; SE; C;};
+            lhs{C;};
+                rhs{SD; A; D; ED; SE;};
+            lhs{D;};
+                rhs{AT; SD; A; D; ED; SE;};
+                rhs{SD; A; DT; D; ED; SE;};
+        };
+};
+
+
+val g_orig = root.grammar_under_test.Grammar;
+
+print("Original grammar:\n", g_orig,"\n\n");
+
+
 val g = exi_processor_operation(
     rename_non_terminal{
         GrammarNonterminal A, B, C, D;
@@ -54,6 +72,8 @@ val g = exi_processor_operation(
         };
     }
 );
+
+print("Transformed grammar:\n", g,"\n\n");
 
 assert_equality{
     g;

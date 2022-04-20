@@ -100,6 +100,13 @@ std::optional<Grammar::NonTerminal> Grammar::is_lhs(grammar_elem_t p) const {
     return {};
 }
 
+std::optional<Grammar::Production> Grammar::is_rhs(grammar_elem_t p) const{
+    if (!is<Ast_node_kind::structdef>(p)) return {};
+    if (name(as_struct_ref(p)) != "rhs") return {};
+    return Production{NonTerminal{},p};
+}
+
+
 Grammar::lhs_vec_t Grammar::left_hand_sides(){
     lhs_vec_t r{};
     foreach_grammar_element([&](grammar_elem_t p){
@@ -226,6 +233,12 @@ bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs){
     return true;
 } 
 
+// NonTerminal
+
+void Grammar::NonTerminal::set_name(string new_name){
+    if (rep == nullptr) return;
+    ceps::ast::name(as_symbol_ref(rep)) = new_name;
+}
 
 
 bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){

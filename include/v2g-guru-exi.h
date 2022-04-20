@@ -50,6 +50,7 @@ namespace v2g_guru_exi{
                 NonTerminal() = default;
                 NonTerminal(grammar_elem_t rep) : rep{rep} {}
                 string name() const;
+                void set_name(string);
                 grammar_elem_t get_rep() const {return rep;} 
             };
 
@@ -215,6 +216,7 @@ namespace v2g_guru_exi{
             grammar_rep_t grammar_rep{};
 
             std::optional<NonTerminal> is_lhs(grammar_elem_t) const;
+            std::optional<Production> is_rhs(grammar_elem_t) const;
 
             template<typename F>  void foreach_grammar_element(F f) {
                 auto& g = as_struct_ref(grammar_rep);

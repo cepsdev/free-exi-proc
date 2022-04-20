@@ -22,8 +22,22 @@
 namespace v2g_guru_exi{
     bool Grammar::rename_non_termial(string from , string to){
         if (from.length() == 0 || to.length() == 0) return false;
-        return true;
+        bool replaced{};
+        foreach_grammar_element([&](grammar_elem_t p){
+            auto nonterminal = is_lhs(p);
+            if (nonterminal && nonterminal->name() == from){
+                nonterminal->set_name(to);replaced = true;
+            } else{
+                auto prod = is_rhs(p);
+                if (prod){
+                    for(auto e: *prod){
+                        if (!e.is_nonterminal()) continue;
+                        auto nt = e.as_nonterminal();
+                        if (nt.name() == from) nt.set_name(to);                        
+                    }
+                }
+            }
+        });
+        return replaced;
     }
-
 }
-
