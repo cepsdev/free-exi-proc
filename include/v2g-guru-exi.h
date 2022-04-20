@@ -241,6 +241,7 @@ namespace v2g_guru_exi{
             vector<Production> right_hand_sides(NonTerminal lhs);
             optional<Production> find_production_starting_with(Terminal);
             void insert(Production prod);
+            bool rename_non_termial(string from , string to);
     };
 
     class GenericGrammar{
