@@ -1,0 +1,79 @@
+/*
+    v2g-guru-exi - an EXI (= "Efficient XML Interchange") processor
+    Copyright (C) 2022 Tomas Prerovsky <cepsdev@hotmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+Test{RenameNonTerminal;};
+
+kind GrammarTerminal;
+kind GrammarNonterminal;
+kind GrammarAnnotation;
+kind GrammarAction;
+
+
+val g = exi_processor_operation(
+    rename_non_terminal{
+        GrammarNonterminal A, B, C, D;
+        GrammarTerminal    
+            SD, 
+            ED, 
+            SE, 
+            EE, 
+            AT, 
+            CH, 
+            NS, 
+            CM, 
+            PI, 
+            DT, 
+            ER, 
+            SC;
+
+        from{A;};
+        to{B;};
+        Grammar{
+            lhs{A;};
+                rhs{SD; ED; SE; C;};
+            lhs{C;};
+                rhs{SD; A; D; ED; SE;};
+            lhs{D;};
+                rhs{AT; SD; A; D; ED; SE;};
+                rhs{SD; A; DT; D; ED; SE;};
+        };
+    }
+);
+
+assert_equality{
+    g;
+        Grammar{
+            lhs{A;};
+                rhs{SD; ED; SE; C;};
+            lhs{C;};
+                rhs{SD; A; D; ED; SE;};
+            lhs{D;};
+                rhs{AT; SD; A; D; ED; SE;};
+                rhs{SD; A; DT; D; ED; SE;};
+        };
+        Grammar{
+            lhs{B;};
+                rhs{SD; ED; SE; C;};
+            lhs{C;};
+                rhs{SD; B; D; ED; SE;};
+            lhs{D;};
+                rhs{AT; SD; B; D; ED; SE;};
+                rhs{SD; B; DT; D; ED; SE;};
+        };
+
+};
