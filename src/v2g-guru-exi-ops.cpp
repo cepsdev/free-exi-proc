@@ -33,11 +33,27 @@ namespace v2g_guru_exi{
                     for(auto e: *prod){
                         if (!e.is_nonterminal()) continue;
                         auto nt = e.as_nonterminal();
-                        if (nt.name() == from) nt.set_name(to);                        
+                        if (nt.name() == from){ nt.set_name(to); replaced=true;}                        
                     }
                 }
             }
         });
         return replaced;
     }
+    bool Grammar::rename_termial(string from , string to){
+        if (from.length() == 0 || to.length() == 0) return false;
+        bool replaced{};
+        foreach_grammar_element([&](grammar_elem_t p){
+            auto prod = is_rhs(p);
+            if (prod){
+                for(auto e: *prod){
+                    if (!e.is_terminal()) continue;
+                    auto t = e.as_terminal();
+                    if (t.name() == from){ t.set_name(to); replaced=true;}                        
+                }
+            }
+        });
+        return replaced;
+    }
+
 }

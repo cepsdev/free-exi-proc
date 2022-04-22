@@ -83,7 +83,44 @@ string Grammar::Terminal::as_str() const{
     if (!rep) return "";
     stringstream ss;
     ss << *rep; return ss.str();
-} 
+}
+
+void Grammar::Terminal::set_name(string new_name){
+    if(!rep) return;
+}
+
+string Grammar::Terminal::name() const {
+    if(!rep) return "";
+    stringstream ss;
+    if(is<Ast_node_kind::symbol>(get_rep())){
+        ss << ceps::ast::name(as_symbol_ref(get_rep()));
+    } else if (is<Ast_node_kind::func_call>(get_rep()) && 
+               is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(get_rep()))) && 
+               kind(as_symbol_ref(func_call_target(as_func_call_ref(get_rep())))) == "GrammarTerminal"){
+    
+        ss << ceps::ast::name(as_symbol_ref(func_call_target(as_func_call_ref(get_rep())))) << "(";
+        auto& f = as_func_call_ref(get_rep());
+        auto params = &as_call_params_ref( children(f)[1]);
+        if (children(*params).size()){
+            auto print_expr = [&](node_t e){
+                if (is<Ast_node_kind::identifier>(e)) ss << ceps::ast::name(as_id_ref(e));
+                else if (is<Ast_node_kind::string_literal>(e)) ss << "\"" <<  value(as_string_ref(e)) << "\"";
+                else if (is<Ast_node_kind::int_literal>(e)) ss << value(as_int_ref(e));
+            };
+            if (is<Ast_node_kind::binary_operator>(children(*params)[0])){
+                auto& op = as_binop_ref(children(*params)[0]);
+                print_expr(op.left());
+                if (op_val(op) == "*") { 
+                    ss << " " << op_val(op) << " "; 
+                    print_expr(op.right());
+                }
+            } else print_expr(children(*params)[0]);
+        }
+        ss << ")";
+    }
+    return ss.str();
+}
+
 
 std::string Grammar::NonTerminal::name() const{
     return ceps::ast::name(as_symbol_ref(rep));

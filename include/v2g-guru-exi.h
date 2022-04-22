@@ -69,6 +69,8 @@ namespace v2g_guru_exi{
                     bool valid() const { return rep != nullptr;}
                     grammar_elem_t get_rep() const {return rep;}
                     string as_str() const;
+                    string name() const;
+                    void set_name(string);
             };
 
             class Action{
@@ -244,6 +246,7 @@ namespace v2g_guru_exi{
             optional<Production> find_production_starting_with(Terminal);
             void insert(Production prod);
             bool rename_non_termial(string from , string to);
+            bool rename_termial(string from , string to);
     };
 
     class GenericGrammar{
