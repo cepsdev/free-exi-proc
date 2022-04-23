@@ -121,6 +121,11 @@ string Grammar::Terminal::name() const {
     return ss.str();
 }
 
+// Grammar::NonTerminal
+
+Grammar::NonTerminal::NonTerminal (std::string nm){
+    rep = ceps::ast::mk_symbol(nm, "GrammarNonterminal");
+}
 
 std::string Grammar::NonTerminal::name() const{
     return ceps::ast::name(as_symbol_ref(rep));

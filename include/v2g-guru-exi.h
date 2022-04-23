@@ -49,6 +49,7 @@ namespace v2g_guru_exi{
                 public:
                 NonTerminal() = default;
                 NonTerminal(grammar_elem_t rep) : rep{rep} {}
+                NonTerminal(string name);
                 string name() const;
                 void set_name(string);
                 grammar_elem_t get_rep() const {return rep;} 
@@ -137,10 +138,14 @@ namespace v2g_guru_exi{
                     optional<Production> instantiate(Terminal term) const;
                     void incr_ev_pos(int delta, int pos);
 
+                    class iterator_t;
                     struct rhs_elem_t{
+                        iterator_t* assoc_it{};
                         grammar_elem_t rep{};
                         rhs_elem_t() = default;
                         rhs_elem_t(grammar_elem_t rep): rep{rep} {}
+                        rhs_elem_t(grammar_elem_t rep,iterator_t* assoc_it):assoc_it{assoc_it}, rep{rep} {}
+
                         bool is_terminal() const {
                             return rep != nullptr && 
                                           ( (is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarTerminal") || 
@@ -178,21 +183,23 @@ namespace v2g_guru_exi{
                         Grammar::Action as_action() const {
                             return {rep};
                         }
+
+                        rhs_elem_t& operator = (NonTerminal const & rhs );
                     };
 
                     class iterator_t{
-                        rhs_vec_t rep_rhs{};
+                        rhs_vec_t& rep_rhs;
                         size_t pos = 0;
                         public:
-                        iterator_t() = default;
-                        iterator_t(rhs_vec_t rep_rhs, size_t pos) : rep_rhs{rep_rhs}, pos{pos} {}
+                        iterator_t() = delete;
+                        iterator_t(rhs_vec_t& rep_rhs, size_t pos) : rep_rhs{rep_rhs}, pos{pos} {}
 
                         operator bool() {
                             return pos < rep_rhs.size();
                         }
 
                         rhs_elem_t operator *() {
-                            return rhs_elem_t{rep_rhs[pos]};
+                            return rhs_elem_t{rep_rhs[pos], this};
                         }
 
                         iterator_t& operator ++ () {
@@ -206,10 +213,12 @@ namespace v2g_guru_exi{
                         bool operator != (iterator_t const & rhs) const {
                             return pos != rhs.pos;
                         }
+                        friend class rhs_elem_t;
                     };
+                    static rhs_vec_t empty_vec;
 
                     iterator_t begin() {return iterator_t{ children(as_struct_ref(rep_rhs)), {} }; }
-                    iterator_t end() {return iterator_t{{},children(as_struct_ref(rep_rhs)).size()}; }
+                    iterator_t end() {return iterator_t{empty_vec,children(as_struct_ref(rep_rhs)).size()}; }
                     optional<EventCode> get_eventcode();
             };
 

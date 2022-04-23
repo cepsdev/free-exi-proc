@@ -48,8 +48,9 @@ namespace v2g_guru_exi{
             if (prod){
                 for(auto e: *prod){
                     if (!e.is_terminal()) continue;
-                    auto t = e.as_terminal();
-                    if (t.name() == from){ t.set_name(to); replaced=true;}                        
+                    if (e.as_terminal().name() != from) continue;
+                    e = NonTerminal{to};
+                    replaced=true;                        
                 }
             }
         });

@@ -88,7 +88,7 @@ print( Grammar{
 print("\n");
 
 assert_equality{
-    g;
+      g;
         Grammar{
             lhs{A;};
                 rhs{SD; SD; SE; C;};

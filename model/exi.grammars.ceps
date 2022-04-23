@@ -827,14 +827,14 @@ Proto-grammars are specified in a modular, constructive fashion. XML Schema comp
 transformed each into a distinct proto-grammar, leveraging proto-grammars of their sub-components. At various stages of proto-Grammar
 construction, two or more of proto-grammars are concatenated one after another to form more composite grammars.
 
-The grammar concatenatio operator + is a binary, associative operator that creates a new grammar from its left and right grammar operands.
+The grammar concatenation operator + is a binary, associative operator that creates a new grammar from its left and right grammar operands.
 The new grammar accepts any set of symbols accepted by its left operand followed by any set of symbols accepted by its right operand.
 
 Given a left operand Grammar_L and a right operand Grammar_R, the following operation
 
 Grammar_L + Grammar_R
 
-creates a combined grammar by replacing ecah production of the from
+creates a combined grammar by replacing each each production of the from
 
 Grammar_L_k:
            EE
