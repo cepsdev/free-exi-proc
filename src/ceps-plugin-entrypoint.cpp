@@ -57,6 +57,12 @@ static bool expect_nonterminal(ceps::ast::Nodeset ns){
            ;
 }
 
+static bool expect_terminal(ceps::ast::Nodeset ns){
+    using namespace ceps::ast;
+    return ns.nodes().size() == 1 && 
+           v2g_guru_exi::Grammar::Terminal{ns.nodes()[0]}.valid();
+}
+
 static bool expect_one_and_only_one_grammar(ceps::ast::Nodeset ns){
     using namespace ceps::ast;
     return ns[all{"Grammar"}].nodes().size() == 1;
@@ -85,6 +91,23 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
         g.rename_non_termial(from_nt.name(), to_nt.name());
         return g.grammar_rep;
     }
+    if("rename_terminal_to_nonterminal" == name(ceps_struct))
+    {
+        auto ns = ceps::ast::Nodeset{children(ceps_struct)};
+        if(!expect_terminal(ns["from"])) {   v2g_guru_exi_err (" exi_processor_operation(op = rename_terminal_to_nonterminal) argument 'from': expected exactly one terminal (symbol of kind GrammarNonterminal)."); 
+                                                return nullptr;}
+        if(!expect_nonterminal(ns["to"])) {   v2g_guru_exi_err (" exi_processor_operation(op = rename_terminal_to_nonterminal)  argument 'to': expected exactly one non-terminal (symbol of kind GrammarNonterminal)."); 
+                                                return nullptr;}
+        if(!expect_one_and_only_one_grammar(ns)) {   v2g_guru_exi_err (" exi_processor_operation(op = rename_terminal_to_nonterminal) argument 'Grammar': expected exactly one grammar (a single struct with name 'Grammar')."); 
+                                                return nullptr;}
+        auto from_t = Grammar::Terminal{ns["from"].nodes()[0]};
+        auto to_nt = Grammar::NonTerminal{ns["to"].nodes()[0]};
+        auto g = Grammar{ns[all{"Grammar"}].nodes()[0]};
+        g.rename_terminal_to_nonterminal(from_t.name(), to_nt.name());
+        return g.grammar_rep;
+    }
+
+    v2g_guru_exi_err (" exi_processor_operation() operation '"+name(ceps_struct)+"' not suported.");
     return nullptr;
 }
 

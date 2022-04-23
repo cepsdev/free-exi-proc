@@ -246,7 +246,7 @@ namespace v2g_guru_exi{
             optional<Production> find_production_starting_with(Terminal);
             void insert(Production prod);
             bool rename_non_termial(string from , string to);
-            bool rename_termial(string from , string to);
+            bool rename_terminal_to_nonterminal(string from , string to);
     };
 
     class GenericGrammar{

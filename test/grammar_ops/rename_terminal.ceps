@@ -43,7 +43,7 @@ print("Original grammar:\n", g_orig,"\n\n");
 
 
 val g = exi_processor_operation(
-    rename_terminal{
+    rename_terminal_to_nonterminal{
         GrammarNonterminal A, B, C, D;
         GrammarTerminal    
             SD, 
@@ -60,7 +60,7 @@ val g = exi_processor_operation(
             SC;
 
         from{ED;};
-        to{SD;};
+        to{A;};
         Grammar{
             lhs{A;};
                 rhs{SD; ED; SE; C;};
@@ -73,7 +73,19 @@ val g = exi_processor_operation(
     }
 );
 
-print("Transformed grammar:\n", g,"\n\n");
+print("Transformed grammar: ", g,"\n");
+
+print("Expected: ");
+print( Grammar{
+            lhs{A;};
+                rhs{SD; A; SE; C;};
+            lhs{C;};
+                rhs{SD; A; D; A; SE;};
+            lhs{D;};
+                rhs{AT; SD; A; D; A; SE;};
+                rhs{SD; A; DT; D; A; SE;};
+        });
+print("\n");
 
 assert_equality{
     g;

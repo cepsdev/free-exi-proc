@@ -40,7 +40,7 @@ namespace v2g_guru_exi{
         });
         return replaced;
     }
-    bool Grammar::rename_termial(string from , string to){
+    bool Grammar::rename_terminal_to_nonterminal(string from , string to){
         if (from.length() == 0 || to.length() == 0) return false;
         bool replaced{};
         foreach_grammar_element([&](grammar_elem_t p){
