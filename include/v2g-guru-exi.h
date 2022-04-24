@@ -19,6 +19,7 @@
 #include "ceps_ast.hh"
 #include "core/include/state_machine_simulation_core.hpp"
 
+
 #include <vector>
 #include <queue>
 #include <stack>
@@ -121,107 +122,7 @@ namespace v2g_guru_exi{
                 grammar_elem_t* get_code_rep() {return code_rep;}
             };
 
-            class Production{
-                NonTerminal lhs{};
-                grammar_elem_t rep_rhs{};
-                public:
-                    static constexpr int GENERIC_DEFAULT = 0;
-                    static constexpr int GENERIC_IF_EVCODE_LEN_NOT_ONE = 1;
-
-                    Production() = default;
-                    Production(NonTerminal lhs, grammar_elem_t rep_rhs) : lhs{lhs}, rep_rhs{rep_rhs} {}
-                    NonTerminal get_lhs() const {return lhs;}
-                    grammar_elem_t get_rhs_rep() const {return rep_rhs;}
-                    size_t size() const { if (rep_rhs ==  nullptr) return 0; return children(as_struct_ref(rep_rhs)).size(); }
-                    bool is_generic(int&) const;
-                    bool is_generic() const;
-                    optional<Production> instantiate(Terminal term) const;
-                    void incr_ev_pos(int delta, int pos);
-
-                    class iterator_t;
-                    struct rhs_elem_t{
-                        iterator_t* assoc_it{};
-                        grammar_elem_t rep{};
-                        rhs_elem_t() = default;
-                        rhs_elem_t(grammar_elem_t rep): rep{rep} {}
-                        rhs_elem_t(grammar_elem_t rep,iterator_t* assoc_it):assoc_it{assoc_it}, rep{rep} {}
-
-                        bool is_terminal() const {
-                            return rep != nullptr && 
-                                          ( (is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarTerminal") || 
-                                            (is<Ast_node_kind::func_call>(rep) && is<Ast_node_kind::symbol>(children(as_func_call_ref(rep))[0]) && kind(as_symbol_ref(children(as_func_call_ref(rep))[0])) == "GrammarTerminal" ) 
-                                          );
-                        }
-                        bool is_nonterminal() const {
-                            return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarNonterminal";
-                        }
-                        bool is_action() const {
-                            return rep != nullptr && is<Ast_node_kind::symbol>(rep) && kind(as_symbol_ref(rep)) == "GrammarAction";
-                        }
-                        bool is_annotation() const {
-                            return rep != nullptr && !is_terminal() && !is_nonterminal() && !is_action();
-                        }
-
-                        bool is_eventcode() const {
-                            return rep !=   nullptr && 
-                                            (is<Ast_node_kind::func_call>(rep) && is<Ast_node_kind::identifier>(children(as_func_call_ref(rep))[0]) && name(as_id_ref(children(as_func_call_ref(rep))[0])) == "EventCode" ) 
-                                          ;
-                        }
-
-                        Grammar::Terminal as_terminal() const {
-                            return {rep};
-                        }
-
-                        Grammar::NonTerminal as_nonterminal() const {
-                            return {rep};
-                        }
-                        
-                        Grammar::EventCode as_eventcode() const {
-                            return {rep};
-                        }
-
-                        Grammar::Action as_action() const {
-                            return {rep};
-                        }
-
-                        rhs_elem_t& operator = (NonTerminal const & rhs );
-                    };
-
-                    class iterator_t{
-                        rhs_vec_t& rep_rhs;
-                        size_t pos = 0;
-                        public:
-                        iterator_t() = delete;
-                        iterator_t(rhs_vec_t& rep_rhs, size_t pos) : rep_rhs{rep_rhs}, pos{pos} {}
-
-                        operator bool() {
-                            return pos < rep_rhs.size();
-                        }
-
-                        rhs_elem_t operator *() {
-                            return rhs_elem_t{rep_rhs[pos], this};
-                        }
-
-                        iterator_t& operator ++ () {
-                            if (pos < rep_rhs.size()) ++pos;
-                            return *this;
-                        }
-
-                        bool operator == (iterator_t const & rhs) const {
-                            return pos == rhs.pos;
-                        }
-                        bool operator != (iterator_t const & rhs) const {
-                            return pos != rhs.pos;
-                        }
-                        friend class rhs_elem_t;
-                    };
-                    static rhs_vec_t empty_vec;
-
-                    iterator_t begin() {return iterator_t{ children(as_struct_ref(rep_rhs)), {} }; }
-                    iterator_t end() {return iterator_t{empty_vec,children(as_struct_ref(rep_rhs)).size()}; }
-                    optional<EventCode> get_eventcode();
-            };
-
+            class Production;
            
         public:
             grammar_rep_t grammar_rep{};
@@ -345,4 +246,8 @@ namespace v2g_guru_exi{
 
     bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs); 
  
+
+
 }
+
+#include "v2g-guru-exi-grammar-prod.h"
