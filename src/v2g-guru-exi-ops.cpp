@@ -57,4 +57,16 @@ namespace v2g_guru_exi{
         return replaced;
     }
 
+    Grammar::sorted_vec_of_unique_nonterminals_t Grammar::get_lhs_nonterminals() const{
+        sorted_vec_of_unique_nonterminals_t r{};
+        foreach_grammar_element([&](grammar_elem_t p){
+            auto nonterminal = is_lhs(p);
+            if (nonterminal) 
+                r.push_back(*nonterminal);
+        });
+        sort(r.begin(), r.end());
+        auto last = unique(r.begin(), r.end());
+        r.erase(last, r.end());
+        return r;
+    }
 }

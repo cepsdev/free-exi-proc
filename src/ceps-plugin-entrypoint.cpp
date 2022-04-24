@@ -91,7 +91,7 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
         g.rename_non_termial(from_nt.name(), to_nt.name());
         return g.grammar_rep;
     }
-    if("rename_terminal_to_nonterminal" == name(ceps_struct))
+    else if("rename_terminal_to_nonterminal" == name(ceps_struct))
     {
         auto ns = ceps::ast::Nodeset{children(ceps_struct)};
         if(!expect_terminal(ns["from"])) {   v2g_guru_exi_err (" exi_processor_operation(op = rename_terminal_to_nonterminal) argument 'from': expected exactly one terminal (symbol of kind GrammarNonterminal)."); 
@@ -106,7 +106,19 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
         g.rename_terminal_to_nonterminal(from_t.name(), to_nt.name());
         return g.grammar_rep;
     }
-
+    else if ("get_nonterminals_on_lhs" == name(ceps_struct))
+    {
+        auto ns = ceps::ast::Nodeset{children(ceps_struct)};
+        if(!expect_one_and_only_one_grammar(ns)) {   v2g_guru_exi_err (" exi_processor_operation(op = "+name(ceps_struct)+") argument 'Grammar': expected exactly one grammar (a single struct with name 'Grammar')."); 
+                                                return nullptr;}
+        auto g = Grammar{ns[all{"Grammar"}].nodes()[0]};
+        auto r = g.get_lhs_nonterminals();
+        auto ceps_r = ceps::ast::mk_scope();
+        for(auto e:r){
+            children(*ceps_r).push_back(e.get_rep()->clone());
+        }
+        return ceps_r;
+    }
     v2g_guru_exi_err (" exi_processor_operation() operation '"+name(ceps_struct)+"' not suported.");
     return nullptr;
 }

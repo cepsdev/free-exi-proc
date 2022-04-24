@@ -44,6 +44,9 @@ namespace v2g_guru_exi{
             using rhs_vec_t = vector<grammar_elem_t>;
             using grammar_pattern_rep_t = grammar_rep_t;
             using lhs_vec_t = vector<NonTerminal>;
+            using sorted_vec_of_unique_nonterminals_t = vector<NonTerminal>; 
+            
+            
             grammar_rep_t grammar_rep{};
 
             bool has_global_id() const {return global_id_.length() > 0;}
@@ -54,13 +57,13 @@ namespace v2g_guru_exi{
             std::optional<NonTerminal> is_lhs(grammar_elem_t) const;
             std::optional<Production> is_rhs(grammar_elem_t) const;
 
-            template<typename F>  void foreach_grammar_element(F f) {
+            template<typename F>  void foreach_grammar_element(F f) const {
                 auto& g = as_struct_ref(grammar_rep);
                 for(auto p : children(g) ){
                     f(p);
                 }
             }
-            template<typename F>  void foreach_grammar_element_until(F f) {
+            template<typename F>  void foreach_grammar_element_until(F f) const {
                 auto& g = as_struct_ref(grammar_rep);
                 for(auto p : children(g) ){
                     if(!f(p)) return;
@@ -81,6 +84,7 @@ namespace v2g_guru_exi{
             void insert(Production prod);
             bool rename_non_termial(string from , string to);
             bool rename_terminal_to_nonterminal(string from , string to);
+            sorted_vec_of_unique_nonterminals_t get_lhs_nonterminals() const;
     };
 
     class GenericGrammar{
@@ -159,16 +163,6 @@ namespace v2g_guru_exi{
             void set_emitter(Emitter* an_emitter) {emitter = an_emitter;}
     };
 
-    bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
-    bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
-    bool operator == (Grammar::Terminal const &, Grammar::Terminal const & );
-    ostream& operator << (ostream& os, Grammar::EventCode const &);
-    ostream& operator << (ostream& os, Grammar::Production );
-    ostream& operator << (ostream& os, Grammar );
-    ostream& operator << (ostream& os, Grammar::NonTerminal );
-    ostream& operator << (ostream& os, Grammar::Terminal );
-
-    bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs); 
  
     class Grammar::NonTerminal{       
         public:
@@ -247,6 +241,19 @@ namespace v2g_guru_exi{
             bool valid() const{ return rep != nullptr;}
             grammar_elem_t* get_code_rep() {return code_rep;}
     };
+    
+    bool operator == (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
+    bool operator < (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
+
+    bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs);
+    bool operator == (Grammar::Terminal const &, Grammar::Terminal const & );
+    ostream& operator << (ostream& os, Grammar::EventCode const &);
+    ostream& operator << (ostream& os, Grammar::Production );
+    ostream& operator << (ostream& os, Grammar );
+    ostream& operator << (ostream& os, Grammar::NonTerminal );
+    ostream& operator << (ostream& os, Grammar::Terminal );
+    bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs); 
+
 }
 
 #include "v2g-guru-exi-grammar-prod.h"

@@ -24,6 +24,9 @@ extern std::optional<bool> equality(ceps::ast::Nodebase_ptr lhs, ceps::ast::Node
 namespace v2g_guru_exi{
 
 Grammar::Terminal Event::as_terminal() const { return Grammar::Terminal{ev_rep}; }
+bool operator < (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const & rhs){
+    return lhs.name() < rhs.name();
+}
 
 bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
     if (!lhs.valid() || !rhs.valid()) return false;
