@@ -31,102 +31,26 @@ namespace v2g_guru_exi{
             string global_id_{};
             bool modifiable_{true};
         public:
+            class NonTerminal;
+            class Terminal;
+            class Action;
+            class EventCode;
+            class Production;
+
             using grammar_rep_t = node_t;
             using grammar_elem_t = node_t;
             using lhs_t = node_t;
             using rhs_t = node_t;
             using rhs_vec_t = vector<grammar_elem_t>;
             using grammar_pattern_rep_t = grammar_rep_t;
+            using lhs_vec_t = vector<NonTerminal>;
+            grammar_rep_t grammar_rep{};
 
             bool has_global_id() const {return global_id_.length() > 0;}
             string global_id() const {return global_id_;}
             string& global_id()  {return global_id_;}
-
             bool is_modifiable() const {return modifiable_;}
             bool& modifiable()  {return modifiable_;}           
-            
-            class NonTerminal{
-                grammar_elem_t rep{};
-                public:
-                NonTerminal() = default;
-                NonTerminal(grammar_elem_t rep) : rep{rep} {}
-                NonTerminal(string name);
-                string name() const;
-                void set_name(string);
-                grammar_elem_t get_rep() const {return rep;} 
-            };
-
-            using lhs_vec_t = vector<NonTerminal>;
-
-            class Terminal{
-                grammar_elem_t rep{};
-                public:
-                    Terminal() = default;
-                    Terminal(grammar_elem_t rep_arg) {
-                        if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) rep = rep_arg;
-                        else if (rep_arg && is<Ast_node_kind::func_call>(rep_arg) && is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
-                                kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarTerminal"  ) rep = rep_arg;
-                        else rep = nullptr;
-                    }
-                    bool valid() const { return rep != nullptr;}
-                    grammar_elem_t get_rep() const {return rep;}
-                    string as_str() const;
-                    string name() const;
-                    void set_name(string);
-            };
-
-            class Action{
-                grammar_elem_t rep{};
-                string action_name_;
-                public:
-                    Action() = default;
-                    Action(grammar_elem_t rep_arg) {
-                        if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarAction" ) {
-                            rep = rep_arg;
-                            action_name_ = name(as_symbol_ref(rep_arg));
-                        } else if (rep_arg && is<Ast_node_kind::func_call>(rep_arg) && is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
-                                kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarAction"  ) {
-                                    rep = rep_arg;
-                                    action_name_ = name(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg))));
-                        }
-                        else rep = nullptr;
-                    }
-                    bool valid() const { return rep != nullptr;}
-                    grammar_elem_t get_rep() const {return rep;}
-                    string action_name() const { return action_name_; }
-            };
-
-            class EventCode{
-                grammar_elem_t rep{};
-                grammar_elem_t code_rep[3] = {nullptr, nullptr, nullptr};
-                public:
-                int code[3] = {0,0,0};
-                int dim = 0;
-                EventCode() = default;
-                EventCode(grammar_elem_t rep_arg){
-                    if(!rep_arg) return;
-                    string func_id;
-                    std::vector<node_t> args;
-                    if (!is_a_simple_funccall(  rep_arg,
-				                                func_id,
-                                                args)) return;
-                    if (func_id != "EventCode") return;
-                    dim = args.size();
-                    size_t j = 0;
-                    for (size_t i = 0; i < args.size(); ++i)
-                        if (is<Ast_node_kind::int_literal>(args[i]))
-                            code[min(j++,2UL)] = value(as_int_ref(code_rep[i] = args[i]));
-                    rep = rep_arg;
-                }
-                bool valid() const{ return rep != nullptr;}
-                grammar_elem_t* get_code_rep() {return code_rep;}
-            };
-
-            class Production;
-           
-        public:
-            grammar_rep_t grammar_rep{};
-
             std::optional<NonTerminal> is_lhs(grammar_elem_t) const;
             std::optional<Production> is_rhs(grammar_elem_t) const;
 
@@ -179,7 +103,7 @@ namespace v2g_guru_exi{
             operator bool(){
                 return valid;
             }
-            Grammar::Terminal as_terminal() const { return Grammar::Terminal{ev_rep}; }
+            Grammar::Terminal as_terminal() const;
             bool is_SD();
             event_rep_t get_rep() { return ev_rep;}
         private:
@@ -246,8 +170,83 @@ namespace v2g_guru_exi{
 
     bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs); 
  
+    class Grammar::NonTerminal{       
+        public:
+            NonTerminal() = default;
+            NonTerminal(grammar_elem_t rep) : rep{rep} {}
+            NonTerminal(string name);
+            string name() const;
+            void set_name(string);
+            grammar_elem_t get_rep() const {return rep;}
+        private:
+            grammar_elem_t rep{};
+ 
+    };
+    
+    class Grammar::Terminal{                
+        public:
+            Terminal() = default;
+            Terminal(grammar_elem_t rep_arg) {
+                if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) rep = rep_arg;
+                else if (rep_arg && is<Ast_node_kind::func_call>(rep_arg) && is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
+                        kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarTerminal"  ) rep = rep_arg;
+                else rep = nullptr;
+            }
+            bool valid() const { return rep != nullptr;}
+            grammar_elem_t get_rep() const {return rep;}
+            string as_str() const;
+            string name() const;
+            void set_name(string);
+        private:
+            grammar_elem_t rep{};
+    };
+    
+    class Grammar::Action{
+            grammar_elem_t rep{};
+            string action_name_;
+        public:
+            Action() = default;            
+            Action(grammar_elem_t rep_arg) {
+                        if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarAction" ) {
+                            rep = rep_arg;
+                            action_name_ = name(as_symbol_ref(rep_arg));
+                        } else if (rep_arg && is<Ast_node_kind::func_call>(rep_arg) && is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
+                                kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarAction"  ) {
+                                    rep = rep_arg;
+                                    action_name_ = name(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg))));
+                        }
+                        else rep = nullptr;
+                    }
+            bool valid() const { return rep != nullptr;}
+            grammar_elem_t get_rep() const {return rep;}
+            string action_name() const { return action_name_; }
+    };
 
-
+    class Grammar::EventCode{
+            grammar_elem_t rep{};
+            grammar_elem_t code_rep[3] = {nullptr, nullptr, nullptr};
+        public:
+            int code[3] = {0,0,0};
+            int dim = 0;
+            EventCode() = default;
+            EventCode(grammar_elem_t rep_arg){
+                    if(!rep_arg) return;
+                    string func_id;
+                    std::vector<node_t> args;
+                    if (!is_a_simple_funccall(  rep_arg,
+				                                func_id,
+                                                args)) return;
+                    if (func_id != "EventCode") return;
+                    dim = args.size();
+                    size_t j = 0;
+                    for (size_t i = 0; i < args.size(); ++i)
+                        if (is<Ast_node_kind::int_literal>(args[i]))
+                            code[min(j++,2UL)] = value(as_int_ref(code_rep[i] = args[i]));
+                    rep = rep_arg;
+            }
+            bool valid() const{ return rep != nullptr;}
+            grammar_elem_t* get_code_rep() {return code_rep;}
+    };
 }
 
 #include "v2g-guru-exi-grammar-prod.h"
