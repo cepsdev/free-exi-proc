@@ -69,4 +69,15 @@ namespace v2g_guru_exi{
         r.erase(last, r.end());
         return r;
     }
+    Grammar::sorted_vec_of_unique_nonterminals_t Grammar::confliciting_nonterminals(Grammar const & g) const
+    {
+        sorted_vec_of_unique_nonterminals_t r{};
+        auto lhs_nonterminals = get_lhs_nonterminals();
+        auto rhs_nonterminals = g.get_lhs_nonterminals();
+        if (lhs_nonterminals.size() == 0 || rhs_nonterminals.size() == 0) return r;
+        for (auto nt : lhs_nonterminals)
+            if (binary_search(rhs_nonterminals.begin(), rhs_nonterminals.end(),nt))
+                r.push_back(nt);
+        return r;
+    }
 }

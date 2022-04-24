@@ -85,6 +85,7 @@ namespace v2g_guru_exi{
             bool rename_non_termial(string from , string to);
             bool rename_terminal_to_nonterminal(string from , string to);
             sorted_vec_of_unique_nonterminals_t get_lhs_nonterminals() const;
+            sorted_vec_of_unique_nonterminals_t confliciting_nonterminals(Grammar const & g) const;
     };
 
     class GenericGrammar{

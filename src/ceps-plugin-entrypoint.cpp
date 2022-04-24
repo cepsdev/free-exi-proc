@@ -129,7 +129,14 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
         auto ns = ceps::ast::Nodeset{children(ceps_struct)};
         if(!expect_two_grammars(ns)) {   v2g_guru_exi_err (" exi_processor_operation(op = "+name(ceps_struct)+") argument 'Grammar': expect two grammars (two 'Grammar'-structs)."); 
                                                 return nullptr;}
-                                                
+
+        auto g1 = Grammar{ns[all{"Grammar"}].nodes()[0]};
+        auto g2 = Grammar{ns[all{"Grammar"}].nodes()[1]};
+        
+        auto r = g1.confliciting_nonterminals(g2);
+        for(auto e: r){
+            children(*ceps_r).push_back(e.get_rep()->clone());   
+        }
     
         return ceps_r;
     }
