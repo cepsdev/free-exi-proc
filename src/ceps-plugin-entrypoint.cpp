@@ -140,6 +140,29 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
     
         return ceps_r;
     }
+    else if("resolve_conflicting_nonterminals" == name(ceps_struct)){
+        auto ceps_r = ceps::ast::mk_scope();
+        auto ns = ceps::ast::Nodeset{children(ceps_struct)};
+        if(!expect_two_grammars(ns)) {   v2g_guru_exi_err (" exi_processor_operation(op = "+name(ceps_struct)+") argument 'Grammar': expect two grammars (two 'Grammar'-structs)."); 
+                                                return nullptr;}
+
+        auto g1 = Grammar{ns[all{"Grammar"}].nodes()[0]};
+        auto g2 = Grammar{ns[all{"Grammar"}].nodes()[1]};
+        
+        auto r = g1.resolve_conflicting_nonterminals(g2);
+        for(auto e: r){
+            auto r = ceps::ast::mk_scope();
+            children(*r).push_back(e.first.get_rep()->clone());
+            children(*r).push_back(e.second.get_rep()->clone());
+            children(*ceps_r).push_back(
+                r
+            );   
+        }
+    
+        return ceps_r;
+    }
+
+    
     v2g_guru_exi_err (" exi_processor_operation() operation '"+name(ceps_struct)+"' not supported.");
     return nullptr;
 }

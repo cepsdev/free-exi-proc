@@ -69,6 +69,20 @@ namespace v2g_guru_exi{
         r.erase(last, r.end());
         return r;
     }
+
+    Grammar::sorted_vec_of_unique_nonterminals_t Grammar::get_all_nonterminals() const{
+        sorted_vec_of_unique_nonterminals_t r{};
+        foreach_grammar_element([&](grammar_elem_t p){
+            auto nonterminal = is_lhs(p);
+            if (nonterminal) 
+                r.push_back(*nonterminal);
+        });
+        sort(r.begin(), r.end());
+        auto last = unique(r.begin(), r.end());
+        r.erase(last, r.end());
+        return r;
+    }
+
     Grammar::sorted_vec_of_unique_nonterminals_t Grammar::confliciting_nonterminals(Grammar const & g) const
     {
         sorted_vec_of_unique_nonterminals_t r{};
@@ -78,6 +92,25 @@ namespace v2g_guru_exi{
         for (auto nt : lhs_nonterminals)
             if (binary_search(rhs_nonterminals.begin(), rhs_nonterminals.end(),nt))
                 r.push_back(nt);
+        return r;
+    }
+
+    Grammar::vec_pairs_of_nonterminals_t Grammar::resolve_conflicting_nonterminals(Grammar const & g) const{
+        auto nts_in_conflict = confliciting_nonterminals(g);
+        auto lhs_all_nts = get_lhs_nonterminals();
+        auto rhs_all_nts = g.get_lhs_nonterminals();
+        vec_pairs_of_nonterminals_t  r;
+
+        for(auto nt_in_conflict : nts_in_conflict){
+            for(int i = 1; ; ++i){
+                auto new_nt_name = nt_in_conflict.name() + "_" + to_string(i);
+                auto new_nt{new_nt_name};
+                if (binary_search(lhs_all_nts.begin(), lhs_all_nts.end(),new_nt)) continue;
+                if (binary_search(rhs_all_nts.begin(), rhs_all_nts.end(),new_nt)) continue;
+                r.push_back(make_pair(nt_in_conflict,new_nt));
+                break;
+            }
+        }
         return r;
     }
 }

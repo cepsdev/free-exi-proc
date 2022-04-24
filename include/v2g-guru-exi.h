@@ -45,6 +45,7 @@ namespace v2g_guru_exi{
             using grammar_pattern_rep_t = grammar_rep_t;
             using lhs_vec_t = vector<NonTerminal>;
             using sorted_vec_of_unique_nonterminals_t = vector<NonTerminal>; 
+            using vec_pairs_of_nonterminals_t = vector<pair<NonTerminal,NonTerminal>>; 
             
             
             grammar_rep_t grammar_rep{};
@@ -85,7 +86,9 @@ namespace v2g_guru_exi{
             bool rename_non_termial(string from , string to);
             bool rename_terminal_to_nonterminal(string from , string to);
             sorted_vec_of_unique_nonterminals_t get_lhs_nonterminals() const;
+            sorted_vec_of_unique_nonterminals_t get_all_nonterminals() const;
             sorted_vec_of_unique_nonterminals_t confliciting_nonterminals(Grammar const & g) const;
+            vec_pairs_of_nonterminals_t resolve_conflicting_nonterminals(Grammar const & g) const;
     };
 
     class GenericGrammar{

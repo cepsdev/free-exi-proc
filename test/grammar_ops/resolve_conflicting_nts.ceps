@@ -1,0 +1,129 @@
+/*
+    v2g-guru-exi - an EXI (= "Efficient XML Interchange") processor
+    Copyright (C) 2022 Tomas Prerovsky <cepsdev@hotmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+Test{ResolveConflictingNonTerminals;};
+
+kind GrammarTerminal;
+kind GrammarNonterminal;
+kind GrammarAnnotation;
+kind GrammarAction;
+
+
+val test1_result = exi_processor_operation(
+    resolve_conflicting_nonterminals{
+        GrammarNonterminal A, B, C, D, E , F, G , H;
+        GrammarTerminal    
+            SD, 
+            ED, 
+            SE, 
+            EE, 
+            AT, 
+            CH, 
+            NS, 
+            CM, 
+            PI, 
+            DT, 
+            ER, 
+            SC;
+
+        Grammar{
+            lhs{F;};
+            lhs{G;};
+                rhs{SD; ED; SE; C;E;};
+            lhs{A;};
+                rhs{SD; ED; SE; C;};
+            lhs{C;};
+                rhs{SD; A; D; ED; SE;};
+            lhs{D;};
+                rhs{AT; SD; A;E; D; ED; SE;};
+            lhs{D;};
+                rhs{SD; A; DT; D; ED; SE;};
+        };
+
+        Grammar{
+            lhs{F;};
+            lhs{G;};
+                rhs{SD; ED; SE; C;E;};
+            lhs{A;};
+                rhs{SD; ED; SE; C;};
+            lhs{C;};
+                rhs{SD; A; D; ED; SE;};
+            lhs{D;};
+                rhs{AT; SD; A;E; D; ED; SE;};
+            lhs{D;};
+                rhs{SD; A; DT; D; ED; SE;};
+        };
+    }
+);
+
+print("\n===============\nTest #1\n===============\n\n Result:\n", test1_result,"\n\n");
+val expected = {{A;A_1;};{B;B_1;};{D;D_1;};{F;F_1;};{G;G_1;};};
+print("Expected:\n");print(expected);print("\n");
+
+val test2_result = exi_processor_operation(
+    resolve_conflicting_nonterminals{
+        GrammarNonterminal A, B, C, D, E , F, G , H;
+        GrammarNonterminal A1, B1, C1, D1, E1 , F1, G1 , H1;
+
+        GrammarTerminal    
+            SD, 
+            ED, 
+            SE, 
+            EE, 
+            AT, 
+            CH, 
+            NS, 
+            CM, 
+            PI, 
+            DT, 
+            ER, 
+            SC;
+
+        Grammar{
+            lhs{F;};
+            lhs{G;};
+                rhs{SD; ED; SE; C;E;};
+            lhs{A;};
+                rhs{SD; ED; SE; C;};
+            lhs{C;};
+                rhs{SD; A; D; ED; SE;};
+            lhs{D;};
+                rhs{AT; SD; A;E; D; ED; SE;};
+            lhs{D;};
+                rhs{SD; A; DT; D; ED; SE;};
+        };
+
+        Grammar{
+            lhs{F1;};
+            lhs{G1;};
+                rhs{SD; ED; SE; C;E;};
+            lhs{A1;};
+                rhs{SD; ED; SE; C;};
+            lhs{C1;};
+                rhs{SD; A; D; ED; SE;};
+            lhs{D1;};
+                rhs{AT; SD; A;E; D; ED; SE;};
+            lhs{D1;};
+                rhs{SD; A; DT; D; ED; SE;};
+        };
+    }
+);
+
+print("\n===============\nTest #2\n===============\n\n Result:\n", test2_result,"\n\n");
+val expected = {};
+print("Expected:\n");print(expected);print("\n");
