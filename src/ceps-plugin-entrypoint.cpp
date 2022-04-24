@@ -68,6 +68,11 @@ static bool expect_one_and_only_one_grammar(ceps::ast::Nodeset ns){
     return ns[all{"Grammar"}].nodes().size() == 1;
 }
 
+static bool expect_two_grammars(ceps::ast::Nodeset ns){
+    using namespace ceps::ast;
+    return ns[all{"Grammar"}].nodes().size() == 2;
+}
+
 static void v2g_guru_exi_err(std::string msg){
     std::cerr << "*** Fatal Error [v2g-guru-exi] " <<  msg << "\n";
 }
@@ -119,7 +124,16 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
         }
         return ceps_r;
     }
-    v2g_guru_exi_err (" exi_processor_operation() operation '"+name(ceps_struct)+"' not suported.");
+    else if("get_conflicting_nonterminals" == name(ceps_struct)){
+        auto ceps_r = ceps::ast::mk_scope();
+        auto ns = ceps::ast::Nodeset{children(ceps_struct)};
+        if(!expect_two_grammars(ns)) {   v2g_guru_exi_err (" exi_processor_operation(op = "+name(ceps_struct)+") argument 'Grammar': expect two grammars (two 'Grammar'-structs)."); 
+                                                return nullptr;}
+                                                
+    
+        return ceps_r;
+    }
+    v2g_guru_exi_err (" exi_processor_operation() operation '"+name(ceps_struct)+"' not supported.");
     return nullptr;
 }
 
