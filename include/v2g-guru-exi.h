@@ -89,6 +89,7 @@ namespace v2g_guru_exi{
             sorted_vec_of_unique_nonterminals_t get_all_nonterminals() const;
             sorted_vec_of_unique_nonterminals_t confliciting_nonterminals(Grammar const & g) const;
             vec_pairs_of_nonterminals_t resolve_conflicting_nonterminals(Grammar const & g) const;
+            Grammar& concatenate(Grammar const & );
     };
 
     class GenericGrammar{

@@ -24,7 +24,7 @@ kind GrammarAnnotation;
 kind GrammarAction;
 
 
-exi_processor_operation(
+val result = exi_processor_operation(
     concatenate_grammars{
         GrammarNonterminal G_L_0,G_L_0_RHS_0,G_L_0_RHS_1,G_L_0_RHS_2;
         GrammarNonterminal G_L_1,G_L_1_RHS_0,G_L_1_RHS_1,G_L_1_RHS_2;
@@ -65,3 +65,7 @@ exi_processor_operation(
         };    
     }
 );
+
+print("\n");
+print(result);
+print("\n");

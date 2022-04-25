@@ -113,4 +113,18 @@ namespace v2g_guru_exi{
         }
         return r;
     }
+    Grammar& Grammar::concatenate(Grammar const & rhs){
+        NonTerminal g_r_0;        
+        rhs.foreach_grammar_element_until(
+            [&](grammar_elem_t elem) -> bool{
+                auto new_nt = is_lhs(elem);
+                if (new_nt) {
+                    g_r_0 = *new_nt;
+                    return false;                
+                }
+                return true;
+            });
+        rename_terminal_to_nonterminal("EE",g_r_0.name());
+        return *this;        
+    }
 }
