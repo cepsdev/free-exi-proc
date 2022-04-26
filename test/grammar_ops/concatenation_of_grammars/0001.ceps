@@ -45,6 +45,8 @@ GrammarNonterminal G_R_1,G_R_1_RHS_0,G_R_1_RHS_1,G_R_1_RHS_2;
 GrammarNonterminal G_R_2,G_R_2_RHS_0,G_R_2_RHS_1,G_R_2_RHS_2;
 GrammarTerminal T_0,T_1,T_2,T_3,EE;
 
+GrammarNonterminal G_L_0_1;
+
 
 comment{
 "
@@ -115,7 +117,7 @@ expectation{
             rhs{ T_0; G_R_2_RHS_0; };
             rhs{ T_1; G_R_2_RHS_1; };
             rhs{ T_2; G_R_2_RHS_2; };
-            rhs{ EE; };
+            rhs{ 1; EE; };
     };    
 };   
 
@@ -128,13 +130,6 @@ result{
         }
     );
 };
-
-val a = root.result.Grammar;
-val b =  root.expectation.Grammar;
-rr{
-a == b;
-};
-
 
 kind Event;
 Event evBasicCaseI_OK, evBasicCaseI_Failed;
@@ -167,15 +162,15 @@ sm{
 };
 
 
-print("\n\n",root.rr,"\n\n");
-
 Simulation{
  Start{root.Test.content();};
- if (1) {
+ if ( as_int( symbolic_equality(root.result.Grammar,root.expectation.Grammar).diff.equal.content() ) ) {
      evBasicCaseI_OK;
  }
  else { 
      evBasicCaseI_Failed;
+     print("\n\n**** Error: symbolic_equality(root.result.Grammar,root.expectation.Grammar) failed because:\n>>>>\n",
+     symbolic_equality(root.result.Grammar,root.expectation.Grammar).diff.reason,"\n<<<<\n\n");
  }
  evDidReplaceEEsinGRWithGL_0;
  evDidAppendProductionsOfG_R;
