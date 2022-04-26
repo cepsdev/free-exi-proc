@@ -48,7 +48,7 @@ namespace v2g_guru_exi{
             using vec_pairs_of_nonterminals_t = vector<pair<NonTerminal,NonTerminal>>; 
             
             
-            grammar_rep_t grammar_rep{};
+            grammar_rep_t grammar_rep = nullptr;
 
             bool has_global_id() const {return global_id_.length() > 0;}
             string global_id() const {return global_id_;}
@@ -73,10 +73,16 @@ namespace v2g_guru_exi{
             Grammar() = default;
             Grammar(node_t grammar_rep): grammar_rep{grammar_rep} {}
             Grammar(Grammar const & g){
-                if (!g.grammar_rep) grammar_rep = nullptr;
-                else grammar_rep = g.grammar_rep->clone();
+                grammar_rep = g.grammar_rep->clone();
                 global_id_ = g.global_id_;
                 modifiable_ = g.modifiable_;   
+            }
+
+            Grammar& operator = (Grammar const & g){
+                grammar_rep = g.grammar_rep->clone();
+                global_id_ = g.global_id_;
+                modifiable_ = g.modifiable_;
+                return *this;   
             }
 
             grammar_rep_t get_rep() const { return grammar_rep;}
@@ -85,7 +91,7 @@ namespace v2g_guru_exi{
             vector<Production> right_hand_sides(NonTerminal lhs);
             optional<Production> find_production_starting_with(Terminal);
             void insert(Production prod);
-            bool rename_non_termial(string from , string to);
+            bool rename_non_terminal(string from , string to);
             bool rename_terminal_to_nonterminal(string from , string to);
             sorted_vec_of_unique_nonterminals_t get_lhs_nonterminals() const;
             sorted_vec_of_unique_nonterminals_t get_all_nonterminals() const;
@@ -93,6 +99,7 @@ namespace v2g_guru_exi{
             vec_pairs_of_nonterminals_t resolve_conflicting_nonterminals(Grammar const & g) const;
             Grammar& concatenate(Grammar const & );
             void append(Grammar const & g);
+            bool empty() const {return !get_rep();}
     };
 
     class GenericGrammar{

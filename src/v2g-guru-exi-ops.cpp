@@ -20,7 +20,7 @@
 #include "v2g-guru-exi.h"
 
 namespace v2g_guru_exi{
-    bool Grammar::rename_non_termial(string from , string to){
+    bool Grammar::rename_non_terminal(string from , string to){
         if (from.length() == 0 || to.length() == 0) return false;
         bool replaced{};
         foreach_grammar_element([&](grammar_elem_t p){
@@ -96,6 +96,7 @@ namespace v2g_guru_exi{
     }
 
     Grammar::vec_pairs_of_nonterminals_t Grammar::resolve_conflicting_nonterminals(Grammar const & g) const{
+        if (empty() || g.empty()) return {};
         auto nts_in_conflict = confliciting_nonterminals(g);
         auto lhs_all_nts = get_lhs_nonterminals();
         auto rhs_all_nts = g.get_lhs_nonterminals();
@@ -113,7 +114,25 @@ namespace v2g_guru_exi{
         }
         return r;
     }
-    Grammar& Grammar::concatenate(Grammar const & rhs){
+
+    Grammar& Grammar::concatenate(Grammar const & rhs_orig){
+        Grammar rhs;
+        auto conflicts = rhs_orig.resolve_conflicting_nonterminals(*this);
+
+        //std::cerr << "***** " << conflicts.size() << "\n";
+        //for(auto e: conflicts){
+        //    std::cerr << "**** " << e.first << " -> " << e.second << "\n";
+        //}
+
+        if (conflicts.size()){
+            Grammar new_rhs{rhs_orig};
+            for(auto e: conflicts){
+                new_rhs.rename_non_terminal(e.first.name(),e.second.name());   
+            }
+            //std::cerr << "######\n" << new_rhs << "\n#####\n\n";
+            rhs = new_rhs;
+        } else rhs = rhs_orig;
+
         NonTerminal g_r_0;        
         rhs.foreach_grammar_element_until(
             [&](grammar_elem_t elem) -> bool{
@@ -124,8 +143,11 @@ namespace v2g_guru_exi{
                 }
                 return true;
             });
-        rename_terminal_to_nonterminal("EE",g_r_0.name());
+        rename_terminal_to_nonterminal("EE", g_r_0.name());
         append(rhs);
+        //std::cerr << "-------------\n\n";
+        //std::cerr << *this;
+        //std::cerr << "\n-------------\n";
         return *this;        
     }
 }

@@ -129,6 +129,11 @@ result{
     );
 };
 
+val a = root.result.Grammar;
+val b =  root.expectation.Grammar;
+rr{
+a == b;
+};
 
 
 kind Event;
@@ -161,12 +166,17 @@ sm{
     t{Initial;Verdict;};
 };
 
-//print("\n",root.result,"\n");
+
+print("\n\n",root.rr,"\n\n");
 
 Simulation{
  Start{root.Test.content();};
- if (root.result.Grammar == root.expectation.Grammar) evBasicCaseI_OK;
- else evBasicCaseI_Failed;
+ if (1) {
+     evBasicCaseI_OK;
+ }
+ else { 
+     evBasicCaseI_Failed;
+ }
  evDidReplaceEEsinGRWithGL_0;
  evDidAppendProductionsOfG_R;
 };

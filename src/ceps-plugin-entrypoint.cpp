@@ -93,7 +93,7 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
         auto from_nt = Grammar::NonTerminal{ns["from"].nodes()[0]};
         auto to_nt = Grammar::NonTerminal{ns["to"].nodes()[0]};
         auto g = Grammar{ns[all{"Grammar"}].nodes()[0]};
-        g.rename_non_termial(from_nt.name(), to_nt.name());
+        g.rename_non_terminal(from_nt.name(), to_nt.name());
         return g.grammar_rep;
     }
     else if("rename_terminal_to_nonterminal" == name(ceps_struct))
