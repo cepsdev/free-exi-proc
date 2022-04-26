@@ -279,7 +279,7 @@ extern "C" void init_plugin(IUserdefined_function_registry* smc)
   v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_start_grammar", v2g_guru_exi::plugin_entrypoint_add_start_grammar);
   v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_encode", v2g_guru_exi::plugin_entrypoint_encode);
   v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_generic_grammar", v2g_guru_exi::plugin_entrypoint_add_generic_grammar);
-  v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_operation", v2g_guru_exi::plugin_entrypoint_operation);
+  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin("exi_processor_operation", v2g_guru_exi::plugin_entrypoint_operation);
 
   if(v2g_guru_exi::print_debug_info) std::cout << v2g_guru_exi::version_info << " registered.\n";
 }

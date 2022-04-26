@@ -8,4 +8,4 @@ echo
 
 LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH ceps \
  $1 \
- --pluginlibv2g-guru-exi-plugin.so
+ --pluginlibv2g-guru-exi-plugin.so --pe
