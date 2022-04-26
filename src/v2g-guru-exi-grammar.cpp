@@ -296,13 +296,6 @@ bool operator != (Grammar::NonTerminal const & lhs, Grammar::NonTerminal const &
     return !(lhs == rhs);
 }
 
-template<typename F>  void foreach_grammarrep_element_until(F f, Grammar::grammar_rep_t grammar_rep) {
-    auto& g = as_struct_ref(grammar_rep);
-    for(auto p : children(g) )f(p);
-}
-
-
-
 /// Grammar
 
 ostream& operator << (ostream& os, Grammar::Terminal term){
@@ -412,90 +405,24 @@ string GenericGrammar::pattern_to_str(){
     return pattern_str_cache;
 }
 
-ostream& operator << (ostream& os, Grammar::EventCode const & ev){
-    if (!ev.valid()) os << "Invalid EventCode";
-    else {
-        os << "EventCode(";
-        for(size_t i = 0; i < (size_t)ev.dim; ++i){
-            os << ev.code[i];
-            if (i+1 < (size_t)ev.dim) os << ",";
-        }
-        os << ")";
-    } 
-    return os;   
-}
-
-/// Grammar::Production
-
-bool Grammar::Production::is_generic(int& type) const{
-    if (!get_rhs_rep()) return false;
-    auto result = false;
-    foreach_grammarrep_element_until(
-        [&](Grammar::grammar_rep_t elem){
-            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") { type = GENERIC_DEFAULT; result = true; return false;}
-            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched_and_matched_event_code_length_is_not_one") { 
-                type=GENERIC_IF_EVCODE_LEN_NOT_ONE; result = true; return false;
+    ostream& operator << (ostream& os, Grammar::EventCode const & ev){
+        if (!ev.valid()) os << "Invalid EventCode";
+        else {
+            os << "EventCode(";
+            for(size_t i = 0; i < (size_t)ev.dim; ++i){
+                os << ev.code[i];
+                if (i+1 < (size_t)ev.dim) os << ",";
             }
-            return true;
-        }
-        ,get_rhs_rep()
-    );
+            os << ")";
+        } 
+        return os;   
+    }
 
-    return result;
-}
-
-bool Grammar::Production::is_generic() const{
-    int type;
-    return is_generic(type);
-}
-
-optional<Grammar::Production> Grammar::Production::instantiate(Terminal term) const{
-    if (!get_rhs_rep()) return {};
-    bool success = false;
-    Production new_prod{};
-    node_t new_rhs_rep = nullptr;
-    foreach_grammarrep_element_until(
-        [&](Grammar::grammar_rep_t elem){            
-            if(is<Ast_node_kind::structdef>(elem) && 
-              (name(as_struct_ref(elem))=="add_if_matched" || name(as_struct_ref(elem))=="add_if_matched_and_matched_event_code_length_is_not_one"  ) ) {
-                new_rhs_rep = mk_struct("rhs");
-                auto& new_rhs_rep_children = children(as_struct_ref(new_rhs_rep));
-                foreach_grammarrep_element_until(
-                    [&](Grammar::grammar_rep_t e)
-                    {
-                        if (is<Ast_node_kind::structdef>(e) && name(as_struct_ref(e)) == "do_not_replace") {
-                            if (children(as_struct_ref(e)).size())
-                                new_rhs_rep_children.push_back( children(as_struct_ref(e))[0]->clone() ); 
-                            success = true;                         
-                        } else if (term == Terminal{e}){
-                            new_rhs_rep_children.push_back(term.get_rep()->clone());
-                            success = true;
-                        } else {
-                            new_rhs_rep_children.push_back(e->clone());
-                        }
-                        return true;
-                    }, elem
-                );
-                return false;                
-            }
-            return true;
-        }
-        ,get_rhs_rep()
-    );
-    if (!success) {
-        delete new_rhs_rep;
-        return {};
-    }        
-    return Production{lhs, new_rhs_rep };
-}
-
-optional<Grammar::EventCode> Grammar::Production::get_eventcode(){
-    for(auto e : *this){
-        if (e.is_eventcode())
-            return e.as_eventcode();
-    }    
-    return {};
-}
-
-
+    void Grammar::append(Grammar const & g){
+        if (!g.get_rep()) return;
+        if (!get_rep())
+            grammar_rep = mk_struct("Grammar");
+        auto & rv = children(as_struct_ref(g.get_rep()));        
+        copy(rv.begin(), rv.end(), back_inserter(children(as_struct_ref(get_rep()))));            
+    }
 }

@@ -125,6 +125,7 @@ namespace v2g_guru_exi{
                 return true;
             });
         rename_terminal_to_nonterminal("EE",g_r_0.name());
+        append(rhs);
         return *this;        
     }
 }

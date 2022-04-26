@@ -80,4 +80,75 @@ namespace v2g_guru_exi{
         return {rep};
     }
 
+bool Grammar::Production::is_generic(int& type) const{
+    if (!get_rhs_rep()) return false;
+    auto result = false;
+    foreach_grammarrep_element_until(
+        [&](Grammar::grammar_rep_t elem){
+            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched") { type = GENERIC_DEFAULT; result = true; return false;}
+            if(is<Ast_node_kind::structdef>(elem) && name(as_struct_ref(elem))=="add_if_matched_and_matched_event_code_length_is_not_one") { 
+                type=GENERIC_IF_EVCODE_LEN_NOT_ONE; result = true; return false;
+            }
+            return true;
+        }
+        ,get_rhs_rep()
+    );
+
+    return result;
+}
+
+bool Grammar::Production::is_generic() const{
+    int type;
+    return is_generic(type);
+}
+
+optional<Grammar::Production> Grammar::Production::instantiate(Terminal term) const{
+    if (!get_rhs_rep()) return {};
+    bool success = false;
+    Production new_prod{};
+    node_t new_rhs_rep = nullptr;
+    foreach_grammarrep_element_until(
+        [&](Grammar::grammar_rep_t elem){            
+            if(is<Ast_node_kind::structdef>(elem) && 
+              (name(as_struct_ref(elem))=="add_if_matched" || name(as_struct_ref(elem))=="add_if_matched_and_matched_event_code_length_is_not_one"  ) ) {
+                new_rhs_rep = mk_struct("rhs");
+                auto& new_rhs_rep_children = children(as_struct_ref(new_rhs_rep));
+                foreach_grammarrep_element_until(
+                    [&](Grammar::grammar_rep_t e)
+                    {
+                        if (is<Ast_node_kind::structdef>(e) && name(as_struct_ref(e)) == "do_not_replace") {
+                            if (children(as_struct_ref(e)).size())
+                                new_rhs_rep_children.push_back( children(as_struct_ref(e))[0]->clone() ); 
+                            success = true;                         
+                        } else if (term == Terminal{e}){
+                            new_rhs_rep_children.push_back(term.get_rep()->clone());
+                            success = true;
+                        } else {
+                            new_rhs_rep_children.push_back(e->clone());
+                        }
+                        return true;
+                    }, elem
+                );
+                return false;                
+            }
+            return true;
+        }
+        ,get_rhs_rep()
+    );
+    if (!success) {
+        delete new_rhs_rep;
+        return {};
+    }        
+    return Production{lhs, new_rhs_rep };
+}
+
+optional<Grammar::EventCode> Grammar::Production::get_eventcode(){
+    for(auto e : *this){
+        if (e.is_eventcode())
+            return e.as_eventcode();
+    }    
+    return {};
+}
+
+
 }

@@ -79,6 +79,8 @@ namespace v2g_guru_exi{
                 modifiable_ = g.modifiable_;   
             }
 
+            grammar_rep_t get_rep() const { return grammar_rep;}
+
             lhs_vec_t left_hand_sides();
             vector<Production> right_hand_sides(NonTerminal lhs);
             optional<Production> find_production_starting_with(Terminal);
@@ -90,6 +92,7 @@ namespace v2g_guru_exi{
             sorted_vec_of_unique_nonterminals_t confliciting_nonterminals(Grammar const & g) const;
             vec_pairs_of_nonterminals_t resolve_conflicting_nonterminals(Grammar const & g) const;
             Grammar& concatenate(Grammar const & );
+            void append(Grammar const & g);
     };
 
     class GenericGrammar{
@@ -258,7 +261,11 @@ namespace v2g_guru_exi{
     ostream& operator << (ostream& os, Grammar::NonTerminal );
     ostream& operator << (ostream& os, Grammar::Terminal );
     bool operator <= (Grammar::EventCode lhs, Grammar::EventCode rhs); 
-
+    
+    template<typename F>  void foreach_grammarrep_element_until(F f, Grammar::grammar_rep_t grammar_rep) {
+        auto& g = as_struct_ref(grammar_rep);
+        for(auto p : children(g) )f(p);
+    }
 }
 
 #include "v2g-guru-exi-grammar-prod.h"

@@ -143,6 +143,7 @@ sm{
     };
     for( e: root.FeaturesUndertest.content() ){ 
          t{Initial;e;as_symbol("evDid"+text(e),"Event");}; 
+         t{Initial;Initial;as_symbol("evDid"+text(e),"Event");};
     }
 };
 
@@ -165,4 +166,5 @@ Simulation{
  if (root.result.Grammar == root.expectation.Grammar) evBasicCaseI_OK;
  else evBasicCaseI_Failed;
  evDidReplaceEEsinGRWithGL_0;
+ evDidAppendProductionsOfG_R;
 };
