@@ -73,12 +73,12 @@ comment{
 
 G_R{
     Grammar{
-        lhs{G_R_0;};
-            rhs{ T_0; G_R_0_RHS_0; };
-            rhs{ T_1; G_R_0_RHS_1; };
-            rhs{ T_2; G_R_0_RHS_2; };
+        lhs{G_L_0;};
+            rhs{ T_0; G_L_0_RHS_0; };
+            rhs{ T_1; G_L_0_RHS_1; };
+            rhs{ T_2; G_L_0_RHS_2; };
         lhs{G_R_1;};
-            rhs{ T_0; G_R_1_RHS_0; };
+            rhs{ T_0; G_L_0; };
             rhs{ T_1; G_R_1_RHS_1; };
             rhs{ T_2; G_R_1_RHS_2; };
             rhs{ EE; };
@@ -101,13 +101,13 @@ expectation{
             rhs{T_0;G_L_1_RHS_0;};
             rhs{T_1;G_L_1_RHS_1;};
             rhs{T_2;G_L_1_RHS_2;};
-            rhs{G_R_0;};
-        lhs{G_R_0;};
-            rhs{ T_0; G_R_0_RHS_0; };
-            rhs{ T_1; G_R_0_RHS_1; };
-            rhs{ T_2; G_R_0_RHS_2; };
+            rhs{G_L_0_1;};
+        lhs{G_L_0_1;};
+            rhs{ T_0; G_L_0_RHS_0; };
+            rhs{ T_1; G_L_0_RHS_1; };
+            rhs{ T_2; G_L_0_RHS_2; };
         lhs{G_R_1;};
-            rhs{ T_0; G_R_1_RHS_0; };
+            rhs{ T_0; G_L_0_1; };
             rhs{ T_1; G_R_1_RHS_1; };
             rhs{ T_2; G_R_1_RHS_2; };
             rhs{ EE; };
@@ -160,6 +160,8 @@ sm{
     };
     t{Initial;Verdict;};
 };
+
+//print("\n",root.result,"\n");
 
 Simulation{
  Start{root.Test.content();};
