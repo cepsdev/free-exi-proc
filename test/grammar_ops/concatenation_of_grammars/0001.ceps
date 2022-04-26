@@ -24,17 +24,66 @@ kind GrammarAnnotation;
 kind GrammarAction;
 
 
+comment{
+"
+ Declarations of used terminals/non-terminals. 
+";};
+
+GrammarNonterminal G_L_0,G_L_0_RHS_0,G_L_0_RHS_1,G_L_0_RHS_2;
+GrammarNonterminal G_L_1,G_L_1_RHS_0,G_L_1_RHS_1,G_L_1_RHS_2;
+GrammarNonterminal G_R_0,G_R_0_RHS_0,G_R_0_RHS_1,G_R_0_RHS_2;
+GrammarNonterminal G_R_1,G_R_1_RHS_0,G_R_1_RHS_1,G_R_1_RHS_2;
+GrammarNonterminal G_R_2,G_R_2_RHS_0,G_R_2_RHS_1,G_R_2_RHS_2;
+GrammarTerminal T_0,T_1,T_2,T_3,EE;
+
+
+comment{
+"
+ Left operand. 
+";};
+
+G_L{
+    Grammar{
+        lhs{G_L_0;};
+            rhs{ T_0; G_L_0_RHS_0; };
+            rhs{ T_1; G_L_0_RHS_1; };
+            rhs{ T_2; G_L_0_RHS_2; };
+        lhs{G_L_1;};
+            rhs{ T_0; G_L_1_RHS_0; };
+            rhs{ T_1; G_L_1_RHS_1; };
+            rhs{ T_2; G_L_1_RHS_2; };
+            rhs{ EE; };
+    };
+};
+
+comment{
+"
+ Right operand. 
+";};
+
+
+G_R{
+    Grammar{
+        lhs{G_R_0;};
+            rhs{ T_0; G_R_0_RHS_0; };
+            rhs{ T_1; G_R_0_RHS_1; };
+            rhs{ T_2; G_R_0_RHS_2; };
+        lhs{G_R_1;};
+            rhs{ T_0; G_R_1_RHS_0; };
+            rhs{ T_1; G_R_1_RHS_1; };
+            rhs{ T_2; G_R_1_RHS_2; };
+            rhs{ EE; };
+        lhs{G_R_2;};
+            rhs{ T_0; G_R_2_RHS_0; };
+            rhs{ T_1; G_R_2_RHS_1; };
+            rhs{ T_2; G_R_2_RHS_2; };
+            rhs{ EE; };
+    };    
+};
+
+
 expectation{
     Grammar{
-                    GrammarNonterminal G_L_0,G_L_0_RHS_0,G_L_0_RHS_1,G_L_0_RHS_2;
-            GrammarNonterminal G_L_1,G_L_1_RHS_0,G_L_1_RHS_1,G_L_1_RHS_2;
-
-            GrammarNonterminal G_R_0,G_R_0_RHS_0,G_R_0_RHS_1,G_R_0_RHS_2;
-            GrammarNonterminal G_R_1,G_R_1_RHS_0,G_R_1_RHS_1,G_R_1_RHS_2;
-            GrammarNonterminal G_R_2,G_R_2_RHS_0,G_R_2_RHS_1,G_R_2_RHS_2;
-            
-            GrammarTerminal T_0,T_1,T_2,T_3,EE;
-
         lhs{G_L_0;};
             rhs{T_0;G_L_0_RHS_0;};
             rhs{T_1;G_L_0_RHS_1;};
@@ -50,44 +99,9 @@ expectation{
 
 result{
     exi_processor_operation(
-        concatenate_grammars{
-            GrammarNonterminal G_L_0,G_L_0_RHS_0,G_L_0_RHS_1,G_L_0_RHS_2;
-            GrammarNonterminal G_L_1,G_L_1_RHS_0,G_L_1_RHS_1,G_L_1_RHS_2;
-
-            GrammarNonterminal G_R_0,G_R_0_RHS_0,G_R_0_RHS_1,G_R_0_RHS_2;
-            GrammarNonterminal G_R_1,G_R_1_RHS_0,G_R_1_RHS_1,G_R_1_RHS_2;
-            GrammarNonterminal G_R_2,G_R_2_RHS_0,G_R_2_RHS_1,G_R_2_RHS_2;
-            
-            GrammarTerminal T_0,T_1,T_2,T_3,EE;
-
-            Grammar{
-                lhs{G_L_0;};
-                    rhs{ T_0; G_L_0_RHS_0; };
-                    rhs{ T_1; G_L_0_RHS_1; };
-                    rhs{ T_2; G_L_0_RHS_2; };
-                lhs{G_L_1;};
-                    rhs{ T_0; G_L_1_RHS_0; };
-                    rhs{ T_1; G_L_1_RHS_1; };
-                    rhs{ T_2; G_L_1_RHS_2; };
-                    rhs{ EE; };
-            };
-            Grammar{
-                lhs{G_R_0;};
-                    rhs{ T_0; G_R_0_RHS_0; };
-                    rhs{ T_1; G_R_0_RHS_1; };
-                    rhs{ T_2; G_R_0_RHS_2; };
-                lhs{G_R_1;};
-                    rhs{ T_0; G_R_1_RHS_0; };
-                    rhs{ T_1; G_R_1_RHS_1; };
-                    rhs{ T_2; G_R_1_RHS_2; };
-                    rhs{ EE; };
-                lhs{G_R_2;};
-                    rhs{ T_0; G_R_2_RHS_0; };
-                    rhs{ T_1; G_R_2_RHS_1; };
-                    rhs{ T_2; G_R_2_RHS_2; };
-                    rhs{ EE; };
-
-            };    
+        concatenate_grammars{            
+            root.G_L.Grammar;
+            root.G_R.Grammar;
         }
     );
 };
@@ -95,6 +109,19 @@ result{
 
 kind Event;
 Event evBasicCaseI_OK, evBasicCaseI_Failed;
+Event evDidResolveConflictingLHS, evDidAppendProductionsOfG_R, evDidReplaceEEsinGRWithGL_0;
+sm{
+    ConcatenationOfGrammars;
+    cover{edges_upto_1;};
+    states{Initial; ResolveConflictingLHS; AppendProductionsOfG_R; ReplaceEEsinGRWithGL_0;};
+    t{Initial; ResolveConflictingLHS;  evDidResolveConflictingLHS;};
+    t{Initial; AppendProductionsOfG_R; evDidAppendProductionsOfG_R;};
+    t{Initial; ReplaceEEsinGRWithGL_0;  evDidReplaceEEsinGRWithGL_0;};
+    t{Initial; Initial;  evDidResolveConflictingLHS;};
+    t{Initial; Initial; evDidAppendProductionsOfG_R;};
+    t{Initial; Initial;  evDidReplaceEEsinGRWithGL_0;};
+};
+
 
 sm{
     root.Test.content();
@@ -114,4 +141,7 @@ Simulation{
  Start{root.Test.content();};
  if (root.result.Grammar == root.expectation.Grammar) evBasicCaseI_OK;
  else evBasicCaseI_Failed;
+
+ evDidReplaceEEsinGRWithGL_0;
+
 };
