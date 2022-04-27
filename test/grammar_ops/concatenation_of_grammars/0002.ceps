@@ -22,13 +22,27 @@ FeaturesUndertest{
     ResolveConflictingLHS; 
     AppendProductionsOfG_R; 
     ReplaceEEsinGRWithGL_0;
-    RemoveActionsAttachedToReplacedEE;  
+    AddThreeGrammars;      
 };
 
 val grammar_1 = root.Particle_description.Grammar;
 val grammar_2 = root.Particle_quantity.Grammar;
 val grammar_3 = root.Particle_price.Grammar;
 
-print(grammar_1,"\n");
-print(grammar_2,"\n");
-print(grammar_3,"\n");
+result{
+    exi_processor_operation(
+        concatenate_grammars{
+            exi_processor_operation(
+            concatenate_grammars{            
+                grammar_1;
+                grammar_2;
+            });
+            grammar_3;
+        }
+    );
+};
+
+symbolic_equality(
+    root.result.Grammar,
+    root.Term_sequence.Grammar
+);
