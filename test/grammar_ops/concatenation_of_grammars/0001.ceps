@@ -174,4 +174,5 @@ Simulation{
  }
  evDidReplaceEEsinGRWithGL_0;
  evDidAppendProductionsOfG_R;
+ evDidResolveConflictingLHS;
 };
