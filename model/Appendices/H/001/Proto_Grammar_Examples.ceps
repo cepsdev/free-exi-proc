@@ -1,0 +1,18 @@
+label __Appendices_H_1 title = "Appendices H.1 Proro-Grammar Examples";
+
+comment{
+"
+Grammars for element declaration terms \"description\", \"quantity\" and \"price\" are as follows. See section 8.5.4.1.6 Element Terms for the rules used
+to generate grammars for element terms.
+";
+};
+
+
+Term_description{ 
+    Grammar{
+        lhs{Term_description_0;};
+            rhs{SE("description"); Term_description_1; };
+        lhs{Term_description_1;};
+            rhs{EE;};
+    };
+};
