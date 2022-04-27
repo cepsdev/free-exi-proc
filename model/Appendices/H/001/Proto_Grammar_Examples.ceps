@@ -34,3 +34,15 @@ Term_quantity{
             rhs{EE;};
     };
 };
+
+GrammarNonterminal Term_price_0, Term_price_1; 
+
+Term_price{ 
+    Grammar{
+        lhs{Term_price_0;};
+            rhs{SE("price"); Term_price_1; };
+        lhs{Term_price_1;};
+            rhs{EE;};
+    };
+};
+
