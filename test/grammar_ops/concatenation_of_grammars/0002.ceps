@@ -16,13 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-Test{as_identifier("Concatenation of Grammars: Example taken from EXI spec: H1. Term_sequence.");};
+Test{as_identifier(">>Concatenation of Grammars: Example taken from EXI spec: H1. Term_sequence.<<");};
 
 FeaturesUndertest{
     ResolveConflictingLHS; 
     AppendProductionsOfG_R; 
     ReplaceEEsinGRWithGL_0;
-    AddThreeGrammars;      
+    AddThreeGrammars;
+    EXISpec_Chapter_H1_Term_sequence;
 };
 
 val grammar_1 = root.Particle_description.Grammar;
@@ -42,7 +43,56 @@ result{
     );
 };
 
-symbolic_equality(
-    root.result.Grammar,
-    root.Term_sequence.Grammar
-);
+compare_expectation{
+    symbolic_equality(
+        root.result.Grammar,
+        root.Term_sequence.Grammar
+    );
+};
+
+kind Event;
+Event evOK, evFailed;
+Event evDidResolveConflictingLHS, evDidAppendProductionsOfG_R, evDidReplaceEEsinGRWithGL_0, evDidAddThreeGrammars, evDidEXISpec_Chapter_H1_Term_sequence;
+sm{
+    Features;
+    cover{edges_upto_1;};
+    states{
+        Initial;
+        for( e: root.FeaturesUndertest.content() ){ e; }
+    };
+    for( e: root.FeaturesUndertest.content() ){ 
+         t{Initial;e;as_symbol("evDid"+text(e),"Event");}; 
+         t{Initial;Initial;as_symbol("evDid"+text(e),"Event");};
+    }
+};
+
+sm{
+    root.Test.content();
+    states{Initial;};
+    sm {
+        Verdict;
+        states{Initial;Passed;Failed;};
+        t{Initial;Passed;evOK;};
+        t{Initial;Failed;evFailed;};
+        t{Initial;Initial;evOK;};
+        t{Initial;Initial;evFailed;};
+    };
+    t{Initial;Verdict;};
+};
+
+Simulation{
+ Start{root.Test.content();};
+ if ( as_int(root.compare_expectation.diff.equal.content())  ) {
+     evOK;
+ }
+ else { 
+     evFailed;
+     print("\n\n**** Error: symbolic_equality(...) failed because:\n>>>>\n",
+     root.diff.reason,"\n<<<<\n\n");
+ }
+ evDidReplaceEEsinGRWithGL_0;
+ evDidAppendProductionsOfG_R;
+ evDidResolveConflictingLHS;
+ evDidAddThreeGrammars;
+ evDidEXISpec_Chapter_H1_Term_sequence;
+};
