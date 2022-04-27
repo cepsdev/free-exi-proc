@@ -1,0 +1,34 @@
+/*
+    v2g-guru-exi - an EXI (= "Efficient XML Interchange") processor
+    Copyright (C) 2022 Tomas Prerovsky <cepsdev@hotmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+Test{as_identifier("Concatenation of Grammars: Example taken from EXI spec: H1. Term_sequence.");};
+
+FeaturesUndertest{
+    ResolveConflictingLHS; 
+    AppendProductionsOfG_R; 
+    ReplaceEEsinGRWithGL_0;
+    RemoveActionsAttachedToReplacedEE;  
+};
+
+val grammar_1 = root.Particle_description.Grammar;
+val grammar_2 = root.Particle_quantity.Grammar;
+val grammar_3 = root.Particle_price.Grammar;
+
+print(grammar_1,"\n");
+print(grammar_2,"\n");
+print(grammar_3,"\n");
