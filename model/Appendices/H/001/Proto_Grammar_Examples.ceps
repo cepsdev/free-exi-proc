@@ -24,3 +24,13 @@ Term_description{
     };
 };
 
+GrammarNonterminal Term_quantity_0, Term_quantity_1; 
+
+Term_quantity{ 
+    Grammar{
+        lhs{Term_quantity_0;};
+            rhs{SE("quantity"); Term_quantity_1; };
+        lhs{Term_quantity_1;};
+            rhs{EE;};
+    };
+};
