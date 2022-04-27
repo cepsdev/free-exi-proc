@@ -78,6 +78,16 @@ namespace v2g_guru_exi{
                 modifiable_ = g.modifiable_;   
             }
 
+            // Creates a Grammer of the form
+            //
+            // nt:
+            //  g_0
+            // 
+            // g
+            //
+            // where g_0 is the lhs of the very first production of g
+            Grammar(NonTerminal nt,Grammar const & g);
+
             Grammar& operator = (Grammar const & g){
                 grammar_rep = g.grammar_rep->clone();
                 global_id_ = g.global_id_;

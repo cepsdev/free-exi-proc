@@ -136,6 +136,12 @@ std::string Grammar::NonTerminal::name() const{
     return ceps::ast::name(as_symbol_ref(rep));
 }
 
+// Grammar
+
+Grammar::Grammar(NonTerminal nt,Grammar const & g){
+    grammar_rep = mk_struct("Grammar");
+}
+
 std::optional<Grammar::NonTerminal> Grammar::is_lhs(grammar_elem_t p) const {
     if (!is<Ast_node_kind::structdef>(p)) return {};
     if (name(as_struct_ref(p)) != "lhs") return {};
