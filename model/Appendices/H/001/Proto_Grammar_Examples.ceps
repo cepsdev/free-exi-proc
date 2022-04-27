@@ -46,3 +46,78 @@ Term_price{
     };
 };
 
+comment{
+"
+The grammar for element particle \"description\" is created based on Term_description given {minOccurs} value of 0 and {maxOccurs} value of 1. See section
+8.5.4.1.5 Particles for the rules used to generate grammars for particles.
+"
+;
+};
+
+Particle_description{ 
+    Grammar{
+        lhs{Term_description_0;};
+            rhs{SE("description"); Term_description_1; };
+            rhs{EE;};
+        lhs{Term_description_1;};
+            rhs{EE;};
+    };
+};
+
+comment{
+"
+Grammars for element particle \"quantity\" and \"prices\" are the same as those of their terms (Term_quantity and Term_price, respectively) because {minOccurs} and {maxOccurs} 
+are both 1. 
+"
+;
+};
+
+Particle_quantity{ 
+    Grammar{
+        lhs{Term_quantity_0;};
+            rhs{SE("quantity"); Term_quantity_1; };
+        lhs{Term_quantity_1;};
+            rhs{EE;};
+    };
+};
+
+Particle_price{ 
+     Grammar{
+        lhs{Term_price_0;};
+            rhs{SE("price"); Term_price_1; };
+        lhs{Term_price_1;};
+            rhs{EE;};
+    };
+};
+
+comment{
+"
+The grammar for the sequence group term in <product> element declaration is created based on the grammars of subordinate particles as follows. See section 8.5.4.1.8.1 Sequence Model Groups
+for the rules used t generate grammars for sequence groups.
+";
+
+val Term_sequence = Particle_description + Particle_quantity + Particle_price;
+
+"which yields the following grammars for Term_sequence.";
+};
+
+Term_sequence{
+    Grammar{
+        lhs{Term_description_0;};
+            rhs{SE("description"); Term_description_1; };
+            rhs{Term_quantity_0;};
+        lhs{Term_description_1;};
+            rhs{Term_quantity_0;};
+        lhs{Term_quantity_0;};
+            rhs{SE("quantity"); Term_quantity_1; };
+        lhs{Term_quantity_1;};
+            rhs{Term_price_0;};
+        lhs{Term_price_0;};
+            rhs{SE("price"); Term_price_1; };
+        lhs{Term_price_1;};
+            rhs{EE;};
+    };
+};
+
+
+
