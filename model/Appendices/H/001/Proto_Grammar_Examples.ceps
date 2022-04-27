@@ -1,4 +1,4 @@
-label __Appendices_H_1 title = "Appendices H.1 Proro-Grammar Examples";
+label __Appendices_H_1 title = "Appendices H.1 Proto-Grammar Examples";
 
 comment{
 "
@@ -7,6 +7,13 @@ to generate grammars for element terms.
 ";
 };
 
+kind GrammarTerminal;
+kind GrammarNonterminal;
+kind GrammarAnnotation;
+kind GrammarAction;
+
+GrammarTerminal SE, EE;
+GrammarNonterminal Term_description_0, Term_description_1; 
 
 Term_description{ 
     Grammar{
@@ -16,3 +23,4 @@ Term_description{
             rhs{EE;};
     };
 };
+
