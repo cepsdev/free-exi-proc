@@ -145,8 +145,10 @@ Grammar::Grammar(NonTerminal nt,Grammar const & g){
     if (!v.size() || !nt.get_rep()) return;
     auto& vv = children(as_struct_ref(grammar_rep));
     auto new_lhs = mk_struct("lhs");
-    children(*new_lhs).push_back(nt.get_rep()->clone());   
-    vv.insert(vv.begin(),v[0].get_rep()->clone());
+    auto new_rhs = mk_struct("rhs");
+    children(*new_lhs).push_back(nt.get_rep()->clone());
+    children(*new_rhs).push_back(v[0].get_rep()->clone());   
+    vv.insert(vv.begin(),new_rhs);
     vv.insert(vv.begin(), new_lhs);
 }
 

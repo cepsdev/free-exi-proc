@@ -74,14 +74,30 @@ compare_expectation_with_result{
 kind Event;
 Event evOK, evFailed;
 
-if ( as_int(root.compare_expectation_with_result.diff.equal.content())  ) {
-    evOK;
-} else { 
-    evFailed;
-    print("\n\n**** Error: symbolic_equality(...) failed because:\n>>>>\n",
-    root.compare_expectation_with_result.diff.reason,"\n<<<<\n\n");
-}
+sm{
+    root.Test.content();
+    states{Initial;};
+    sm {
+        Verdict;
+        states{Initial;Passed;Failed;};
+        t{Initial;Passed;evOK;};
+        t{Initial;Failed;evFailed;};
+        t{Initial;Initial;evOK;};
+        t{Initial;Initial;evFailed;};
+    };
+    t{Initial;Verdict;};
+};
 
+Simulation{
+    Start{root.Test.content();};
 
+    if ( as_int(root.compare_expectation_with_result.diff.equal.content())  ) {
+        evOK;
+    } else { 
+        evFailed;
+        print("\n\n**** Error: symbolic_equality(...) failed because:\n>>>>\n",
+        root.compare_expectation_with_result.diff.reason,"\n<<<<\n\n");
+    }
+};
 
 
