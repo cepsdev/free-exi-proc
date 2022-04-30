@@ -1,0 +1,87 @@
+/*
+    v2g-guru-exi - an EXI (= "Efficient XML Interchange") processor
+    Copyright (C) 2022 Tomas Prerovsky <cepsdev@hotmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+Test{as_identifier(">>Element Grammars: ref __8_5_4_1_2 <<");};
+
+kind GrammarTerminal;
+kind GrammarNonterminal;
+kind GrammarAnnotation;
+kind GrammarAction;
+
+GrammarNonterminal E_0, T_0,T_1,T_2;
+GrammarTerminal A, B, C;
+
+type_grammar{             
+    Grammar{
+                lhs{T_0;};
+                rhs{T_1; A;};
+                lhs{T_1;};
+                rhs{T_2; B;};
+                lhs{T_2;};
+                rhs{C;};
+    };
+};
+
+element{
+    E_0;
+};
+
+expectation{
+     Grammar{
+                lhs{E_0;};
+                 rhs{T_0;};
+                lhs{T_0;};
+                rhs{T_1; A;};
+                lhs{T_1;};
+                rhs{T_2; B;};
+                lhs{T_2;};
+                rhs{C;};
+    };
+};
+
+
+result{
+    exi_processor_operation(
+        create_element_grammar{
+            root.type_grammar.Grammar;
+            lhs{root.element.content();};
+        }
+    );
+};
+
+compare_expectation_with_result{
+    symbolic_equality(
+        root.expectation.Grammar,
+        root.result.Grammar
+    );
+};
+
+kind Event;
+Event evOK, evFailed;
+
+if ( as_int(root.compare_expectation_with_result.diff.equal.content())  ) {
+    evOK;
+} else { 
+    evFailed;
+    print("\n\n**** Error: symbolic_equality(...) failed because:\n>>>>\n",
+    root.compare_expectation_with_result.diff.reason,"\n<<<<\n\n");
+}
+
+
+
+

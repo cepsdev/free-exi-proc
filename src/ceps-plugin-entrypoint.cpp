@@ -73,6 +73,16 @@ static bool expect_two_grammars(ceps::ast::Nodeset ns){
     return ns[all{"Grammar"}].nodes().size() == 2;
 }
 
+static bool expect_lhs(ceps::ast::Nodeset ns){
+    using namespace ceps::ast;
+    
+    return ns[all{"lhs"}].nodes().size() == 1 && ns["lhs"].nodes().size() == 1 && 
+           is<Ast_node_kind::symbol>(ns["lhs"].nodes()[0]) &&
+           kind(as_symbol_ref(ns["lhs"].nodes()[0])) == "GrammarNonterminal"
+           ;
+}
+
+
 static void v2g_guru_exi_err(std::string msg){
     std::cerr << "*** Fatal Error [v2g-guru-exi] " <<  msg << "\n";
 }
@@ -169,6 +179,20 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_call
             
             g1.concatenate(g2);
             return g1.grammar_rep;
+    } else if ("create_element_grammar" == name(ceps_struct)){
+            auto ns = ceps::ast::Nodeset{children(ceps_struct)};
+            if(!expect_one_and_only_one_grammar(ns)) {   
+                v2g_guru_exi_err (" exi_processor_operation(op = "+name(ceps_struct)+") argument 'Grammar': expect one grammar (one 'Grammar'-struct)."); 
+                return nullptr;
+            }
+            if (!expect_lhs(ns)){
+                v2g_guru_exi_err (" exi_processor_operation(op = "+name(ceps_struct)+") argument 'lhs': expect one lhs (one 'lhs'-struct containing exactly one non-terminal)."); 
+                return nullptr;                
+            }
+            Grammar g{ns[all{"Grammar"}].nodes()[0]};
+            Grammar::NonTerminal nt{ns["lhs"].nodes()[0]};
+            Grammar result{nt,g};
+            return result.get_rep(); 
     }
     
     v2g_guru_exi_err (" exi_processor_operation() operation '"+name(ceps_struct)+"' not supported.");

@@ -139,7 +139,15 @@ std::string Grammar::NonTerminal::name() const{
 // Grammar
 
 Grammar::Grammar(NonTerminal nt,Grammar const & g){
-    grammar_rep = mk_struct("Grammar");
+    //grammar_rep = mk_struct("Grammar");
+    *this = g;
+    auto v = left_hand_sides();
+    if (!v.size() || !nt.get_rep()) return;
+    auto& vv = children(as_struct_ref(grammar_rep));
+    auto new_lhs = mk_struct("lhs");
+    children(*new_lhs).push_back(nt.get_rep()->clone());   
+    vv.insert(vv.begin(),v[0].get_rep()->clone());
+    vv.insert(vv.begin(), new_lhs);
 }
 
 std::optional<Grammar::NonTerminal> Grammar::is_lhs(grammar_elem_t p) const {
