@@ -172,29 +172,6 @@ Note:
 ";};
 
 
-label __8_5_4_1_5 title = "8.5.4.1.5 Particles";
-
-comment{
-"
-Given an XML Schema particle P_i with {min occurs}, {max occurs} and {term} properties, generate a grammar Particle_i for evaluating instances
-of P_i as follows.
-
-If {term} is an element declaration, generate the grammar Term_0 according to section 8.5.4.1.6 Element Terms. If {term} is a wildcard, generate
-the grammar Term_0 according to section 8.5.4.1.6 Element Terms. If {term} is a wildcard, generate the grammar Term_0 according to section
-8.5.4.1.7 Wildcard Terms. If {term} is a model group, generate the grammar Term_0 according to section 8.5.4.1.8 Model Group Terms.
-
-Create {min occurs} copies of Term_0.
-
-        G_0, G_1, ... . G_{ {min occurs} - 1}
-
-If {max occurs} is not unbounded, create {max occurs} - {min occurs} additional copies of Term_0,
-
-        G_{min occurs}, G_{{min occurs} + 1}, ... , G_{{max occurs}-1}
-
-Add the following productions to each of the grammars  
-
-";
-};
 
 
 
