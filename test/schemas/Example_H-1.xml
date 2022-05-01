@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<xs:element name="product">
+  <xs:complexType>
+    <xs:sequence maxOccurs="2">
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="quantity" type="xs:integer" />
+      <xs:element name="price" type="xs:float" />
+    </xs:sequence>
+    <xs:attribute name="sku" type="xs:string" use="required" />
+    <xs:attribute name="color" type="xs:string" use="optional" />
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="order">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element ref="product" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
