@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir bin -rf 2>/dev/null
+mkdir bin 2>/dev/null
 
 cd bin 
 rm CMakeFiles -rf 2>/dev/null  
