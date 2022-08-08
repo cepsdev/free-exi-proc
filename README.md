@@ -1,4 +1,4 @@
-# TEXIProc
+# A Truely Free EXI Processor
 EXI Processor
 
 
