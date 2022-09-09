@@ -1,6 +1,8 @@
 # A Truely Free EXI Processor
-EXI Processor
-
+## Goals
+- Complete implementation of an EXI "Efficient XML Interchange" processor, 
+- in modern, idiomatic and portable C++,
+- truely open.
 
 ## Building and running the example (3.3 Encoding Example) from the EXI Primer document (https://www.w3.org/TR/exi-primer/)
 - Requirements: g++ >= 8 and https://github.com/cepsdev/machines4ceps
