@@ -52,14 +52,14 @@ Grammar::Grammar(NonTerminal nt,Grammar const & g){
     vv.insert(vv.begin(), new_lhs);
 }
 
-std::optional<Grammar::NonTerminal> Grammar::is_lhs(grammar_elem_t p) const {
+std::optional<Grammar::NonTerminal> Grammar::is_lhs(grammar_elem_t p, bool check_for_wellformedness) const {
     if (!is<Ast_node_kind::structdef>(p)) return {};
     if (name(as_struct_ref(p)) != "lhs") return {};
-    for(auto pp : children(as_struct_ref(p))){
+    if (check_for_wellformedness) for(auto pp : children(as_struct_ref(p))){
         if (!is<Ast_node_kind::symbol>(pp)) continue;
         if (kind(as_symbol_ref(pp))!="GrammarNonterminal") continue;
         return NonTerminal{pp};
-    }
+    } else return {NonTerminal{}};
     return {};
 }
 
@@ -128,6 +128,23 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
     });   
     if (found) return result;
     return {};
+}
+
+std::pair<bool, Grammar::Error> Grammar::check() {
+    bool valid{true};
+    Grammar::Error err;
+    foreach_grammar_element_until([&](grammar_elem_t elem) -> bool{
+        auto lhs = is_lhs(elem,false);
+        if (lhs){
+            lhs = is_lhs(elem,true); // with check
+            if (!lhs) {
+                valid = false;
+                err = Grammar::Error::EmptyLefthandside; 
+            }
+        }
+        return true;
+    });
+    return {valid, err};
 }
 
 void Grammar::insert(Grammar::Production prod) {

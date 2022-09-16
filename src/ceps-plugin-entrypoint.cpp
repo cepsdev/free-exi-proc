@@ -47,6 +47,7 @@ namespace v2g_guru_exi{
     ceps::ast::node_t plugin_entrypoint_encode (ceps::ast::node_callparameters_t params);
     ceps::ast::node_t plugin_entrypoint_add_generic_grammar(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t plugin_entrypoint_operation(ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t plugin_entrypoint_check(ceps::ast::node_callparameters_t params);
 }
 
 static bool expect_nonterminal(ceps::ast::Nodeset ns){
@@ -226,6 +227,36 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_add_start_grammar(ceps::ast::n
     return nullptr;
 }
 
+ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_check(ceps::ast::node_callparameters_t params){
+    auto data = get_first_child(params);
+    auto result = mk_struct("result");
+    auto ok = mk_struct("ok");
+    children(result).push_back(ok);
+
+    if (!is<Ast_node_kind::structdef>(data)) {
+        children(ok).push_back(ceps::interpreter::mk_int_node(0));
+        return result;
+    }
+    auto& ceps_struct = *as_struct_ptr(data);
+    if("Grammar" != name(ceps_struct)) {
+        children(ok).push_back(ceps::interpreter::mk_int_node(0));
+        return result;
+    }
+    Grammar g{data};
+    auto gcheck = g.check();
+    if (gcheck.first) children(ok).push_back(ceps::interpreter::mk_int_node(1));
+    else {
+        children(ok).push_back(ceps::interpreter::mk_int_node(0));
+        auto details = mk_struct("details");
+        if (gcheck.second == Grammar::Error::EmptyLefthandside)
+         children(details).push_back(ceps::ast::mk_string("Missing non-terminal in production head"));
+        else children(details).push_back(ceps::ast::mk_string("Unknown"));
+        children(result).push_back(details);
+    }
+    return result;
+}
+
+
 ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_encode (ceps::ast::node_callparameters_t params){
     auto data = get_first_child(params);
     auto result = mk_struct("encoding");
@@ -300,10 +331,21 @@ void v2g_guru_exi::ceps_emitter::emit(Grammar::EventCode ev) {
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   v2g_guru_exi::plugin_master = smc->get_plugin_interface();
-  v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_start_grammar", v2g_guru_exi::plugin_entrypoint_add_start_grammar);
-  v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_encode", v2g_guru_exi::plugin_entrypoint_encode);
-  v2g_guru_exi::plugin_master->reg_ceps_plugin("exi_processor_add_generic_grammar", v2g_guru_exi::plugin_entrypoint_add_generic_grammar);
-  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin("exi_processor_operation", v2g_guru_exi::plugin_entrypoint_operation);
+  v2g_guru_exi::plugin_master->reg_ceps_plugin(
+    "exi_processor_add_start_grammar", 
+    v2g_guru_exi::plugin_entrypoint_add_start_grammar);
+  v2g_guru_exi::plugin_master->reg_ceps_plugin(
+    "exi_processor_encode", 
+    v2g_guru_exi::plugin_entrypoint_encode);
+  v2g_guru_exi::plugin_master->reg_ceps_plugin(
+    "exi_processor_add_generic_grammar", 
+    v2g_guru_exi::plugin_entrypoint_add_generic_grammar);
+  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
+    "exi_processor_operation", 
+    v2g_guru_exi::plugin_entrypoint_operation);
+  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
+    "exi_processor_check", 
+    v2g_guru_exi::plugin_entrypoint_check);
 
   if(v2g_guru_exi::print_debug_info) std::cout << v2g_guru_exi::version_info << " registered.\n";
 }

@@ -55,7 +55,7 @@ namespace v2g_guru_exi{
             string& global_id()  {return global_id_;}
             bool is_modifiable() const {return modifiable_;}
             bool& modifiable()  {return modifiable_;}           
-            std::optional<NonTerminal> is_lhs(grammar_elem_t) const;
+            std::optional<NonTerminal> is_lhs(grammar_elem_t, bool check_for_wellformedness = true) const;
             std::optional<Production> is_rhs(grammar_elem_t) const;
 
             template<typename F>  void foreach_grammar_element(F f) const {
@@ -77,6 +77,12 @@ namespace v2g_guru_exi{
                 global_id_ = g.global_id_;
                 modifiable_ = g.modifiable_;   
             }
+
+            enum class Error {
+                EmptyLefthandside
+            };
+
+            std::pair<bool, Error>  check();
 
             // Creates a Grammer of the form
             //

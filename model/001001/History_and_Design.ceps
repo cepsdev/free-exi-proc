@@ -1,0 +1,37 @@
+label __1__1 title = "1.1 History and Design";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+
+EXI is the reszkt if extensive work carried out by the W3C's XML Binary Characterization
+(XBC) and Efficient XML Interchange (EXI) Working Groups. XBC was chartered
+to investigate the costs and benefits of an alternative form of XML, and formulate
+a way to objectively evaluate the potential of a substitute fornat for XML. Based
+on XBC's technologies (using metrics developed by XBC [XBC Measurement Methodologies]),
+and then, if it appeared suitable, to formulate a recommendation for a W3C format
+specification. The measurements results and analyses, are presented elsewhere
+[EXI Measurement Note]. The format described in this document is the specification
+so recommended. The functional requirements of the EXI format are 
+those that were prepared by the XBC working group in their
+analysis of the desirable properties of a high performance representation for
+XML those properties were derives from a very broad set of use cases also identified 
+by the xbc working group.
+
+The design of the format presented here is largely based on the results
+of the measurements carried out by the group to evaluate the performance
+characteristics mainly of processing efficiency compactness of various 
+existing formats the exi format is based on efficient XML including
+for example the basis heuristic grammar approach compression algorithm 
+and resulting entropy encoding
+
+EXI is compatible with XML at the xml information set level rather than at
+the XML syntax level this permits it to encapsulate an efficient alternative
+syntax and grammar for xml  while facilitating at least the potential 
+for minimizing the impact on XML application interoperability.
+
+"
+
+);
