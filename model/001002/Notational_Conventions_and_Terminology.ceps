@@ -30,19 +30,35 @@ example{
     GrammarAnnotation EventCode;
 
     Grammar{
-            lhs{LeftHandSide;};
+            lhs{NonTerminal_1;};
                 rhs{Terminal_1; NonTerminal_1;EventCode(1); };
                 rhs{Terminal_2; NonTerminal_2;EventCode(2); };
                 rhs{Terminal_3; NonTerminal_3;EventCode(3); };
                 rhs{Terminal_n; NonTerminal_n;EventCode(n); };
+          
     };
 };
 
-val check_1_2_ex_1 = exi_processor_check(root.example.last().content().Grammar); 
+kind EXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal;
+kind EXIConcept_Grammar_NoDanglingLHS;
+
+EXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal 
+ EachLHSContainsExactlyOneNonTerminal;
+EXIConcept_Grammar_NoDanglingLHS NoDanglingLHS;
+
+val check_1_2_ex_1 = exi_processor_check(
+    input{
+        check_for{
+            EachLHSContainsExactlyOneNonTerminal;
+            NoDanglingLHS;
+        };
+        root.example.last().content().Grammar;
+    }
+); 
+
 if(check_1_2_ex_1.result.ok.content() == 0){
     kind DocgenWarning;
     DocgenWarning warn;
-    warn("exi_processor_check() failed: ", 
-     check_1_2_ex_1.result.details.content(),
-    ".");
+    warn("exi_processor_check() failed: "); 
+    check_1_2_ex_1.result.details.content();
 }

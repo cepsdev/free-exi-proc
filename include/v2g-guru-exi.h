@@ -37,6 +37,14 @@ namespace v2g_guru_exi{
             class EventCode;
             class Production;
 
+            struct Concept_Grammar{};
+            struct EachLHSContainsExactlyOneNonTerminal : public Concept_Grammar{
+                const static std::string name;
+            };
+            struct NoDanglingLHS : public Concept_Grammar{
+                const static std::string name;
+            };
+
             using grammar_rep_t = node_t;
             using grammar_elem_t = node_t;
             using lhs_t = node_t;
@@ -82,7 +90,8 @@ namespace v2g_guru_exi{
                 EmptyLefthandside
             };
 
-            std::pair<bool, Error>  check();
+            template<typename T> 
+             std::pair<bool, Error>  check(T concept_to_check);
 
             // Creates a Grammer of the form
             //

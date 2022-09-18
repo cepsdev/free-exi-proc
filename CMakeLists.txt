@@ -34,6 +34,7 @@ add_library(v2g-guru-exi-plugin SHARED
            src/v2g-guru-exi-ops.cpp
            src/v2g-guru-exi-production.cpp
            src/v2g-guru-exi-terminal.cpp
+           src/free-exi-grammar-concepts.cpp
            )
 
 target_link_libraries(v2g-guru-exi-plugin cepscore sctp)

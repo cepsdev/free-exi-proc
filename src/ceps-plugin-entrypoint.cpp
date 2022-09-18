@@ -238,20 +238,41 @@ ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_check(ceps::ast::node_callpara
         return result;
     }
     auto& ceps_struct = *as_struct_ptr(data);
-    if("Grammar" != name(ceps_struct)) {
+    if("input" != name(ceps_struct)) {
         children(ok).push_back(ceps::interpreter::mk_int_node(0));
         return result;
     }
-    Grammar g{data};
-    auto gcheck = g.check();
-    if (gcheck.first) children(ok).push_back(ceps::interpreter::mk_int_node(1));
-    else {
-        children(ok).push_back(ceps::interpreter::mk_int_node(0));
+    
+    auto ns = ceps::ast::Nodeset{children(ceps_struct)};
+    if (ns[all{"Grammar"}].nodes().size()){    
+        auto g = Grammar{ns[all{"Grammar"}].nodes()[0]};
+        bool verdict = true;
+        auto properties = ns["check_for"];
         auto details = mk_struct("details");
-        if (gcheck.second == Grammar::Error::EmptyLefthandside)
-         children(details).push_back(ceps::ast::mk_string("Missing non-terminal in production head"));
-        else children(details).push_back(ceps::ast::mk_string("Unknown"));
         children(result).push_back(details);
+
+        for(auto e : properties.nodes()){
+            if (!is<Ast_node_kind::symbol>(e)) continue;
+            auto prop_name = kind(as_symbol_ref(e));
+            if (prop_name == Grammar::EachLHSContainsExactlyOneNonTerminal::name){
+                auto check = g.check(Grammar::EachLHSContainsExactlyOneNonTerminal{});
+                if (!check.first)
+                 children(details).push_back(
+                    mk_string("EXI Concept 'EachLHSContainsExactlyOneNonTerminal' violated."));
+                verdict &= check.first;
+            } else  if (prop_name == Grammar::NoDanglingLHS::name){
+                auto check = g.check(Grammar::NoDanglingLHS{});
+                if (!check.first)
+                 children(details).push_back(
+                    mk_string("EXI Concept 'NoDanglingLHS' violated."));
+                verdict &= check.first;
+            }
+
+        }       
+        if (verdict) children(ok).push_back(ceps::interpreter::mk_int_node(1));
+        else children(ok).push_back(ceps::interpreter::mk_int_node(0));                    
+    } else{
+        children(ok).push_back(ceps::interpreter::mk_int_node(0));
     }
     return result;
 }

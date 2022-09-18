@@ -130,22 +130,6 @@ optional<Grammar::Production> Grammar::find_production_starting_with(Grammar::Te
     return {};
 }
 
-std::pair<bool, Grammar::Error> Grammar::check() {
-    bool valid{true};
-    Grammar::Error err;
-    foreach_grammar_element_until([&](grammar_elem_t elem) -> bool{
-        auto lhs = is_lhs(elem,false);
-        if (lhs){
-            lhs = is_lhs(elem,true); // with check
-            if (!lhs) {
-                valid = false;
-                err = Grammar::Error::EmptyLefthandside; 
-            }
-        }
-        return true;
-    });
-    return {valid, err};
-}
 
 void Grammar::insert(Grammar::Production prod) {
 
