@@ -1,0 +1,17 @@
+label __2 title = "2. Concepts";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+The development of the Efficient XML Interchange (EXI) format was guided by five design principles,
+namely, the format had to be general, minimal , efficient, flexible, and interoperable. The format
+satisfies these prerequisites, achieving generality, efficiencym and flexibility while at the same time
+keeping complexity in check.
+
+Many of the concepts employed by the EXI format are applicable to the encoding of arbitrary languages
+that can be described by a grammar. Even though EXI utilizes schema information to improve compactness
+and processing efficiency, it does not depend on accurate, complete, or current schemas to work.
+
+");
