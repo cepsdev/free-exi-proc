@@ -1,0 +1,20 @@
+label __2__1 title = "2.1 EXI Streams";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+EXI represents the contents of an XML document as an EXI stream. As shown below, an EXI stream consists
+of an EXI header followed by an EXI body.
+
+
+");
+
+label __2__1_table title = "Table 2-1.  EXI Streams";
+docinfo_se("===========");
+EXIStream{
+  EXIHeader{};
+  EXIBody{};  
+};
+docinfo_se("===========");

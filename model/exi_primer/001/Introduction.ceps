@@ -5,5 +5,17 @@ DocgenStringPrintNoEscape docinfo_se;
 docinfo_se(
 
 "
+The intended audience of this document includes users and developers of EXI with a basic understanding
+of XML and XML Schema. This document provides an informal description of the EXI format, the reader 
+is referred to the [Efficient XML Interchange (EXI) Format 1.0 (Second Edition)]] document for further
+details: Hereinafter, the presentation assumes that the reader is familiar with the basic concepts of XML
+and the way XML Schema can be used to describe and enforce constraints on XML documents.
+
+The document is comprised of two major parts. The first part describes the structure and content
+of an EXI document with and without compression. More specifically, it describes the concept of
+an EXI stream and how it is generated using EXI grammars, as well as the implications on structure 
+and content ordering aín an EXI stream when compression is enabled. As a practical application of the
+concepts from the first part, the second part presents a complete bit-level description of an EXI
+document.
 
 ");
