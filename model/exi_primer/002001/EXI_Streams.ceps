@@ -18,3 +18,16 @@ EXIStream{
   EXIBody{};  
 };
 docinfo_se("===========");
+
+docinfo_se(
+"
+The EXI header conveys format version information and may also include the
+set of options that were used during encoding. If these options are omitted,
+it is assumed that the decoder has access to then out of band. The EXI body
+comprises an event sequence describing the document (or document fragment) that
+is encoded. The following two sections describe the EXI header and EXI body
+in more detail.s
+
+");
+
+
