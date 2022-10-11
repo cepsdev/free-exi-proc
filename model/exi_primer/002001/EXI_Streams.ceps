@@ -26,8 +26,193 @@ set of options that were used during encoding. If these options are omitted,
 it is assumed that the decoder has access to then out of band. The EXI body
 comprises an event sequence describing the document (or document fragment) that
 is encoded. The following two sections describe the EXI header and EXI body
-in more detail.s
+in more details.
 
 ");
+
+label __2__1__1 title = "2.1.1 EXI Header";
+
+docinfo_se(
+"
+
+The header communicates encoding properties that are needed to decode The
+EXI body. The minimal header can be represented in a single byte This keeps
+the overhead and complexity to a minimum and does not sacrifice compactness,
+especially for small documents where a header can introduce a large constant
+factor. 
+
+The structure of an EXI header is depicted in the following figure.
+
+");
+
+label __2__1_table title = "Table 2-2.  EXI Header Structure";
+kind DataType; DataType datatype;
+
+macro  ComputeEXIFormatVersion{
+  EXIFormatVersion{
+    if(CompliantWithFinalEXIRecommendation) {
+      bit{0;};
+    }
+    else{
+      bit{1;};
+      for (e : 1 .. (SupportedEXIVersion - 1) / 15){
+        uint4{15;};
+      }
+      val r = SupportedEXIVersion - ((SupportedEXIVersion - 1) / 15)*15;
+      if (  r >= 1 ) 
+      {
+        uint4{ r - 1; };
+      }
+    }
+    };
+};
+
+EXIHeader{
+  datatype;
+  
+  if(EXIHeaderCookie) {
+    EXICookie{"$EXI";};
+  }
+  
+  DistinguishingBits{uint2{2;};};
+  PresenceBitForEXIOptions{
+    bit{if (EXIHeaderOptionsPresent) 1; else 0;}; 
+  };
+  ComputeEXIFormatVersion{};
+};
+
+docinfo_se(
+"
+
+The EXI header starts with an optional four-byte EXI Cookie. The four byte
+field consists of four characters '$','E','X' and 'I' in that order, each
+represented as an ASCII octet, that can be used to distinguish an EXI stream
+from a broad range of data streams.
+
+The EXI Cookie is followed by a pair of Distinguishing Bits. The two bit-sequence
+(1 0) can be used to distinguish an EXI document form a textual XML document
+and is sufficient to distinguish EXI streams from XML streams based on a broad
+range of character encodings.
+
+The Presence Bit for EXI Options follows the Distinguishing Bits. The value
+of this single bit is used to indicate the presence or absence of the EXI Options
+that appear later in the header.
+
+The EXI Format Version identifies the version of EXI in use and allows
+future improvements and modifications.  A leading 0 (zero) bit indicates
+that the document is encoded according to the final version of the recommendation,
+while a leading 1 (one) indicates that it is a preview version. The differentiation
+is introduced to facilitate early releases of preview versions withe less
+strict interiperability requirements. Only final versions are requires to 
+be processed by compliant processors. The leading bit is followed by one
+or more 4-bit sequences whoh are collectively interpreted as a format version
+number starting at 1. For example, the 4-bit sequence 0000 is interpreted
+as version 1 and the two 4-bit sequences 1111 0001 are interpreted as 15 + 2
+or version 17.
+
+
+
+");
+
+
+
+label __2__1_EXIFormatVersion_Examples title = "2.1.1.1 [Not in original document] Examples for Formatting of the expected EXI Version.";
+
+docinfo_se(
+"
+Throughout the following examples the variable *CompliantWithFinalEXIRecommendation* will be set to 0.
+
+");
+val CompliantWithFinalEXIRecommendation = 0;
+
+docinfo_se(
+"
+SupportedEXIVersion = 1.
+
+");
+
+
+val SupportedEXIVersion = 1;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 2.
+
+");
+
+let SupportedEXIVersion = 2;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 14.
+
+");
+
+let SupportedEXIVersion = 14;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 15.
+
+");
+
+let SupportedEXIVersion = 15;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 16.
+
+");
+
+let SupportedEXIVersion = 16;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 17.
+
+");
+
+let SupportedEXIVersion = 17;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 30.
+
+");
+
+let SupportedEXIVersion = 30;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 31.
+
+");
+
+let SupportedEXIVersion = 31;
+ComputeEXIFormatVersion{};
+
+docinfo_se(
+"
+SupportedEXIVersion = 32.
+
+");
+
+let SupportedEXIVersion = 32;
+ComputeEXIFormatVersion{};
+
+
+
+
+
+
+
+
 
 
