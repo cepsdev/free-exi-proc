@@ -110,17 +110,100 @@ number starting at 1. For example, the 4-bit sequence 0000 is interpreted
 as version 1 and the two 4-bit sequences 1111 0001 are interpreted as 15 + 2
 or version 17.
 
+The EXI Options specify how the body of an EXI stream is encoded and, as srared earlier,
+their presence is controlles by the presence bit earlier in the header. The overhead introduced
+by the EXI options is comparatively small given that they are formally described using an XML schema
+and are encoded using EXI as well. The following table describes the EXI options that can be
+specified in the EXI header. When the EXI Options document does not specify a value for
+a particular option the default value is assumed. 
+
 
 
 ");
 
+label __2__3_table title = "Table 2-3.  EXI Options";
 
+EXIOptions{
+  kind EXIOptionName;
+  EXIOptionName alignment, compression, strict, fragment, preserve, selfConained, schemaId,
+                datatypeRepresentationMap, blockSize, valueMaxLength, valuePartiotionCapacity,
+                user_defined_metadata;
 
-label __2__1_EXIFormatVersion_Examples title = "2.1.1.1 [Not in original document] Examples for Formatting of the expected EXI Version.";
+  kind EXIOptionAlignment; EXIOptionAlignment bit_packed;
+  val false = 0;
+  val true = 1;
+
+  EXIOptionEntry{EXIOption{alignment;};Description{"Alignment of event codes and content items.";};DefaultValue{bit_packed;};};
+  EXIOptionEntry{EXIOption{compression;};Description{"Indicates if EXI compression is to be used for better compactness.";};DefaultValue{false;};};
+  EXIOptionEntry{EXIOption{strict;};Description{"Strict interpretation of schema is used to achieve better compactness.";};DefaultValue{false;};};
+  EXIOptionEntry{EXIOption{fragment;};Description{"Indicates if the body is to be encoded as an EXI fragment instead of an EXI document.";};DefaultValue{false;};};
+  EXIOptionEntry{EXIOption{preserve;};Description{"A set of options that controls whether comments, processing instructions, etc. are preserved.";};DefaultValue{};};
+  EXIOptionEntry{EXIOption{selfContained;};Description{"Enables self-contained elements. Seld-contained elements may be read independently from the rest of then EXI body.";};DefaultValue{false;};};
+  EXIOptionEntry{EXIOption{schemaId;};Description{"Identify the schema information, if anym used to encode the body.";};DefaultValue{};};
+  EXIOptionEntry{EXIOption{datatypeRepresentationMap;};Description{"Specify alternate datatype representations for typed values in the EXI body.";};DefaultValue{};};
+  EXIOptionEntry{EXIOption{blockSize;};Description{"Specifies the number of Attribute (AT) and Character (CH) values for each block used for EXI compression";};DefaultValue{};};
+  EXIOptionEntry{EXIOption{valueMaxLength;};Description{"Specifies the maximum string length of value content items to be considered for addition to the string table.";};DefaultValue{1000000;};};
+  EXIOptionEntry{EXIOption{valuePartitionCapacity;};Description{"Specifies the total vapacity of value partitions in a string table";};DefaultValue{};};
+  EXIOptionEntry{EXIOption{user_defined_meta_data;};Description{"User defined options may be added";};DefaultValue{};};
+};
 
 docinfo_se(
 "
-Throughout the following examples the variable *CompliantWithFinalEXIRecommendation* will be set to 0.
+
+Most of the options are straightforward and act as boolean values to enable or disable a feature.
+They are represented using optional XML elements which are also encoded using EXI. For more information
+on the XML schema that is used to encode these options, the reader is referred to XML Schema for EXI Header.
+
+The preserve options shown in the table above are really a family of options that control which XML items
+are preserved and which XML items are ignored. These are collectively known as fidelity options.
+These options can be used to eliminate the associated overhead of communicating unused XML items.
+Certain XML items such as processing instructions or DTDs may never occur (like in SOAP) or are 
+simply unimportant to the use case or application domain. Fidelity options are used to manage filters
+for certain XML items as shown in the following table.
+");
+
+label __2__4_table title = "Table 2-4.  Fidelity Options";
+FidelityOptions{
+ kind EXIOptionPreserve;
+ EXIOptionPreserve comments, pis, dtd, prefixes, lexicalValues;
+ FidelityOption{
+  Name{comments;};
+  Effect{"Productions of CM (Comments) events are preserves in grammars.";};
+ };
+ FidelityOption{
+  Name{pis;};
+  Effect{"Productions od PI (Processing instructions) events are preserved in grammars.";};
+ };
+ FidelityOption{
+  Name{dtd;};
+  Effect{"Productions of DOCTYPE and ER (Entity Reference) events are preserved.";};
+ };
+ FidelityOption{
+  Name{prefixes;};
+  Effect{"NS(Namespace Declaration) events and namespace prefixes are preserved.";};
+ };
+ FidelityOption{
+  Name{lexicalValues;};
+  Effect{"Lexical form of element and attribute values is perserved.";};
+ };
+
+};
+
+docinfo_se(
+"
+
+Naturally, XML items that are discarded at encoding time (due to a particular setting of the fidelity options)
+cannot be reconstructed exactly at decoding time. The next section deals with the EXI Body and discusses
+in more detail the effects of enabling and disabling fidelity options.
+
+");
+
+
+label __2__1_EXIFormatVersion_Examples title = "2.1.1.1 [Not in original document] Appendix: Examples for Formatting of the expected EXI Version.";
+
+docinfo_se(
+"
+Throughout this section the variable *CompliantWithFinalEXIRecommendation* has value 0.
 
 ");
 val CompliantWithFinalEXIRecommendation = 0;
@@ -206,6 +289,8 @@ SupportedEXIVersion = 32.
 
 let SupportedEXIVersion = 32;
 ComputeEXIFormatVersion{};
+
+
 
 
 
