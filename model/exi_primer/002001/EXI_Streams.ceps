@@ -293,6 +293,100 @@ ComputeEXIFormatVersion{};
 
 
 
+label __2__1__2 title = "2.1.2 EXI Body";
+
+docinfo_se(
+"
+
+The body of an EXI document is composed of a sequence of EXI events. The notion of an event in this
+context is similar to that in then StAX and SAX APIs. XML items are encoded into one or more EXI ecents;
+for example, an attribute named foo can be encoded as AT(\"foo\") and an element named bar as the pair
+of events SE(\"bar\") and EE. EXI events may have assitional content associated with them. For example,
+the attribute event AT(\"foo\") may have an attribute value foo1 associated with it. The following table
+shows all the possible event types together with their associated information items distinguished
+by structure and content. In EXI terminology content denotes attribute ans character values while all
+other information items are considered as belonging to the structure category.
+
+");
+
+label __2__5_table title = "Table 2-5.  EXI Event types";
+
+kind GrammarTerminal;
+kind GrammarNonterminal;
+kind GrammarAnnotation;
+kind GrammarAction;
+
+kind XMLEntity;
+
+GrammarTerminal    
+    SD, 
+    ED, 
+    SE, 
+    EE, 
+    AT, 
+    CH, 
+    NS, 
+    CM, 
+    PI, 
+    DT, 
+    ER, 
+    SC;
+
+GrammarAction 
+ PopGrammar;
+
+XMLEntity
+    qname, 
+    uri;
+
+EXIEventTypes{
+ EXIEvent{
+  Type{};
+  GrammarNotation{};
+  InformationItems{
+    Structure{};
+    Content{};
+  };
+ };
+ 
+};
+
+table{
+    label __4__1_EXI_Events title="Table 4-1 EXI events";
+    th{ td{ "EXI Event Type"; };        td{ "Event Content(Content Items)"; };  td{ "Grammar Notation(Terminal Symbols)"; };    td{ "Information Item"; };};
+
+    tr{ td{"Start Document";};          td{};                                   td{SD;};                                        td{}; };
+    tr{ td{"End Document";};            td{};                                   td{ED;};                                        td{}; };
+    tr{ td{"Start Element";};           td{qname;};                             td{SE(qname);};                                 td{}; };
+    tr{ td{"Start Element";};           td{qname;};                             td{SE(_*_);};                                   td{}; };
+    tr{ td{"Start Element";};           td{qname;};                             td{SE(uri:_*_);};                               td{}; };
+    tr{ td{"End Element";};             td{};                                   td{EE;};                                        td{}; };
+    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(qname);};                                 td{}; };
+    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(_*_);};                                   td{}; };
+    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(uri:_*_);};                               td{}; };
+    tr{ td{"Characters";};              td{value;};                             td{CH;};                                        td{}; };
+    tr{ td{"Namespace Declaration";};   td{uri;prefix;local_element_ns;};       td{NS;};                                        td{}; };
+    tr{ td{"Comment";};                 td{text;};                              td{CM;};                                        td{}; };
+    tr{ td{"Process Instruction";};     td{name;text;};                         td{PI;};                                        td{}; };
+    tr{ td{"DOCTYPE";};                 td{name;public;system;text;};           td{DT;};                                        td{}; };
+    tr{ td{"Entity Reference";};        td{name;};                              td{ER;};                                        td{}; };
+    tr{ td{"Self Contained";};          td{};                                   td{SC;};                                        td{}; };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
