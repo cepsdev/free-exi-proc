@@ -341,37 +341,162 @@ XMLEntity
 
 EXIEventTypes{
  EXIEvent{
-  Type{};
-  GrammarNotation{};
+  Type{docinfo_se("Start Document");};
+  GrammarNotation{SD;};
   InformationItems{
     Structure{};
     Content{};
   };
  };
- 
+ EXIEvent{
+  Type{docinfo_se("End Document");};
+  GrammarNotation{ED;};
+  InformationItems{
+    Structure{};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Start Element");};
+  GrammarNotation{SE(qname);};
+  InformationItems{
+    Structure{optional(prefix);};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Start Element");};
+  GrammarNotation{SE(uri:_*_);};
+  InformationItems{
+    Structure{local_name;optional(prefix);};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Start Element");};
+  GrammarNotation{SE(_*_);};
+  InformationItems{
+    Structure{qname;optional(prefix);};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("End Element");};
+  GrammarNotation{EE;};
+  InformationItems{
+    Structure{};
+    Content{};
+  };
+ };
+ EXIEvent{
+  Type{docinfo_se("Attribute");};
+  GrammarNotation{AT(qname);};
+  InformationItems{
+    Structure{optional(prefix);};
+    Content{value;};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Attribute");};
+  GrammarNotation{AT(uri:_*_);};
+  InformationItems{
+    Structure{local_name;optional(prefix);};
+    Content{value;};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Attribute");};
+  GrammarNotation{AT(_*_);};
+  InformationItems{
+    Structure{qname;optional(prefix);};
+    Content{value;};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Namespace Declaration");};
+  GrammarNotation{NS;};
+  InformationItems{
+    Structure{uri;prefix;local_element_ns;};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Comment");};
+  GrammarNotation{CM;};
+  InformationItems{
+    Structure{text;};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Processing Instruction");};
+  GrammarNotation{PI;};
+  InformationItems{
+    Structure{name;text;};
+    Content{};
+  };
+ };
+ EXIEvent{
+  Type{docinfo_se("DOCTYPE");};
+  GrammarNotation{DT;};
+  InformationItems{
+    Structure{name;public;system;text;};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Entity Reference");};
+  GrammarNotation{ER;};
+  InformationItems{
+    Structure{name;};
+    Content{};
+  };
+ }; 
+ EXIEvent{
+  Type{docinfo_se("Self Contained");};
+  GrammarNotation{SC;};
+  InformationItems{
+    Structure{};
+    Content{};
+  };
+ };
 };
 
-table{
-    label __4__1_EXI_Events title="Table 4-1 EXI events";
-    th{ td{ "EXI Event Type"; };        td{ "Event Content(Content Items)"; };  td{ "Grammar Notation(Terminal Symbols)"; };    td{ "Information Item"; };};
+docinfo_se("
 
-    tr{ td{"Start Document";};          td{};                                   td{SD;};                                        td{}; };
-    tr{ td{"End Document";};            td{};                                   td{ED;};                                        td{}; };
-    tr{ td{"Start Element";};           td{qname;};                             td{SE(qname);};                                 td{}; };
-    tr{ td{"Start Element";};           td{qname;};                             td{SE(_*_);};                                   td{}; };
-    tr{ td{"Start Element";};           td{qname;};                             td{SE(uri:_*_);};                               td{}; };
-    tr{ td{"End Element";};             td{};                                   td{EE;};                                        td{}; };
-    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(qname);};                                 td{}; };
-    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(_*_);};                                   td{}; };
-    tr{ td{"Attribute";};               td{qname;value;};                       td{AT(uri:_*_);};                               td{}; };
-    tr{ td{"Characters";};              td{value;};                             td{CH;};                                        td{}; };
-    tr{ td{"Namespace Declaration";};   td{uri;prefix;local_element_ns;};       td{NS;};                                        td{}; };
-    tr{ td{"Comment";};                 td{text;};                              td{CM;};                                        td{}; };
-    tr{ td{"Process Instruction";};     td{name;text;};                         td{PI;};                                        td{}; };
-    tr{ td{"DOCTYPE";};                 td{name;public;system;text;};           td{DT;};                                        td{}; };
-    tr{ td{"Entity Reference";};        td{name;};                              td{ER;};                                        td{}; };
-    tr{ td{"Self Contained";};          td{};                                   td{SC;};                                        td{}; };
-};
+For named XML items, such as elements and attributes, there are three types of events: SE(qname),SE(uri:_*_) and SE(_*_)
+as well as AT(qname), AT(uri:_*_) and AT(_*_). These events differ in their associated structure: when SE(qname) or
+AT(qname) are used, the actual qname of the XML item is *not* encoded as part of the event whilt SE(uri:_*_) and
+AT(uri:_*_) events do not encode the uri. The decision to use one type og event over the other will be explained
+later after introducing the notion of EXI grammars. Additionally, Fidelity Options may allow the preservation of
+namespace prefixes.
+
+The fidelity options introduced in section 2.1.1 EXI Header may be used to prune EXI events such as Namespace Declarations (NS),
+Comment (CM), Processing Instructions (PI), DOCTYPE (DT) or Entity Reference (ER). Grammar pruning simplifies the
+encoding and decoding process and also improves compactness by filtering out unused event types.
+
+Consider a simple XML document form a notebook application:
+
+");
+
+
+
+docinfo_se("
+
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<notebook date=\"2007-09-12\">
+ <note category=\"EXI\" date=\"2007-07-23\">
+  <subject>EXI</subject>
+  <body>Do not forget it!</body>
+ </note>
+ <note category=\"EXI\" date=\"2007-09-12\">
+  <subject>Shopping List</subject>
+  <body>milk, honey</body>
+ </note>
+</notebook>
+
+");
+
 
 
 
