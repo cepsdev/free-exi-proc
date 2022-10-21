@@ -497,6 +497,296 @@ docinfo_se("
 
 ");
 
+docinfo_se("
+The sequence of EXI events corresponding to the body of this XML document is shown below.
+");
+
+
+
+EXIBodyStream{
+            SD;
+            SE("notebook");
+            AT(date = "2007-09-12");
+            SE("note");
+            AT(categpory = "EXI");
+            AT(date = "2007-07-23");
+            SE("subject");
+            CH("EXI");
+            EE/*("subject")*/;
+            SE("body");
+            CH("Do not forget it!");
+            EE/*("body")*/;
+            EE/*("note")*/;
+            SE("note");
+            AT(date = "2007-09-12");
+            SE("subject");
+            CH("Shopping List");
+            EE/*("subject")*/;
+            SE("body");
+            CH("milk,honey");
+            EE/*("body")*/;
+            EE/*("note")*/;
+            EE/*("notebook")*/;
+            ED;
+};
+
+
+
+docinfo_se("
+
+This sequence of EXI events can be easily mapped to the structure of the XML document
+shown above. Every document begins with a Start Document (SD) and ends with an End Document
+(ED). The order in which attributes are encoded may be different in schema-less and
+schema-informed EXI streams, as is the exact content associated with each event.
+
+The actual number of bits used to represent each type of eventm excluding its content,
+differs depending on the context. The more event types can occur in a certain context,
+the larger the number of bits required to represent an event in that context. What
+constitutes a context in this case is more formally defindes by an EXI grammar production
+in the next section.
+
+");
+
+label __2__1__3 title = "2.1.3 EXI Grammars";
+
+
+docinfo_se("
+
+EXI is a knowledge based encoding that uses a set of grammars to determine which
+events are m ost likely to occur at any given point in an EXI stream and encodes the
+most likely alternaroves in fewer bits. It does this by mapping the stream of events
+to a lower entropy set of representative values and encoding those values using a
+set of simple variable length codes or an EXI compression algorithm.
+
+EXI grammars are regular grammars in which productions are associated with event codes.
+An EXI encoder, driven by an XML event stream, matches events to grammar productions
+and uses their associated event codes to represent an XML document or XML fragment.
+Since EXI grammars are regular grammars, the sequence of event codes written by an
+encoder corresponds to a path in the finite automaton that accepts the grammar. In reality,
+given that XML is nit a regular language, a single grammar cannot be used to represent
+an entire XML event stream. Instead, an EXI encoder uses a stack of grammars, one
+for each element content model (just like an XML Schema validator might do).
+
+An event code is represented by a sequence of one to three parts, where each part
+is a non-negative integer. Event codes in an EXI grammar are assigned to productions
+in such a way that shorter event codes are used to represent productions that are less 
+likely to occur. EXI grammars are designed in a way that the average number of bits needed
+to represent each production is less than that for a grammar in which more likely
+and less likely productions are not distinguished. The following tables illustrate
+this principle via an example.
+
+");
+
+
+
+EventCodeAssignmentTableLeft{
+docinfo_se("Naive Event Code Assignment");
+
+ EventCodeAssignment{
+   AT(date);
+   Indicator {0;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   AT(category);
+   Indicator {1;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   EE;
+   Indicator {2;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   AT(_*_);
+   Indicator {3;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   NS;
+   Indicator {4;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   SE(_*_);
+   Indicator {5;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   CH;
+   Indicator {6;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   CM;
+   Indicator {7;};
+   bits{4;};
+ };
+ EventCodeAssignment{
+   PI;
+   Indicator {8;};
+   bits{4;};
+ };
+ distinct_values{9;};
+};
+
+EventCodeAssignmentTableRight{
+docinfo_se("EXI Event Code Assignment");
+
+  GrammarAnnotation EventCode;
+  EventCodeAssignment{
+    AT(date);
+    EventCode(0);
+    bits{2;};    
+  };
+  EventCodeAssignment{
+    AT(category);
+    EventCode(1);
+    bits{2;};    
+  };
+  EventCodeAssignment{
+    EE;
+    EventCode(2,0);
+    bits{2+3;};    
+  };
+  EventCodeAssignment{
+    AT(_*_);
+    EventCode(2,1);
+    bits{2+3;};    
+  };
+  EventCodeAssignment{
+    NS;
+    EventCode(2,2);
+    bits{2+3;};    
+  };
+  ventCodeAssignment{
+    SE(_*_);
+    EventCode(2,3);
+    bits{2+3;};    
+  }; 
+  EventCodeAssignment{
+    CH;
+    EventCode(2,4);
+    bits{2+3;};    
+  };
+  EventCodeAssignment{
+    CM;
+    EventCode(2,5,0);
+    bits{2+3+1;};    
+  };
+  EventCodeAssignment{
+    CM;
+    EventCode(2,5,1);
+    bits{2+3+1;};    
+  };
+  distinct_values{values{3;};values{6;};values{2;};};
+};
+
+docinfo_se("
+
+In the first table, where productions are not separated according to their probability,
+a 4-bit code is needed to represent each entry. Tn the second table, on the other hand,
+code lengths vary from 2 bits to 6 bits since productions are grouped based on their
+likelihood to occur. Assuming the content model for the element being encoded corresponds
+to the sequence AT(category) AT(date)(i.e., the element declares two attributes) then
+the encoding of all the event codes will be 4 bits shorter using the second table.
+
+EXI grammars take advantage of a priori knowledge of the kind of data being encoded,
+namely XML documents and XML fragments. In particular, EXI grammars can take advantage
+of the dact that, on any given grammar, certain XML items are more popular than others.
+For example, by simple inspection of real-world documents, it is easy to verify that
+attributes occur more frequently than processing instructions and should therefore
+receive shorter event codes.
+
+Further improvements in grammar design are possible if schema information is available.
+In this case, we can not only take advantage of generic XML knowledge but also of knowledge
+that is specific to the type of documents being encoded. For example, as shown on the
+tables above, we can add specific productions such as AT(category) and AT(date) with
+shorter event codes than AT(_*_).
+
+The following two sections describe the differences between the built-in grammars
+ans the schem-informed grammars. Note that an EXI encoder may only have parial schema
+information on which case it will use a combination of built-in ans schema-informed
+grammars during encoding.
+");
+
+
+label __2__1__3_1 title = "2.1.3.1 Built-in Grammar";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
