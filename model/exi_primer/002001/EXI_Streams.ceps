@@ -713,6 +713,31 @@ grammars during encoding.
 
 label __2__1__3_1 title = "2.1.3.1 Built-in Grammar";
 
+docinfo_se("
+
+EXI uses a set of built-in grammars to encode XML fragments when no schema information
+is availble. There are built-in grammars to encode documents, fragments, and elements.
+Document grammars and fragment grammars describe the top-level structure, while element
+grammars describe the structure of every element. Fragmented grammars are more lenient
+than document grammars; for example, they allow multiple top-level elements to be encoded
+as siblings. For more information on these grammars, the reader is referred to 
+Built-in XML Grammars. 
+
+The EXI format describes a mechanism by which built-in grammars are dynamically 
+extended using information from the actual instance being encoded. Stated differently,
+the EXI format describes a learning mechanism to further improve efficiency when no schema
+information is available statically. Newly learned productions are assigned short event
+codes, improving compactness for every subsequent use of those productions. In addition,
+by assing new productions to the grammar, certain data associated with an event only
+needs to be encoded once. For example, if an element named notebook is matched by
+SE(_*_) and subsequently matched by SE(notebook), the actual localName \"notebook\" is 
+only encoded once as part of the SE(_*_) event.
+
+As pointed out in the previous section, EXI grammars are always regular and can, therefor,
+be accepted by finite automata (FA). To provide a more operational view of an EXI processor,
+we will 
+");
+
 
 
 

@@ -99,7 +99,7 @@ exi_processor_add_generic_grammar(
 val encode_result =     exi_processor_encode(
         events{
             SD;
-            SE("notebook");
+            SE("notebook", uri("jkjk"));
             AT(date = "2007-09-12");
             SE("note");
             AT(categpory = "EXI");

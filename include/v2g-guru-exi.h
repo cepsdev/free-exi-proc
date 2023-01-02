@@ -23,10 +23,25 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <map>
 
 namespace v2g_guru_exi{
     using namespace ceps::ast;
     using namespace std;
+
+    class Stringtable{
+        public:
+        using rep_t = node_t;
+        Stringtable(){}
+        Stringtable(rep_t rep);
+        optional<size_t> lookup(string const& value);
+        private:
+        map<string,Stringtable*> sub_tables;
+        rep_t rep;
+        vector<string> data;
+        map<string,size_t> value2id;
+    };
+
     class Grammar{
             string global_id_{};
             bool modifiable_{true};
@@ -150,6 +165,10 @@ namespace v2g_guru_exi{
             Grammar::Terminal as_terminal() const;
             bool is_SD();
             event_rep_t get_rep() { return ev_rep;}
+            std::optional<std::string> get_local_name() const;
+            std::optional<std::string> get_uri() const;
+            std::optional<std::string> get_value() const;
+            std::optional<std::string> get_prefix() const;
         private:
             event_rep_t ev_rep{};
             bool valid{};
@@ -190,6 +209,9 @@ namespace v2g_guru_exi{
         bool match(Grammar::Terminal);
         //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
         Emitter* emitter{};
+        Stringtable uri;
+        Stringtable global_values;        
+
         public:
             struct parser_exception{std::string msg;};
             Processor() = default;

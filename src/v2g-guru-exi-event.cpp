@@ -22,6 +22,22 @@
 namespace v2g_guru_exi{
     Event::Event(event_rep_t event_rep) : ev_rep{event_rep}, valid{true} {}
     bool Event::is_SD(){
-        return is<Ast_node_kind::symbol>(ev_rep) && kind(as_symbol_ref(ev_rep)) == "GrammarTerminal" && name(as_symbol_ref(ev_rep)) == "SD" ;
+        return is<Ast_node_kind::symbol>(ev_rep) && 
+               kind(as_symbol_ref(ev_rep)) == "GrammarTerminal" && 
+               name(as_symbol_ref(ev_rep)) == "SD" ;
     }
+    std::optional<std::string> Event::get_local_name() const
+    {
+        return {};
+    }
+    std::optional<std::string> Event::get_uri() const{
+        return string{};
+    }
+    std::optional<std::string> Event::get_value() const{
+        return {};
+    }
+    std::optional<std::string> Event::get_prefix() const{
+        return {};
+    }
+
 }

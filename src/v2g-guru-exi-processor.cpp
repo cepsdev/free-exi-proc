@@ -88,9 +88,18 @@ namespace v2g_guru_exi{
             
             return ss.str();
         };
+        
+        auto handle_content = [&](Event const & ev) -> void{
+            auto uri = ev.get_uri();
+            if (uri){
+                auto const & v = *uri;
+                
+            }
+        };
 
         prologue();
         emit_eventcode(g, prod);
+        handle_content(event_stream.peek());
 
         for(auto rhs_elem : prod){             
             if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";

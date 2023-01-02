@@ -1,0 +1,243 @@
+label __2__2__1 title = "2.2.1 Built-in EXI Datatype Representations";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+
+EXI uses built-in datatype representations to represent so called content value items in an
+efficient manner. In other wordes, all attribute and character values are encoded according
+to their EXI datatype representation associated with their XML Schema datatype. Type Information
+can be retrieved from availble schema information. The following table lists the mapping
+between [XML Schema Datatypes] and teh Built-in Datatype Representations supported in EXI.
+
+Binary base64Binary, hexBinary
+Boolean boolean
+Date-Time dateTime, time, date, gYearMonth, gYear, gMonthDay, gDay, gMonth
+Decimal decimal
+Float float, double 
+n-bit Unsigned Integer integer with bounded range 4096 or smaller as determindes by the
+values minInclusive, minExclusive,maxInclusive and maxExclusive facets.
+
+Unsigned Integer noNegativeInteger or integer with either minInclusive facet specified
+with a value to or greater than 0, or minExclusive facet specified with a value equal to or
+greater than -1.
+
+Integer any other integer that is not already covered by n-bit Unsigned Integer or Unsigned
+Integer. 
+
+String string, anySimpleType and all types directly by union.
+
+List All types directly derived by list, including NMTOKENS,IDREFS and ENTITIES.
+
+QName xsi:type attribute values when Preserve.lexicalValues option value is false
+
+
+Enumerated values are efficiently encoded as n-bit Unsigned Integers where n = ceil(log_2 m)
+and m is the number of items in the enumerated type. The ordinal position (starting with 
+position zero) of each value item in the enumeration in schem-order is used as identifier.
+Exceptions are for schema union datatypes, list datatypes, as well as QName or Notation 
+and types derived therefrom by restriction. The values of such types are processed by their
+respective built-in EXI datatype representations instead of being represented as enumerations.
+
+The interested reader is referred to the Efficient XML Interchange (EXI) Format 1.0 document
+which describes in details the encoding rules for representing built-in EXI datatypes. When
+the preserve.lexicalValues option is true, all values are represented as Strings. Some
+values that would have otherwise been designated to certain built-in EXI datatype representations
+are represented as Strings with restricted charcter sets. In the absence of external type
+information (no available schema information) all attributesand character values are typed as
+Strings.
+"
+);
+
+
+
+label __2__2__2 title = "2.2.2 String Table";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+
+String tables are used in memory-sensitive areas allowing a compact representation of
+repeated string values are represented using an associated compact identifier rather than encoding
+the string literally again. When a string value is found in the string table (i.e. a string table
+hit) the value is encoded using a compact identifier. Only if a string value is not found in
+the associated table (i.e. a string table miss) is the string encoded as String and a new
+compact identifier is introduced.
+
+++EXI puts the following four information items into string tables and partitions the string tables
+based on the context in which they occur.
+
+- uri
+- prefix
+- local-name
+- value
+
+The tables below shows EXI information items used in section 2.1.2 EXI Body and its relation to the
+string table partitions (e.g. a prefix information item is asseigend to the Prefix partition while
+value information items are assigned to the value partition)
+
+Information item                Used in EXI Event           String Table Partition
+
+
+local-name                      SE(uri:*) AT(uri:*)         LocalName
+prefix                          NS, SE, AT                  Prefix
+qname                           SE(*),AT(*)                 URI (uri portion of qname)
+                                                            LocalName (local-name portion of qname)
+uri                             NS                          URI
+value                           CH, AT                      Value
+
+
+Each EXI string table partition is optimized for more frequent use of either compact identifiers
+or string literals depending on the purpose of the partition. The URI and the Prefix partitions
+are optimized for frequent unse of compact identifiers while the LocalName and the Value partitions
+are optimized for frequent use of string literals.
+
+In the subsequent paragraphs, more details about the different partitions are given by making
+use of the previously introduced Notebook example. The Notebook XML Document example is repeated
+here to simplify algorithm illustrations.
+
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<notebook date=\"2007-09-12\">
+ <note category=\"EXI\" date=\"2007-07-23\">
+  <subject>EXI</subject>
+  <body>Do not forget it!</body>
+ </note>
+ <note date=\"2007-09-12\">
+  <subject>Shopping List</subject>
+  <body>milk,honey</body>
+ </note>
+</notebook>
+
+
+The uri portion of qname content items and uri content items are assigned to the URI partition.
+The partition is intially pre-populated with three likely entries (see figure below). When a schema
+is provided, there is an additional entry that is a appended and the URI partition is also pre-populated
+with teh name of each target namespace declared in the schema, plus namespace URIs allowed in wildcard
+terms and attribute wildcards.
+");
+
+StringTable{
+ Partitions{
+    URI{
+     entry{value{"";};idx{0;};
+      Prefixes{
+        entry{value{"";};idx{0;};};
+      };
+      LocalNames{
+      };
+     };
+     entry{value{"http://www.w3c.org/XML/1998/namespace";};idx{1;};
+      Prefixes{
+        entry{value{"xml";};idx{0;};};
+      };
+      LocalNames{
+        //entry{value{"";};idx{0;};};
+      };
+     };
+     entry{value{"http://www.w3c.org/XML/2001/XMLSchema-instance";};idx{2;};
+      Prefixes{
+        entry{value{"xsi";};idx{0;};};
+      };
+      LocalNames{
+        //entry{value{"";};idx{0;};};
+      };
+     };
+     //entry{value{"http://www.w3c.org/XML/2001/XMLSchema";};idx{3;};};
+    };
+    GlobalValues{};
+ };
+};
+
+docinfo_se(
+
+"
+The local-name portion of qname content items and local-name content items are assigned to LocalName
+partitions. Respectively, prefix content items are assigned to Prefix partitions. Both partition types
+are initially pre-populated with likely entries (see figure below). These types of partitions are further
+differentiated according to the associated namespace URI. In our notebook example no prefixes are used
+and the default namespace URI (\"\" [empty-string]) is used. When a schea is provided, LocalName
+partitions are also pre-populated with the local-name of each  attribute, element and type declared
+in the schema, sorted lexicographically. Further local-name entries are appended in the order they appear
+in the actual XML instance (no additional sorting is applied). The figure above shows in highlighted
+form uri and local-name items used throughout the entire example document. For instance, the notebook
+sample assigns 7 local-name entries, such as notebook and date , to the empty URI namespace. Whenever
+local-name and/or uri information items occur again, the compact identifier is used instead.
+
+The last string table partition type is the Value partiotion. A value partition is intially empty and
+grows while processing an XML instance. The total number of value items or the maximum string lenght
+of value content items can be restricted to save memory on small devices (see valuePartitionCapacity and
+ valueMaxLength EXI Options). Attribute and Character content-values of type String are assigned to this partition.
+
+");
+
+docinfo_se(
+
+"
+The figure above illustrates that value vontent items can be indexed form two different partitions,
+a global partition and a local partition. When a string value is neither found in the global nor In
+the local value section its string literal is encoded as String and the string value is added to both,
+the associated local and the global string index. 
+
+In our example we assume that all value items are represented as Strin, as it is the case in schema-less
+grammars or if the fidelity option Preserve.lexicalValue is true. When a string value is found
+in the vlocal value section for a given element or attribute, EXI can use the corresponding compact
+identifier to encode the reappearance more efficiently. The value '2007-09-12' appears twice in the
+date context. The second occurence results in a local value hit and is respectively encoded as a 1 bit compact
+identifier.
+
+On the other side, if a string value is not found in the local section, but is found in the global
+section, the corresponding global compact identifier is used. The value 'EXI' appears two times in
+the notebook example, respecitively in then context of category and subject. Hence, the second appearance
+results in a global vlaue hit encoded as a 3 bit compact identifier since there are 6 entries in the 
+global section ( 3 = ceil(log_2 6)). Due to the different table sizes, a global compact identifier is
+generally less compact than a local compact identifier. Still, global value hits avoid the repeated
+encoding of string literals.
+
+The number of bits needed to encode a compact identifier depends on the actual number of entries of
+the associated table at that time. Since all tables are growing while parsing an XML instance, the
+number of bits is not fixed. The figure above illustrates the situation after coding the entire XML instance.
+This growth effect applies to all string table partitions and makes the format very compact for small documents.
+
+
+");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
