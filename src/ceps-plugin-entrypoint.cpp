@@ -352,13 +352,13 @@ void v2g_guru_exi::ceps_emitter::emit(Grammar::EventCode ev) {
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   v2g_guru_exi::plugin_master = smc->get_plugin_interface();
-  v2g_guru_exi::plugin_master->reg_ceps_plugin(
+  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
     "exi_processor_add_start_grammar", 
     v2g_guru_exi::plugin_entrypoint_add_start_grammar);
-  v2g_guru_exi::plugin_master->reg_ceps_plugin(
+  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
     "exi_processor_encode", 
     v2g_guru_exi::plugin_entrypoint_encode);
-  v2g_guru_exi::plugin_master->reg_ceps_plugin(
+  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
     "exi_processor_add_generic_grammar", 
     v2g_guru_exi::plugin_entrypoint_add_generic_grammar);
   v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(

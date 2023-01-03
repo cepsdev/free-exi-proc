@@ -29,19 +29,6 @@ namespace v2g_guru_exi{
     using namespace ceps::ast;
     using namespace std;
 
-    class Stringtable{
-        public:
-        using rep_t = node_t;
-        Stringtable(){}
-        Stringtable(rep_t rep);
-        optional<size_t> lookup(string const& value);
-        private:
-        map<string,Stringtable*> sub_tables;
-        rep_t rep;
-        vector<string> data;
-        map<string,size_t> value2id;
-    };
-
     class Grammar{
             string global_id_{};
             bool modifiable_{true};
@@ -199,6 +186,9 @@ namespace v2g_guru_exi{
         void emit(Grammar::EventCode) override;
     };
 
+
+
+
     class Processor{
         EventStream event_stream;
         stack<Grammar> grammars;
@@ -209,8 +199,6 @@ namespace v2g_guru_exi{
         bool match(Grammar::Terminal);
         //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
         Emitter* emitter{};
-        Stringtable uri;
-        Stringtable global_values;        
 
         public:
             struct parser_exception{std::string msg;};

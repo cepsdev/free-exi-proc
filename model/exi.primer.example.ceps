@@ -96,6 +96,7 @@ exi_processor_add_generic_grammar(
     }
 );
 
+
 val encode_result =     exi_processor_encode(
         events{
             SD;
@@ -124,10 +125,12 @@ val encode_result =     exi_processor_encode(
             ED;
         });   
 
-print("\nencode_result = ",encode_result, "\n\n\n");
-print("Number of exi-events generated (should be 24): ",encode_result.encoding.content().size(),"\n" ); 
+//print("\nencode_result = ",encode_result, "\n\n\n");
+//print("Number of exi-events generated (should be 24): ",encode_result.encoding.content().size(),"\n" );
+//encode_result.encoding.content().size()
+encode_result;
 
-print(expected_encoding{
+expected_encoding{
         0;
         0;
         0,1;
@@ -152,4 +155,4 @@ print(expected_encoding{
         1;
         1;
         0;
-},"\n");
+};
