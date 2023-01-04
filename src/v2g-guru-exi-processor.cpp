@@ -39,7 +39,9 @@ namespace v2g_guru_exi{
          auto tok = event_stream.get_event().as_terminal();
          if (debug_output)  
             cout << " match( " << terminal << "," << tok <<")="<< ( tok == terminal)<< "\n";
-         return tok == terminal;                 
+         bool eq = tok == terminal;
+         if (eq) last_match = tok;
+         return eq;                 
     }
 
     void Processor::emit_eventcode(Grammar& g, Grammar::Production prod){

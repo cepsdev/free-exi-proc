@@ -186,47 +186,8 @@ namespace v2g_guru_exi{
         void emit(Grammar::EventCode) override;
     };
 
+    // Terminals
 
-
-
-    class Processor{
-        EventStream event_stream;
-        stack<Grammar> grammars;
-        map<string,Grammar> global_grammars;
-        map<string,Grammar> generic_grammars;
-        bool debug_output = false;
-        bool debug_output_emit_eventcode = true;        
-        bool match(Grammar::Terminal);
-        //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
-        Emitter* emitter{};
-
-        public:
-            struct parser_exception{std::string msg;};
-            Processor() = default;
-            void set_start_grammar(Grammar g);
-            void set_event_stream(EventStream ev_stream);
-            void encode();
-            void parse(Grammar g);
-            bool parse(Grammar g, Grammar::Production prod);
-            void insert(GenericGrammar);
-            void emit_eventcode(Grammar& g, Grammar::Production prod);
-            void set_emitter(Emitter* an_emitter) {emitter = an_emitter;}
-    };
-
- 
-    class Grammar::NonTerminal{       
-        public:
-            NonTerminal() = default;
-            NonTerminal(grammar_elem_t rep) : rep{rep} {}
-            NonTerminal(string name);
-            string name() const;
-            void set_name(string);
-            grammar_elem_t get_rep() const {return rep;}
-        private:
-            grammar_elem_t rep{};
- 
-    };
-    
     class Grammar::Terminal{                
         public:
             Terminal() = default;
@@ -243,7 +204,51 @@ namespace v2g_guru_exi{
             void set_name(string);
         private:
             grammar_elem_t rep{};
+
     };
+
+    // EXI Processor
+
+    class Processor{
+        EventStream event_stream;
+        stack<Grammar> grammars;
+        map<string,Grammar> global_grammars;
+        map<string,Grammar> generic_grammars;
+        bool debug_output = false;
+        bool debug_output_emit_eventcode = true;        
+        bool match(Grammar::Terminal);
+        //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
+        Emitter* emitter{};
+        Grammar::Terminal last_match = {};
+
+        public:
+            struct parser_exception{std::string msg;};
+            Processor() = default;
+            void set_start_grammar(Grammar g);
+            void set_event_stream(EventStream ev_stream);
+            void encode();
+            void parse(Grammar g);
+            bool parse(Grammar g, Grammar::Production prod);
+            void insert(GenericGrammar);
+            void emit_eventcode(Grammar& g, Grammar::Production prod);
+            void set_emitter(Emitter* an_emitter) {emitter = an_emitter;}
+            Grammar::Terminal get_last_match() const { return last_match;}
+    };
+
+ 
+    class Grammar::NonTerminal{       
+        public:
+            NonTerminal() = default;
+            NonTerminal(grammar_elem_t rep) : rep{rep} {}
+            NonTerminal(string name);
+            string name() const;
+            void set_name(string);
+            grammar_elem_t get_rep() const {return rep;}
+        private:
+            grammar_elem_t rep{};
+ 
+    };
+    
     
     class Grammar::Action{
             grammar_elem_t rep{};
