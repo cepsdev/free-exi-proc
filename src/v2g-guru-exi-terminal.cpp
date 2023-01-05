@@ -121,4 +121,68 @@ string Grammar::Terminal::name() const {
     }
     return ss.str();
 }
+
+using namespace std;
+optional<Grammar::Terminal::content> Grammar::Terminal::get_content() const{
+    if (!valid()) return {};
+    if (!get_rep()) return {};
+    auto nm = name().substr(0,2);
+    if (nm == "EE" || nm == "SC" || nm == "SD" || nm == "ED" ) return {};
+    Grammar::Terminal::content r{};
+
+    if (nm == "SE" || nm == "AT" || nm == "NS"){
+		string func_id;string fkind;string sym_name;
+	    node_t ftarget;vector<node_t> args;         
+
+        if (is_a_funccall(	get_rep(),func_id,fkind,sym_name,ftarget,args)){
+            if (args.size()){
+                if (is<Ast_node_kind::string_literal>(args[0])) 
+                    r.local_name = value(as_string_ref(args[0]));
+                if (is<Ast_node_kind::binary_operator>(args[0])){
+                    auto& op = as_binop_ref(args[0]);
+                    if(is<Ast_node_kind::identifier>(op.left())) 
+                        r.local_name = ceps::ast::name(as_id_ref(op.left()));
+                    if(is<Ast_node_kind::string_literal>(op.right()))
+                        r.value = value(as_string_ref(op.right())); 
+                }
+                                        
+                for(auto i = 1; i != args.size(); ++i){
+		            string func_id;string fkind;string sym_name;
+	                node_t ftarget;vector<node_t> args2;         
+
+                    if (is_a_funccall(	args[i],func_id,fkind,sym_name,ftarget,args2)){
+                        if(sym_name == "uri" && args2.size()){
+                            r.uri = 
+                             is<Ast_node_kind::string_literal>(args2[0]) ? value(as_string_ref(args2[0])): "";
+                        } else if(sym_name == "prefix" && args2.size()){
+                            r.prefix = 
+                             is<Ast_node_kind::string_literal>(args2[0]) ? value(as_string_ref(args2[0])): "";
+                        }
+                    }
+                }
+            }
+        }
+    } else if (nm == "CH"){
+		string func_id;string fkind;string sym_name;
+	    node_t ftarget;vector<node_t> args;
+        if (is_a_funccall(	get_rep(),func_id,fkind,sym_name,ftarget,args)){
+            if (args.size()){
+                if (is<Ast_node_kind::string_literal>(args[0])) 
+                    r.value = value(as_string_ref(args[0]));
+            }
+        }
+    }
+    return r;
+} 
+
+
+
 }
+
+
+
+
+
+
+
+

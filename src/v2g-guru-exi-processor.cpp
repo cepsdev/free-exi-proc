@@ -95,13 +95,30 @@ namespace v2g_guru_exi{
             auto uri = ev.get_uri();
             if (uri){
                 auto const & v = *uri;
+
                 
             }
         };
 
         prologue();
-        if (get_last_match().valid()) 
-         std::cout <<*get_last_match().get_rep() << "\n"; else  std::cout << "???\n";
+        if (debug_output){
+            std::cout << ">>----\n";
+            auto tok = event_stream.peek().as_terminal();
+            if (tok.valid()){ 
+                std::cout <<*tok.get_rep() << "\n";
+                auto const & ev{tok};
+                auto const & content = ev.get_content();
+                if(content){
+                    std::cout << " has content\n";
+                    if ( content->uri) std::cout << " uri: '"<<*(content->uri) << "'\n";
+                    if ( content->local_name) std::cout << " local-name: '"<<*(content->local_name) << "'\n";
+                    if ( content->value) std::cout << " value: '"<<*(content->value) << "'\n";
+                } else std::cout << " has NO content\n";;
+            }
+            else std::cout << "???\n";
+            std::cout << "<<----\n";
+        }
+
         emit_eventcode(g, prod);
         handle_content(event_stream.peek());
 

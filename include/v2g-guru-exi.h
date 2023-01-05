@@ -190,6 +190,12 @@ namespace v2g_guru_exi{
 
     class Grammar::Terminal{                
         public:
+            struct content{
+                optional<string> uri;
+                optional<string> prefix;
+                optional<string> local_name;
+                optional<string> value;
+            };
             Terminal() = default;
             Terminal(grammar_elem_t rep_arg) {
                 if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) rep = rep_arg;
@@ -202,6 +208,7 @@ namespace v2g_guru_exi{
             string as_str() const;
             string name() const;
             void set_name(string);
+            optional<content> get_content() const;
         private:
             grammar_elem_t rep{};
 
