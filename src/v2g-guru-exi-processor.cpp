@@ -100,6 +100,8 @@ namespace v2g_guru_exi{
         };
 
         prologue();
+        if (get_last_match().valid()) 
+         std::cout <<*get_last_match().get_rep() << "\n"; else  std::cout << "???\n";
         emit_eventcode(g, prod);
         handle_content(event_stream.peek());
 

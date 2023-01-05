@@ -100,21 +100,21 @@ exi_processor_add_generic_grammar(
 val encode_result =     exi_processor_encode(
         events{
             SD;
-            SE("notebook", uri("jkjk"));
-            AT(date = "2007-09-12");
-            SE("note");
-            AT(categpory = "EXI");
-            AT(date = "2007-07-23");
-            SE("subject");
+            SE("notebook", uri(""));
+            AT(date = "2007-09-12", uri(""));
+            SE("note", uri(""));
+            AT(categpory = "EXI", uri(""));
+            AT(date = "2007-07-23", uri(""));
+            SE("subject", uri(""));
             CH("EXI");
             EE/*("subject")*/;
-            SE("body");
+            SE("body", uri(""));
             CH("Do not forget it!");
             EE/*("body")*/;
             EE/*("note")*/;
-            SE("note");
+            SE("note", uri(""));
             AT(date = "2007-09-12");
-            SE("subject");
+            SE("subject", uri(""));
             CH("Shopping List");
             EE/*("subject")*/;
             SE("body");
