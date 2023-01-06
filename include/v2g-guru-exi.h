@@ -177,6 +177,8 @@ namespace v2g_guru_exi{
     class Emitter{ 
         public:
         virtual void emit(Grammar::EventCode) = 0;
+        virtual void emit(string content, size_t length_icrement) = 0;
+        virtual void emit(uint32_t value, size_t bit_width) = 0;
     };
 
     class ceps_emitter: public Emitter {
@@ -184,6 +186,8 @@ namespace v2g_guru_exi{
         public:
         ceps_emitter(node_t encoding_result):encoding_result{encoding_result}{}
         void emit(Grammar::EventCode) override;
+        void emit(string content, size_t length_icrement) override;
+        void emit(uint32_t value, size_t bit_width) override;
     };
 
     // Terminals
@@ -214,6 +218,15 @@ namespace v2g_guru_exi{
 
     };
 
+    class StringTable{
+        map<string,size_t> v2idx;
+        size_t next_id{0};
+        public:
+        StringTable(size_t next_id): next_id{next_id} {}
+        optional<size_t> lookup(string s);  
+        size_t bitwidth() const;
+    };
+
     // EXI Processor
 
     class Processor{
@@ -227,10 +240,11 @@ namespace v2g_guru_exi{
         //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
         Emitter* emitter{};
         Grammar::Terminal last_match = {};
-
+        StringTable uris{1};
+      
         public:
             struct parser_exception{std::string msg;};
-            Processor() = default;
+            Processor();
             void set_start_grammar(Grammar g);
             void set_event_stream(EventStream ev_stream);
             void encode();

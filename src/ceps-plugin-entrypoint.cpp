@@ -347,7 +347,32 @@ void v2g_guru_exi::ceps_emitter::emit(Grammar::EventCode ev) {
             )
         );
 }
-
+void v2g_guru_exi::ceps_emitter::emit(string content, size_t length_icrement) {
+    if (!encoding_result) return;
+    children(as_struct_ref(encoding_result)).push_back(
+        new Func_call(
+            new Identifier("Content",nullptr,nullptr,nullptr),
+            new Call_parameters(
+                ceps::interpreter::mk_bin_op ( ',', 
+                ceps::ast::mk_string(content),
+                ceps::interpreter::mk_int_node(length_icrement + content.length()),"")
+            )        
+        )
+    );
+}
+void v2g_guru_exi::ceps_emitter::emit(uint32_t value, size_t bit_width) {
+    if (!encoding_result) return;
+    children(as_struct_ref(encoding_result)).push_back(
+        new Func_call(
+            new Identifier("Content",nullptr,nullptr,nullptr),
+            new Call_parameters(
+                ceps::interpreter::mk_bin_op ( ',', 
+                ceps::interpreter::mk_int_node(value),
+                ceps::interpreter::mk_int_node(bit_width),"")
+            )        
+        )
+    );
+}
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {

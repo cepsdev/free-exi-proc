@@ -21,6 +21,13 @@
 
 namespace v2g_guru_exi{
     
+    Processor::Processor(){
+        uris.lookup("");
+        uris.lookup("http://ww.w3.org/XML/1998/namespace");
+        uris.lookup("http://ww.w3.org/2001/XMLSchema-instance");
+        uris.lookup("http://ww.w3.org/2001/XMLSchema");
+    }
+
     void Processor::insert(GenericGrammar g){
         generic_grammars[g.pattern_to_str()] = g.get_grammar();
 
@@ -91,13 +98,15 @@ namespace v2g_guru_exi{
             return ss.str();
         };
         
-        auto handle_content = [&](Event const & ev) -> void{
-            auto uri = ev.get_uri();
-            if (uri){
-                auto const & v = *uri;
-
-                
-            }
+        auto handle_content = [&](Grammar::Terminal tok) -> void{
+                auto const & content = tok.get_content();
+                if(!content) return;
+                bool wildcard_match = true;
+                if (content->uri && wildcard_match) {
+                    //encode uri
+                    auto idx = uris.lookup( *(content->uri) );
+                    if (idx) emitter->emit(*idx,uris.bitwidth()); else emitter->emit(*(content->uri),1);
+                }
         };
 
         prologue();
@@ -118,9 +127,8 @@ namespace v2g_guru_exi{
             else std::cout << "???\n";
             std::cout << "<<----\n";
         }
-
+        handle_content(event_stream.peek().as_terminal());
         emit_eventcode(g, prod);
-        handle_content(event_stream.peek());
 
         for(auto rhs_elem : prod){             
             if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";

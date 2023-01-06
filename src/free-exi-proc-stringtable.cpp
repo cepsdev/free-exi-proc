@@ -19,4 +19,21 @@
 #include "v2g-guru-exi.h"
 
 namespace v2g_guru_exi{
+    optional<size_t> StringTable::lookup(string s){
+        auto it = v2idx.find(s);
+        if (it == v2idx.end()){
+            v2idx[s] = next_id++;
+            return {};
+        }
+        return it->second;
+    }
+    size_t StringTable::bitwidth() const{
+        //TODO: Replace with smarter logic (divide and conquer)
+        size_t r = 0;
+        size_t s = v2idx.size() + 1;
+        s >>= 1;
+        for (;s; ++r, s >>= 1);
+        return r;        
+    }
+
 }
