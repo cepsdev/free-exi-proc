@@ -6,5 +6,10 @@
 - truely open.
 
 ## Installation
-- Requirements: g++ >= 8 and https://github.com/cepsdev/machines4ceps
-- ./build_all.sh && ./run_primer_encode_example.sh 
+### Requirements
+- g++  (version >= 8 )
+- https://github.com/cepsdev/machines4ceps
+### Build
+- ./rebuild_all.sh 
+### Test
+- ./run_primer_encode_example.sh 
