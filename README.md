@@ -6,10 +6,10 @@
 - extends EXI significantly by providing a general framework for gammar based compression,
 - truely open.
 
-Truely open means:
+Truely open includes:
 
-- Open source,
-- open architecture - the inner workings of the software are made "visible" for inspection and experimentation (complete executable spec in model/).
+- opem source,
+- and open architecture, i.e. the inner workings of the software are open for inspection and experimentation (complete executable spec in model/).
 
 ## Installation
 ### Requirements
