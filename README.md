@@ -9,7 +9,7 @@
 ## Installation
 ### Requirements
 - Unixish OS
-- C++ compiler supporting C++20  (e.g. g++)
+- recent C++ compiler (e.g. g++ version >= 9)
 - cmake
 - https://github.com/cepsdev/machines4ceps
 ### Build
