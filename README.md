@@ -7,7 +7,8 @@
 
 ## Installation
 ### Requirements
-- g++  (version >= 8 )
+- Unixish OS
+- C++ compiler supporting C++20  (e.g. g++)
 - https://github.com/cepsdev/machines4ceps
 ### Build
 - ./rebuild_all.sh 
