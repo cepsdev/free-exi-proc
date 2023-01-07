@@ -9,7 +9,7 @@
 Truely open means:
 
 - Open source,
-- open architecture - the inner workings of the software are made "visible" for inspection and experimentation see ![](model/).
+- open architecture - the inner workings of the software are made "visible" for inspection and experimentation (complete executable spec in model/).
 
 ## Installation
 ### Requirements
