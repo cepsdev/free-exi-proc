@@ -3,7 +3,7 @@
 - Complete implementation of an EXI "Efficient XML Interchange" processor (https://www.w3.org/TR/exi/), 
 - in modern, idiomatic and portable C++,
 - designed and implemented using the cepS - Ansatz,
-- goes beyond XML Schemas by providing a general framework for gammar based compression,
+- extends EXI significantly by providing a general framework for gammar based compression,
 - truely open.
 
 ## Installation
