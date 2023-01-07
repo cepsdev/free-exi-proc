@@ -6,6 +6,11 @@
 - extends EXI significantly by providing a general framework for gammar based compression,
 - truely open.
 
+Truely open means:
+
+- Open source,
+- open architecture - the inner workings of the software are made "visible" for inspection and experimentation see ![](model/).
+
 ## Installation
 ### Requirements
 - Unixish OS
