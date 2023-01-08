@@ -169,6 +169,23 @@ optional<Grammar::Terminal::content> Grammar::Terminal::get_content() const{
             if (args.size()){
                 if (is<Ast_node_kind::string_literal>(args[0])) 
                     r.value = value(as_string_ref(args[0]));
+                for(auto i = 1; i != args.size(); ++i){
+		            string func_id;string fkind;string sym_name;
+	                node_t ftarget;vector<node_t> args2;
+
+                    cout << *args[i] << "\n\n";         
+
+                    if (is_a_funccall(	args[i],func_id,fkind,sym_name,ftarget,args2)){
+                        if( (func_id == "inherited_uri" || sym_name == "inherited_uri" ) && args2.size()){
+                            r.inherited_uri = 
+                             is<Ast_node_kind::string_literal>(args2[0]) ? value(as_string_ref(args2[0])): "";
+                        } else if( (func_id == "inherited_name" || sym_name == "inherited_name" ) && args2.size()){
+                            r.inherited_name = 
+                             is<Ast_node_kind::string_literal>(args2[0]) ? value(as_string_ref(args2[0])): "";
+                        }
+                    }
+                }
+
             }
         }
     }

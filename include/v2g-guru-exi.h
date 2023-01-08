@@ -180,6 +180,7 @@ namespace v2g_guru_exi{
         virtual void emit(string content, size_t length_icrement) = 0;
         virtual void emit(uint32_t value, size_t bit_width) = 0;
         virtual void emit(uint32_t value) = 0;
+        virtual void emit_debug_message(string) = 0;
     };
 
     class ceps_emitter: public Emitter {
@@ -190,6 +191,7 @@ namespace v2g_guru_exi{
         void emit(string content, size_t length_icrement) override;
         void emit(uint32_t value, size_t bit_width) override;
         void emit(uint32_t value) override;
+        void emit_debug_message(string) override;
     };
 
     // Terminals
@@ -201,6 +203,8 @@ namespace v2g_guru_exi{
                 optional<string> prefix;
                 optional<string> local_name;
                 optional<string> value;
+                optional<string> inherited_uri;
+                optional<string> inherited_name;
             };
             Terminal() = default;
             Terminal(grammar_elem_t rep_arg) {
@@ -245,7 +249,7 @@ namespace v2g_guru_exi{
         Grammar::Terminal last_match = {};
         
         StringTable uris{1};
-        StringTable global_values{1};
+        StringTable global_values;
 
         using string_table_id_t = string;
         map<string_table_id_t,StringTable> local_names;

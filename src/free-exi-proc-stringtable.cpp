@@ -22,7 +22,9 @@ namespace v2g_guru_exi{
     optional<size_t> StringTable::lookup(string s, bool insert){
         auto it = v2idx.find(s);
         if (it == v2idx.end()){
-            if (insert) v2idx[s] = next_id++;
+            if (insert) {
+                v2idx[s] = next_id++;
+            }
             return {};
         }
         return it->second;

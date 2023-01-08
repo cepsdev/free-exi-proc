@@ -385,6 +385,17 @@ void v2g_guru_exi::ceps_emitter::emit(uint32_t value) {
         )
     );
 }
+void v2g_guru_exi::ceps_emitter::emit_debug_message(string msg) {
+    if (!encoding_result) return;
+    children(as_struct_ref(encoding_result)).push_back(
+        new Func_call(
+            new Identifier("Debug",nullptr,nullptr,nullptr),
+            new Call_parameters(
+                ceps::ast::mk_string(msg)
+            )        
+        )
+    );
+}
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {

@@ -109,7 +109,6 @@ namespace v2g_guru_exi{
                         if (idx) emitter->emit(*idx,uris.bitwidth()); else emitter->emit(*(content->uri),1);
                     }
                     if (content->local_name){
-                        //cout << *(content->local_name) << "\n";
                         auto& loc_names_table = local_names[*(content->uri)];
                         auto idx = loc_names_table.lookup(*(content->local_name));
                         if (idx) {
@@ -130,7 +129,28 @@ namespace v2g_guru_exi{
                             emitter->emit(*local_value_idx,
                                           local_values[{*(content->uri),*(content->local_name)}].bitwidth());
                         }
+                    } 
+                } else if (content->value){
+                    if (content->inherited_uri && content->inherited_name){
+                        auto global_idx = 
+                            global_values.lookup(*(content->value),false);
+                        auto local_value_idx = 
+                            local_values[{*(content->inherited_uri),*(content->inherited_name)}].lookup(*(content->value),false);
 
+                        if (!global_idx && !local_value_idx){
+                            emitter->emit(*(content->value),1);
+                            global_values.lookup(*(content->value));
+                            local_values[{*(content->inherited_uri),*(content->inherited_name)}].lookup(*(content->value));
+                        } else if (global_idx)  {
+                            emitter->emit(1);
+                            emitter->emit(*global_idx,
+                                            global_values.bitwidth());
+                        } else {
+                            emitter->emit(0);
+                            emitter->emit(*local_value_idx,
+                                            local_values[{*(content->inherited_uri),*(content->inherited_name)}].bitwidth());
+
+                        }
                     }
                 }
         };
