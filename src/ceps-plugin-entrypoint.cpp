@@ -374,6 +374,18 @@ void v2g_guru_exi::ceps_emitter::emit(uint32_t value, size_t bit_width) {
     );
 }
 
+void v2g_guru_exi::ceps_emitter::emit(uint32_t value) {
+    if (!encoding_result) return;
+    children(as_struct_ref(encoding_result)).push_back(
+        new Func_call(
+            new Identifier("uint",nullptr,nullptr,nullptr),
+            new Call_parameters(
+                ceps::interpreter::mk_int_node(value)
+            )        
+        )
+    );
+}
+
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   v2g_guru_exi::plugin_master = smc->get_plugin_interface();

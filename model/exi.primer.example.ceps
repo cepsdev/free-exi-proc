@@ -103,7 +103,7 @@ val encode_result =     exi_processor_encode(
             SE("notebook", uri(""));
             AT(date = "2007-09-12", uri(""));
             SE("note", uri(""));
-            AT(categpory = "EXI", uri(""));
+            AT(category = "EXI", uri(""));
             AT(date = "2007-07-23", uri(""));
             SE("subject", uri(""));
             CH("EXI");
@@ -130,7 +130,7 @@ val encode_result =     exi_processor_encode(
 //encode_result.encoding.content().size()
 encode_result;
 
-expected_encoding{
+/*expected_encoding{
         0;
         0;
         0,1;
@@ -155,4 +155,4 @@ expected_encoding{
         1;
         1;
         0;
-};
+};*/

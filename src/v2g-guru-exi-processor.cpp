@@ -102,10 +102,36 @@ namespace v2g_guru_exi{
                 auto const & content = tok.get_content();
                 if(!content) return;
                 bool wildcard_match = true;
-                if (content->uri && wildcard_match) {
+                if (content->uri) {
                     //encode uri
-                    auto idx = uris.lookup( *(content->uri) );
-                    if (idx) emitter->emit(*idx,uris.bitwidth()); else emitter->emit(*(content->uri),1);
+                    if(wildcard_match){
+                        auto idx = uris.lookup( *(content->uri) );
+                        if (idx) emitter->emit(*idx,uris.bitwidth()); else emitter->emit(*(content->uri),1);
+                    }
+                    if (content->local_name){
+                        //cout << *(content->local_name) << "\n";
+                        auto& loc_names_table = local_names[*(content->uri)];
+                        auto idx = loc_names_table.lookup(*(content->local_name));
+                        if (idx) {
+                            emitter->emit(0);
+                            emitter->emit(*idx,loc_names_table.bitwidth());
+                        } else emitter->emit(*(content->local_name),1);
+                    }
+                    if (content->value && content->local_name){
+                        auto global_idx = 
+                            global_values.lookup(*(content->value),false);
+                        auto local_value_idx = 
+                            local_values[{*(content->uri),*(content->local_name)}].lookup(*(content->value),false);
+                        if (!global_idx && !local_value_idx){
+                            emitter->emit(*(content->value),2);
+                            global_values.lookup(*(content->value));
+                            local_values[{*(content->uri),*(content->local_name)}].lookup(*(content->value));
+                        } else if (local_value_idx){
+                            emitter->emit(*local_value_idx,
+                                          local_values[{*(content->uri),*(content->local_name)}].bitwidth());
+                        }
+
+                    }
                 }
         };
 
@@ -127,8 +153,9 @@ namespace v2g_guru_exi{
             else std::cout << "???\n";
             std::cout << "<<----\n";
         }
-        handle_content(event_stream.peek().as_terminal());
+
         emit_eventcode(g, prod);
+        handle_content(event_stream.peek().as_terminal());
 
         for(auto rhs_elem : prod){             
             if (debug_output) std::cout << " parse: checking " << *rhs_elem.rep << ": " << " terminal? " << rhs_elem.is_terminal() << " nonterminal? " << rhs_elem.is_nonterminal() << "\n";
