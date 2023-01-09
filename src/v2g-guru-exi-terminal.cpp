@@ -1,6 +1,6 @@
 /*
-    v2g-guru-exi - an EXI (= "Efficient XML Interchange") processor
-    Copyright (C) 2022 Tomas Prerovsky <cepsdev@hotmail.com>
+    free-exi-proc - an EXI (= "Efficient XML Interchange") processor
+    Copyright (C) 2023 Tomas Prerovsky <cepsdev@hotmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,8 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
-// EXI Terminals
 
 
 #include "v2g-guru-exi.h"

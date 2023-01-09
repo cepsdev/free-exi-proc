@@ -1,7 +1,6 @@
-
 /*
     free-exi-proc - an EXI (= "Efficient XML Interchange") processor
-    Copyright (C) 2022 Tomas Prerovsky <cepsdev@hotmail.com>
+    Copyright (C) 2023 Tomas Prerovsky <cepsdev@hotmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
