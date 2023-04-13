@@ -102,7 +102,7 @@ val encode_result =     exi_processor_encode(
             root.exi_event_stream.content();
         });   
 
-//print("\nencode_result = ",encode_result, "\n\n\n");
+print("\n*** encode_result = ",encode_result, "\n\n\n");
 //print("Number of exi-events generated (should be 24): ",encode_result.encoding.content().size(),"\n" );
 //encode_result.encoding.content().size()
 encode_result;
