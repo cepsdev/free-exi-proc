@@ -1,0 +1,7 @@
+
+#!/bin/bash
+
+LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH ceps \
+ propaedeutics.ceps --pe --format ansi\
+ --pluginlibtest_driver.so						
+					
