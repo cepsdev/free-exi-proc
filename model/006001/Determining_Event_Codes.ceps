@@ -1,0 +1,77 @@
+
+
+
+Witness{
+ label __6__1 title = "6.1 Determining Event Codes";
+ kind DocgenStringPrintNoEscape;
+ DocgenStringPrintNoEscape docinfo_se;
+
+ docinfo_se(
+
+  "The structure of an EXI stream is described by the EXI grammars, which are 
+  formally specified in section 8.EXI Grammars. Each grammar defines which
+  events are permitted to occur at any given point in the EXI stream and provides
+  a pre-assigned event code for each one.
+
+  For example, the grammar productions below describe the events that occur in a
+  schema-informed EXI stream after the Start-Document (SD) event provided there
+  are four global elements defined in the schema an assign an event code for each
+  one. See 8.5.1 Schema-informed Document Grammar for the process used for generating
+  the grammar productions below from the schema.
+
+  Example 6-1. Example productions with event codes
+
+   Syntax                               Event Code
+     DocContent
+      SE(\"A\") DocEnd                    0
+      SE(\"B\") DocEnd                    1
+      SE(\"C\") DocEnd                    2
+      SE(\"D\") DocEnd                    3
+      SE(*) DocEnd                        4
+      DT DocContent                       5.0
+      CM DocContent                       5.1.0
+      PI DocContent                       5.1.1
+
+  At the point on an EXI stream where the above grammar productions are in effect,
+  the event code of Start Element \"A\" (i.e. SE(\"A\")) is 0. The event code of a
+  DOCTYPE(DT) event at this point in the stream is 5.0, and so on.
+  "
+);
+};
+
+Exegesis{
+    kind GrammarNonterminal;
+    kind GrammarTerminal;
+    kind GrammarName;
+
+    GrammarTerminal SE, CM, PI, DT;
+    GrammarNonterminal DocEnd,DocContent;
+    GrammarName DocContent;
+         
+    Grammar{
+        DocContent;    
+        lhs{DocContent;};
+            rhs{SE("A"); DocEnd; EventCode(0);};
+            rhs{SE("B"); DocEnd; EventCode(1);};
+            rhs{SE("C"); DocEnd; EventCode(2);};
+            rhs{SE("D"); DocEnd; EventCode(3);};
+            rhs{SE(_*_); DocEnd; EventCode(4);};
+            rhs{DT; DocContent; EventCode(5,0);};
+            rhs{CM; DocContent; EventCode(5,1,0);};
+            rhs{PI;DocContent; EventCode(5,1,1);};
+   };
+};
+
+val g = root.Exegesis.last().content().Grammar;
+val list_of_event_codes = exi_processor(operation{extract_event_codes{g;};});
+expectation{
+    result{ {0;}; {1;}; {2;}; {3;}; {4;}; {5;0;}; {5;1;0;}; {5;1;1;}; };
+};
+symbolic_equality(list_of_event_codes,root.expectation.last().content());
+
+
+
+
+
+
+
