@@ -63,11 +63,17 @@ Exegesis{
 };
 
 val g = root.Exegesis.last().content().Grammar;
-val list_of_event_codes = exi_processor(operation{extract_event_codes{g;};});
-expectation{
+val list_of_event_codes = exi_proc(operation{extract_event_codes{g;};});
+val expected_event_codes = {
     result{ {0;}; {1;}; {2;}; {3;}; {4;}; {5;0;}; {5;1;0;}; {5;1;1;}; };
 };
-symbolic_equality(list_of_event_codes,root.expectation.last().content());
+
+val res = symbolic_equality(list_of_event_codes,expected_event_codes);
+
+if (!as_int(res.diff.equal.content())){
+    label __6__1__extract_event_codes title = "6.1. (extract_event_codes) Equality test failed" type="error";
+    res.diff.reason;
+}
 
 
 

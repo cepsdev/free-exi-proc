@@ -3,3 +3,4 @@ ln $1/CMakeLists.txt CMakeLists.txt --symbolic
 ln $1/propaedeutics propaedeutics --symbolic
 ln $1/rebuild_test rebuild_test --symbolic
 ln $1/testdriver-entrypoint.cpp testdriver-entrypoint.cpp --symbolic
+ln $1/build_test build_test --symbolic

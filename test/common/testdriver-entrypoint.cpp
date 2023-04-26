@@ -39,6 +39,8 @@ namespace cepsplugin{
     ceps::ast::node_t plugin_entrypoint(ceps::ast::node_callparameters_t params);
 }
 
+extern void dispatch_method_under_test(ceps::ast::Struct& method,ceps::ast::Struct& result);
+
 ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
@@ -47,9 +49,12 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
     auto data = get_first_child(params);    
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
-    for(auto e : children(ceps_struct)){
-    }
+    //cout << ceps_struct << '\n';
     auto result = mk_struct("result");
+    dispatch_method_under_test(ceps_struct,*result);
+
+    //for(auto e : children(ceps_struct)){
+    //}
     //children(*result).push_back(mk_int_node(42));
     return result;
 }

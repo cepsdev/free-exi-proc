@@ -28,6 +28,7 @@ link_directories($ENV{CEPSCORE}/bin)
 
 add_library(test_driver SHARED 
             testdriver-entrypoint.cpp
+            testdriver-entrypoint-specifics.cpp
             src/v2g-guru-exi-grammar.cpp
             src/v2g-guru-exi-processor.cpp
             src/v2g-guru-exi-event-stream.cpp
