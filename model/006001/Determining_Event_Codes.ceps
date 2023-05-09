@@ -68,6 +68,7 @@ val expected_event_codes = {
     result{ {0;}; {1;}; {2;}; {3;}; {4;}; {5;0;}; {5;1;0;}; {5;1;1;}; };
 };
 
+
 val res = symbolic_equality(list_of_event_codes,expected_event_codes);
 
 if (!as_int(res.diff.equal.content())){
