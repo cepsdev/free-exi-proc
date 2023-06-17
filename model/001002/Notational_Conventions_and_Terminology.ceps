@@ -2,6 +2,7 @@ label __1__2 title = "1.2 Notational Conventions and Terminology";
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
 
+witness{
 docinfo_se(
 
 "
@@ -9,12 +10,16 @@ docinfo_se(
 "
 
 );
+};
 
+propaedeutics{
+};    
+
+kind GrammarNonterminal;
+kind GrammarTerminal;
+kind GrammarAnnotation;
 
 example{
-    kind GrammarNonterminal;
-    kind GrammarTerminal;
-    kind GrammarAnnotation;
 
     label __1__1_grammar title="";
     GrammarNonterminal LeftHandSide;
@@ -32,7 +37,7 @@ example{
     Grammar{
             lhs{NonTerminal_1;};
                 rhs{Terminal_1; NonTerminal_1;EventCode(1); };
-                rhs{Terminal_2; NonTerminal_2;EventCode(2); };
+                rhs{Terminal_2; /*NonTerminal_2;EventCode(2);*/ };
                 rhs{Terminal_3; NonTerminal_3;EventCode(3); };
                 rhs{Terminal_n; NonTerminal_n;EventCode(n); };
           
@@ -54,11 +59,58 @@ val check_1_2_ex_1 = exi_processor_check(
         };
         root.example.last().content().Grammar;
     }
-); 
+);
 
-if(check_1_2_ex_1.result.ok.content() == 0){
+
+/*if(check_1_2_ex_1.result.ok.content() == 0){
     kind DocgenWarning;
     DocgenWarning warn;
     warn("exi_processor_check() failed: "); 
     check_1_2_ex_1.result.details.content();
-}
+}*/
+
+label __1__2__CheckEXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal 
+ title = "Concept: Grammar_EachLHSContainsExactlyOneNonTerminal";
+
+macro CheckEXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal
+{
+    val violation = 0;
+    for(e : arglist.Grammar.rhs){
+        if (e.contains_symbol("GrammarNonterminal").size() == 0) {
+            let violation = 1;
+        }
+    }
+    violation;
+};
+label __1__2__CheckEXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal_ex1 
+ title = "Example 1 (Grammar_EachLHSContainsExactlyOneNonTerminal)";
+docinfo_se(
+
+"Example of a grammar not satisfying EXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal.
+"
+
+);
+
+Grammar{
+    lhs{LeftHandSide;};
+        rhs{Terminal_1;};
+};
+
+CheckEXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal{
+    GrammarNonterminal LeftHandSide;
+    GrammarNonterminal NonTerminal_1;
+    GrammarNonterminal NonTerminal_2;
+    GrammarNonterminal NonTerminal_3;
+    GrammarNonterminal NonTerminal_n;
+
+    GrammarTerminal Terminal_1;
+    GrammarTerminal Terminal_2;
+    GrammarTerminal Terminal_3;
+    GrammarTerminal Terminal_n;
+    GrammarAnnotation EventCode;
+
+    Grammar{
+        lhs{LeftHandSide;};
+         rhs{Terminal_1;};
+    };
+};
