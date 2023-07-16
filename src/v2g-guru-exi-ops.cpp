@@ -18,6 +18,8 @@
 
 
 #include "v2g-guru-exi.h"
+#include "free-exi-terminal.h"
+#include "free-exi-proc.h"
 
 namespace v2g_guru_exi{
     bool Grammar::rename_non_terminal(string from , string to){

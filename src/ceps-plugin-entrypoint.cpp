@@ -37,6 +37,9 @@
 #include <netinet/sctp.h> 
 
 #include "v2g-guru-exi.h"
+#include "free-exi-terminal.h"
+#include "free-exi-proc.h"
+
 
 namespace v2g_guru_exi{
     static Ism4ceps_plugin_interface* plugin_master = nullptr;

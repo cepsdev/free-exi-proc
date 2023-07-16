@@ -18,6 +18,7 @@
 
 
 #include "v2g-guru-exi.h"
+#include "free-exi-terminal.h"
 
 namespace v2g_guru_exi{
 

@@ -17,7 +17,8 @@
 */
 
 #include "v2g-guru-exi.h"
-
+#include "free-exi-terminal.h"
+#include "free-exi-proc.h"
 
 namespace v2g_guru_exi{
     
@@ -291,4 +292,6 @@ namespace v2g_guru_exi{
         }
         if (debug_output) std::cout << "Processor::encode(): exit.\n";
     }
+
+    Grammar::Terminal Processor::get_last_match() const { return last_match;}
 }

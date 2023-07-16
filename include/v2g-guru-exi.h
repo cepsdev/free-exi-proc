@@ -29,6 +29,8 @@ namespace v2g_guru_exi{
     using namespace ceps::ast;
     using namespace std;
 
+    using string_t = string;
+
     class Grammar{
             string global_id_{};
             bool modifiable_{true};
@@ -194,23 +196,31 @@ namespace v2g_guru_exi{
         void emit_debug_message(string) override;
     };
 
-    // Terminals
+   /* // Terminals
 
     class Grammar::Terminal{                
         public:
             struct content{
-                optional<string> uri;
-                optional<string> prefix;
-                optional<string> local_name;
-                optional<string> value;
-                optional<string> inherited_uri;
-                optional<string> inherited_name;
+                optional<string_t> uri;
+                optional<string_t> prefix;
+                optional<string_t> local_name;
+                optional<string_t> value;
+                optional<string_t> inherited_uri;
+                optional<string_t> inherited_name;
             };
             Terminal() = default;
             Terminal(grammar_elem_t rep_arg) {
-                if ( rep_arg && is<Ast_node_kind::symbol>(rep_arg) && kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) rep = rep_arg;
-                else if (rep_arg && is<Ast_node_kind::func_call>(rep_arg) && is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
-                        kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarTerminal"  ) rep = rep_arg;
+                if ( 
+                    rep_arg && 
+                    is<Ast_node_kind::symbol>(rep_arg) && 
+                    kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) 
+                 rep = rep_arg;
+                else if (
+                    rep_arg && 
+                    is<Ast_node_kind::func_call>(rep_arg) && 
+                    is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
+                    kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarTerminal"  ) 
+                 rep = rep_arg;
                 else rep = nullptr;
             }
             bool valid() const { return rep != nullptr;}
@@ -222,7 +232,7 @@ namespace v2g_guru_exi{
         private:
             grammar_elem_t rep{};
 
-    };
+    };*/
 
     class StringTable{
         map<string,size_t> v2idx;
@@ -236,7 +246,7 @@ namespace v2g_guru_exi{
 
     // EXI Processor
 
-    class Processor{
+    /*class Processor{
         EventStream event_stream;
         stack<Grammar> grammars;
         map<string,Grammar> global_grammars;
@@ -246,7 +256,7 @@ namespace v2g_guru_exi{
         bool match(Grammar::Terminal);
         //Well, yes we use runtime polymorphism refraining from type parametrization in this case (sometimes i surprise myself). 
         Emitter* emitter{};
-        Grammar::Terminal last_match = {};
+        Grammar::Terminal last_match;
         
         StringTable uris{1};
         StringTable global_values;
@@ -266,8 +276,8 @@ namespace v2g_guru_exi{
             void insert(GenericGrammar);
             void emit_eventcode(Grammar& g, Grammar::Production prod);
             void set_emitter(Emitter* an_emitter) {emitter = an_emitter;}
-            Grammar::Terminal get_last_match() const { return last_match;}
-    };
+            Grammar::Terminal get_last_match() const;
+    };*/
 
  
     class Grammar::NonTerminal{       
