@@ -51,6 +51,7 @@ namespace v2g_guru_exi{
     ceps::ast::node_t plugin_entrypoint_add_generic_grammar(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t plugin_entrypoint_operation(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t plugin_entrypoint_check(ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t plugin_entrypoint_obj(ceps::ast::node_callparameters_t params);
 }
 
 static bool expect_nonterminal(ceps::ast::Nodeset ns){
@@ -89,6 +90,20 @@ static bool expect_lhs(ceps::ast::Nodeset ns){
 
 static void v2g_guru_exi_err(std::string msg){
     std::cerr << "*** Fatal Error [v2g-guru-exi] " <<  msg << "\n";
+}
+
+ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_obj(ceps::ast::node_callparameters_t params){
+    using namespace std;
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+
+    auto data{get_first_child(params)};    
+    if (!is<Ast_node_kind::structdef>(data)) return nullptr;
+    auto& ceps_struct = *as_struct_ptr(data);
+    auto& nm {name(ceps_struct)};
+
+    auto result = mk_undef();
+    return result;
 }
 
 ceps::ast::node_t v2g_guru_exi::plugin_entrypoint_operation(ceps::ast::node_callparameters_t params){
@@ -406,6 +421,9 @@ extern "C" void init_plugin(IUserdefined_function_registry* smc)
   v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
     "exi_processor_add_start_grammar", 
     v2g_guru_exi::plugin_entrypoint_add_start_grammar);
+  v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
+    "exi_proc_obj", 
+    v2g_guru_exi::plugin_entrypoint_obj);
   v2g_guru_exi::plugin_master->reg_ceps_phase0plugin(
     "exi_processor_encode", 
     v2g_guru_exi::plugin_entrypoint_encode);
