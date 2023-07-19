@@ -1,0 +1,43 @@
+
+kind GrammarTerminal;
+kind GrammarNonterminal;
+kind GrammarAnnotation;
+kind GrammarAction;
+
+kind XMLEntity;
+
+GrammarTerminal    
+    SD, 
+    ED, 
+    SE, 
+    EE, 
+    AT, 
+    CH, 
+    NS, 
+    CM, 
+    PI, 
+    DT, 
+    ER, 
+    SC;
+
+GrammarAction 
+ PopGrammar;
+
+XMLEntity
+    qname, 
+    uri;
+
+exi_obj(
+ SE(_*_)
+);
+
+exi_obj(
+ SE(uri_a:_*_)
+);
+
+exi_op(
+    match{
+        SE(_*_);
+        SE("note");
+    }
+);

@@ -18,13 +18,21 @@
 #include <future>
 #include <netinet/sctp.h> 
 
-#include "ceps_ast.hh"
-#include "core/include/state_machine_simulation_core.hpp"
-
-
 #include "v2g-guru-exi.h"
 #include "free-exi-terminal.h"
 #include "free-exi-proc.h"
+#include "v2g-guru-exi-model-adapter.h"
+
+namespace v2g_guru_exi{
+    template<> optional<Grammar::Terminal> fetch<Grammar::Terminal>(node_t s)
+    {
+        return Grammar::Terminal{s};
+    }
+}
+
+
+using namespace v2g_guru_exi;
+
 
 namespace v2g_guru_exi{
     static Ism4ceps_plugin_interface* plugin_master = nullptr;
@@ -35,35 +43,52 @@ namespace v2g_guru_exi{
 
 
 namespace cepsplugin{
-    static Ism4ceps_plugin_interface* plugin_master = nullptr;
-    static const std::string version_info = "INSERT_NAME_HERE v0.1";
-    static constexpr bool print_debug_info{true};
-    ceps::ast::node_t plugin_entrypoint(ceps::ast::node_callparameters_t params);
-}
-
-extern void dispatch_method_under_test(ceps::ast::Struct& method,ceps::ast::Struct& result);
-
-ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
     using namespace ceps::interpreter;
 
-    auto data = get_first_child(params);    
-    if (!is<Ast_node_kind::structdef>(data)) return nullptr;
-    auto& ceps_struct = *as_struct_ptr(data);
-    //cout << ceps_struct << '\n';
-    auto result = mk_struct("result");
-    dispatch_method_under_test(ceps_struct,*result);
+    static Ism4ceps_plugin_interface* plugin_master = nullptr;
+    static const std::string version_info = "INSERT_NAME_HERE v0.1";
+    static constexpr bool print_debug_info{true};
+    ceps::ast::node_t plugin_entrypoint_object(ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t plugin_entrypoint_operation(ceps::ast::node_callparameters_t params);
+}
 
-    //for(auto e : children(ceps_struct)){
-    //}
-    //children(*result).push_back(mk_int_node(42));
+extern void dispatch_method_under_test(ceps::ast::Struct& method,ceps::ast::Struct& result);
+
+/**
+ * @brief Entrypoint for exi_obj() calls in the model.
+ * 
+ * @param params 
+ * @return node_t 
+ */
+node_t cepsplugin::plugin_entrypoint_object(node_callparameters_t params){
+    auto args {extract_functioncall_arguments_from_param_block(*params)};
+    {
+        string sym_name;
+	    string sym_kind;
+	    vector<node_t> arg_s_args; // arg's args
+        for(auto a: args)
+            if (is_a_symbol_with_arguments(a, sym_name, sym_kind, arg_s_args)){
+                auto term{read_value<Grammar::Terminal>(a)};
+                if (term)  cout << sym_kind << '\n';
+            }
+    }
+    auto result = mk_undef();
+    return result;
+}
+
+ceps::ast::node_t cepsplugin::plugin_entrypoint_operation(ceps::ast::node_callparameters_t params){
+
+    auto result = mk_undef();
     return result;
 }
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   cepsplugin::plugin_master = smc->get_plugin_interface();
-  cepsplugin::plugin_master->reg_ceps_phase0plugin("exi_proc", cepsplugin::plugin_entrypoint);
+  cepsplugin::plugin_master->reg_ceps_phase0plugin("exi_obj", cepsplugin::plugin_entrypoint_object);
+  cepsplugin::plugin_master->reg_ceps_phase0plugin("exi_op", cepsplugin::plugin_entrypoint_operation);
+
 }					
 				

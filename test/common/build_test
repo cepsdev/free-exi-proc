@@ -4,6 +4,6 @@
 
 cd bin 
 
-CEPSCORE=../../../ceps/core MACHINES4CEPS=../../../machines4ceps LOG4CEPS=../../../log4ceps make -B -j 16
+CEPSCORE=../../../ceps/core MACHINES4CEPS=../../../machines4ceps LOG4CEPS=../../../log4ceps make -j 16
 cd ..					
 				

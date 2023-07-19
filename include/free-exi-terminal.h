@@ -17,16 +17,21 @@
 */
 
 namespace v2g_guru_exi{
-    class Grammar::Terminal{                
+    class Grammar::Terminal{
+        private:
+            bool wild_card_uri() const { return !content.uri; }                
+            bool wild_card_local_name() const {return !content.local_name;}                
+            bool wild_card() const {return wild_card_uri() && wild_card_local_name(); }                
         public:
-            struct content{
+            struct content_t{
                 optional<string_t> uri;
                 optional<string_t> prefix;
                 optional<string_t> local_name;
                 optional<string_t> value;
                 optional<string_t> inherited_uri;
                 optional<string_t> inherited_name;
-            };
+            } content;
+
             Terminal() = default;
             Terminal(grammar_elem_t rep_arg) {
                 if ( 
@@ -47,7 +52,7 @@ namespace v2g_guru_exi{
             string as_str() const;
             string name() const;
             void set_name(string);
-            optional<content> get_content() const;
+            optional<content_t> get_content() const;
         private:
             grammar_elem_t rep{};
 

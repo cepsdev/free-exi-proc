@@ -122,12 +122,12 @@ string Grammar::Terminal::name() const {
 }
 
 using namespace std;
-optional<Grammar::Terminal::content> Grammar::Terminal::get_content() const{
+optional<Grammar::Terminal::content_t> Grammar::Terminal::get_content() const{
     if (!valid()) return {};
     if (!get_rep()) return {};
     auto nm = name().substr(0,2);
     if (nm == "EE" || nm == "SC" || nm == "SD" || nm == "ED" ) return {};
-    Grammar::Terminal::content r{};
+    Grammar::Terminal::content_t r{};
 
     if (nm == "SE" || nm == "AT" || nm == "NS"){
 		string func_id;string fkind;string sym_name;
