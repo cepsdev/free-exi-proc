@@ -9,7 +9,8 @@
 The meaning of the term "truly open" includes:
 
 - open as in *open source*,
-- and open as in *open architecture*, i.e. the inner workings of the software are open for inspection and experimentation (complete executable spec in model/).
+- and open as in *open architecture*, i.e. the inner workings of the software are open for inspection and experimentation (complete executable spec in model/),
+- applies a corpus based approach to modelling, which allows for the incorporation of AI agents (e.g. Codepilot).
 
 ## Installation
 ### Requirements
