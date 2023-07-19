@@ -65,8 +65,7 @@ extern void dispatch_method_under_test(ceps::ast::Struct& method,ceps::ast::Stru
 node_t cepsplugin::plugin_entrypoint_object(node_callparameters_t params){
     auto args {extract_functioncall_arguments_from_param_block(*params)};
     {
-        string sym_name;
-	    string sym_kind;
+        string sym_name, sym_kind;
 	    vector<node_t> arg_s_args; // arg's args
         for(auto a: args)
             if (is_a_symbol_with_arguments(a, sym_name, sym_kind, arg_s_args)){
@@ -74,8 +73,7 @@ node_t cepsplugin::plugin_entrypoint_object(node_callparameters_t params){
                 if (term)  cout << sym_kind << '\n';
             }
     }
-    auto result = mk_undef();
-    return result;
+    return mk_undef();
 }
 
 ceps::ast::node_t cepsplugin::plugin_entrypoint_operation(ceps::ast::node_callparameters_t params){
