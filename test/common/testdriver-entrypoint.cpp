@@ -22,17 +22,9 @@
 #include "free-exi-terminal.h"
 #include "free-exi-proc.h"
 #include "v2g-guru-exi-model-adapter.h"
-
-namespace v2g_guru_exi{
-    template<> optional<Grammar::Terminal> fetch<Grammar::Terminal>(node_t s)
-    {
-        return Grammar::Terminal{s};
-    }
-}
-
+#include "free-exi-terminal-model-adapter.h"
 
 using namespace v2g_guru_exi;
-
 
 namespace v2g_guru_exi{
     static Ism4ceps_plugin_interface* plugin_master = nullptr;
@@ -78,8 +70,17 @@ node_t cepsplugin::plugin_entrypoint_object(node_callparameters_t params){
 
 ceps::ast::node_t cepsplugin::plugin_entrypoint_operation(ceps::ast::node_callparameters_t params){
 
-    auto result = mk_undef();
-    return result;
+    auto data = get_first_child(params);   
+    if (!is<Ast_node_kind::structdef>(data)) return mk_undef();
+    auto& ceps_struct = *as_struct_ptr(data);
+    if (name(ceps_struct) == "match_terminals"){
+        bool result{};
+
+        return ast_rep<bool>(result);
+    }
+
+
+    return mk_undef();
 }
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)

@@ -100,48 +100,46 @@ namespace v2g_guru_exi{
         };
         
         auto handle_content = [&](Grammar::Terminal tok) -> void{
-                auto const & content = tok.get_content();
-                if(!content) return;
                 bool wildcard_match = true;
-                if (content->uri) {
+                if (tok.qname.uri) {
                     //encode uri
                     if(wildcard_match){
-                        auto idx = uris.lookup( *(content->uri) );
-                        if (idx) emitter->emit(*idx,uris.bitwidth()); else emitter->emit(*(content->uri),1);
+                        auto idx = uris.lookup( *tok.qname.uri );
+                        if (idx) emitter->emit(*idx,uris.bitwidth()); else emitter->emit(*tok.qname.uri,1);
                     }
-                    if (content->local_name){
-                        auto& loc_names_table = local_names[*(content->uri)];
-                        auto idx = loc_names_table.lookup(*(content->local_name));
+                    if (tok.qname.local_name){
+                        auto& loc_names_table = local_names[*tok.qname.uri];
+                        auto idx = loc_names_table.lookup(*tok.qname.local_name);
                         if (idx) {
                             emitter->emit(0);
                             emitter->emit(*idx,loc_names_table.bitwidth());
-                        } else emitter->emit(*(content->local_name),1);
+                        } else emitter->emit(*tok.qname.local_name,1);
                     }
-                    if (content->value && content->local_name){
+                    if (tok.content.value && tok.qname.local_name){
                         auto global_idx = 
-                            global_values.lookup(*(content->value),false);
+                            global_values.lookup(*tok.content.value,false);
                         auto local_value_idx = 
-                            local_values[{*(content->uri),*(content->local_name)}].lookup(*(content->value),false);
+                            local_values[{*tok.qname.uri,*tok.qname.local_name}].lookup(*tok.content.value,false);
                         if (!global_idx && !local_value_idx){
-                            emitter->emit(*(content->value),2);
-                            global_values.lookup(*(content->value));
-                            local_values[{*(content->uri),*(content->local_name)}].lookup(*(content->value));
+                            emitter->emit(*tok.content.value,2);
+                            global_values.lookup(*tok.content.value);
+                            local_values[{*tok.qname.uri,*tok.qname.local_name}].lookup(*tok.content.value);
                         } else if (local_value_idx){
                             emitter->emit(*local_value_idx,
-                                          local_values[{*(content->uri),*(content->local_name)}].bitwidth());
+                                          local_values[{*tok.qname.uri,*tok.qname.local_name}].bitwidth());
                         }
                     } 
-                } else if (content->value){
-                    if (content->inherited_uri && content->inherited_name){
+                } else if (tok.content.value){
+                    if (tok.content.inherited_uri && tok.content.inherited_name){
                         auto global_idx = 
-                            global_values.lookup(*(content->value),false);
+                            global_values.lookup(*tok.content.value,false);
                         auto local_value_idx = 
-                            local_values[{*(content->inherited_uri),*(content->inherited_name)}].lookup(*(content->value),false);
+                            local_values[{*tok.content.inherited_uri,*tok.content.inherited_name}].lookup(*tok.content.value,false);
 
                         if (!global_idx && !local_value_idx){
-                            emitter->emit(*(content->value),1);
-                            global_values.lookup(*(content->value));
-                            local_values[{*(content->inherited_uri),*(content->inherited_name)}].lookup(*(content->value));
+                            emitter->emit(*tok.content.value,1);
+                            global_values.lookup(*tok.content.value);
+                            local_values[{*tok.content.inherited_uri,*tok.content.inherited_name}].lookup(*tok.content.value);
                         } else if (global_idx)  {
                             emitter->emit(1);
                             emitter->emit(*global_idx,
@@ -149,7 +147,7 @@ namespace v2g_guru_exi{
                         } else {
                             emitter->emit(0);
                             emitter->emit(*local_value_idx,
-                                            local_values[{*(content->inherited_uri),*(content->inherited_name)}].bitwidth());
+                                            local_values[{*tok.content.inherited_uri,*tok.content.inherited_name}].bitwidth());
 
                         }
                     }
@@ -163,12 +161,11 @@ namespace v2g_guru_exi{
             if (tok.valid()){ 
                 std::cout <<*tok.get_rep() << "\n";
                 auto const & ev{tok};
-                auto const & content = ev.get_content();
-                if(content){
+                if(ev.valid()){
                     std::cout << " has content\n";
-                    if ( content->uri) std::cout << " uri: '"<<*(content->uri) << "'\n";
-                    if ( content->local_name) std::cout << " local-name: '"<<*(content->local_name) << "'\n";
-                    if ( content->value) std::cout << " value: '"<<*(content->value) << "'\n";
+                    if ( ev.qname.uri) std::cout << " uri: '"<<*ev.qname.uri << "'\n";
+                    if ( ev.qname.local_name ) std::cout << " local-name: '"<<*ev.qname.local_name << "'\n";
+                    if ( ev.content.value) std::cout << " value: '"<<*ev.content.value << "'\n";
                 } else std::cout << " has NO content\n";;
             }
             else std::cout << "???\n";

@@ -125,6 +125,8 @@ using namespace std;
 optional<Grammar::Terminal::content_t> Grammar::Terminal::get_content() const{
     if (!valid()) return {};
     if (!get_rep()) return {};
+    
+    #if 0
     auto nm = name().substr(0,2);
     if (nm == "EE" || nm == "SC" || nm == "SD" || nm == "ED" ) return {};
     Grammar::Terminal::content_t r{};
@@ -188,7 +190,8 @@ optional<Grammar::Terminal::content_t> Grammar::Terminal::get_content() const{
             }
         }
     }
-    return r;
+    #endif
+    return {};
 } 
 
 

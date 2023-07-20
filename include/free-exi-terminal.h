@@ -15,18 +15,31 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+#pragma once
+#define comment(s)
 
 namespace v2g_guru_exi{
+
     class Grammar::Terminal{
         private:
-            bool wild_card_uri() const { return !content.uri; }                
-            bool wild_card_local_name() const {return !content.local_name;}                
+            bool wild_card_uri() const { return !qname.uri; }                
+            bool wild_card_local_name() const {return !qname.local_name;}                
             bool wild_card() const {return wild_card_uri() && wild_card_local_name(); }                
         public:
-            struct content_t{
+            struct qname_t{
+                comment(
+                    witness_ref{
+                        id(__1__2); 
+                        lines(33 .. 37);
+                    };
+                );
+ 
                 optional<string_t> uri;
-                optional<string_t> prefix;
                 optional<string_t> local_name;
+                optional<string_t> prefix;
+            } qname;
+
+            struct content_t{
                 optional<string_t> value;
                 optional<string_t> inherited_uri;
                 optional<string_t> inherited_name;

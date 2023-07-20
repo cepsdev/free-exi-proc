@@ -36,7 +36,7 @@ exi_obj(
 );
 
 exi_op(
-    match{
+    match_terminals{
         SE(_*_);
         SE("note");
     }
