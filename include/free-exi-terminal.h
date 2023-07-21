@@ -1,3 +1,4 @@
+#pragma once
 /*
     free-ewxi-proc - an EXI (= "Efficient XML Interchange") processor
     Copyright (C) 2023 Tomas Prerovsky <cepsdev@hotmail.com>
@@ -15,8 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#pragma once
+
 #define comment(s)
+
+#include <stdexcept>
 
 namespace v2g_guru_exi{
 
@@ -26,14 +29,16 @@ namespace v2g_guru_exi{
             bool wild_card_local_name() const {return !qname.local_name;}                
             bool wild_card() const {return wild_card_uri() && wild_card_local_name(); }                
         public:
+            using ev_type_t = uint16_t;
+            ev_type_t ev_type{};
+
             struct qname_t{
                 comment(
                     witness_ref{
                         id(__1__2); 
                         lines(33 .. 37);
                     };
-                );
- 
+                ); 
                 optional<string_t> uri;
                 optional<string_t> local_name;
                 optional<string_t> prefix;
@@ -44,22 +49,10 @@ namespace v2g_guru_exi{
                 optional<string_t> inherited_uri;
                 optional<string_t> inherited_name;
             } content;
-
+            
             Terminal() = default;
-            Terminal(grammar_elem_t rep_arg) {
-                if ( 
-                    rep_arg && 
-                    is<Ast_node_kind::symbol>(rep_arg) && 
-                    kind(as_symbol_ref(rep_arg)) == "GrammarTerminal" ) 
-                 rep = rep_arg;
-                else if (
-                    rep_arg && 
-                    is<Ast_node_kind::func_call>(rep_arg) && 
-                    is<Ast_node_kind::symbol>(func_call_target(as_func_call_ref(rep_arg))) && 
-                    kind(as_symbol_ref(func_call_target(as_func_call_ref(rep_arg)))) == "GrammarTerminal"  ) 
-                 rep = rep_arg;
-                else rep = nullptr;
-            }
+            Terminal(grammar_elem_t rep_arg);
+
             bool valid() const { return rep != nullptr;}
             grammar_elem_t get_rep() const {return rep;}
             string as_str() const;

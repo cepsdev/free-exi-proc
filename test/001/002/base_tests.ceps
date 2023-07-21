@@ -35,9 +35,16 @@ exi_obj(
  SE(uri_a:_*_)
 );
 
+"match";
 exi_op(
     match_terminals{
         SE(_*_);
         SE("note");
+    }
+);
+exi_op(
+    match_terminals{
+        SE("name");
+        SE("name");
     }
 );

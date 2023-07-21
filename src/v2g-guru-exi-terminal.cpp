@@ -19,8 +19,25 @@
 
 #include "v2g-guru-exi.h"
 #include "free-exi-terminal.h"
+#include <unordered_map>
 
 namespace v2g_guru_exi{
+
+std::unordered_map<std::string, Grammar::Terminal::ev_type_t> ev_type_encoding{ 
+    {{}, {}},
+    {"SD", 1},
+    {"ED", 2},
+    {"SE", 3},
+    {"EE", 4},
+    {"AT", 5},
+    {"CH", 6},
+    {"NS", 7},
+    {"CM", 8},
+    {"PI", 9},
+    {"DT", 10},
+    {"ER", 11},
+    {"SC", 12}
+};
 
 
 bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){

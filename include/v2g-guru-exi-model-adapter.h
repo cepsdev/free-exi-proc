@@ -1,3 +1,4 @@
+#pragma once
 /*
     free-exi-proc - an EXI (= "Efficient XML Interchange") processor
     Copyright (C) 2023 Tomas Prerovsky <cepsdev@hotmail.com>
@@ -15,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#pragma once
 
 #include "ceps_ast.hh"
 #include "core/include/state_machine_simulation_core.hpp"
