@@ -44,15 +44,17 @@ namespace v2g_guru_exi{
      }; 
     
     Grammar::Terminal::Terminal(grammar_elem_t rep_arg) {
+        //std::cerr << *rep_arg << "\n";
+        string err_prefix = "Failed to construct Grammar::Terminal::Terminal: ";
         if (!rep_arg) throw std::invalid_argument{"Terminal(null)"};
         if (is<Ast_node_kind::symbol>(rep_arg)){
             auto& sym{as_symbol_ref(rep_arg)};
-            if (kind(sym) != term_sym_kind) throw std::invalid_argument{"Terminal(wrong kind ["+kind(sym)+"])"};
+            if (kind(sym) != term_sym_kind) throw std::invalid_argument{err_prefix+" unknown kind '"+kind(sym)+"'"};
             auto ev_type_it {ev_type_encoding.find( ceps::ast::name(sym))};
-            if (ev_type_it == ev_type_encoding.end()) throw std::invalid_argument{"Terminal(unknown type ["+ceps::ast::name(sym)+"])"};
+            if (ev_type_it == ev_type_encoding.end()) throw std::invalid_argument{err_prefix+" unknown event type '"+ceps::ast::name(sym)+"'"};
             ev_type = ev_type_it->second;
             auto factory_it{factories_pure_terminal.find(ev_type)};
-            if (factory_it == factories_pure_terminal.end()) throw std::runtime_error{"Terminal(cannot build ["+ceps::ast::name(sym)+"])"};
+            if (factory_it == factories_pure_terminal.end()) throw std::runtime_error{err_prefix+" no factory found for '"+ceps::ast::name(sym)+"'"};
 
         }
          else if (

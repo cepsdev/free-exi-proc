@@ -82,7 +82,12 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint_operation(ceps::ast::node_callpa
 
     auto fit{ops.find(name(ceps_struct))};
     if (fit == ops.end()) return mk_undef();
-    auto r{fit->second(ceps_struct)};
+    node_t r{}; 
+    try{
+        r = fit->second(ceps_struct);
+    } catch (std::runtime_error const & e){
+        return mk_undef(e.what());    
+    }
     if (!r) return mk_undef();
     return r;
 }

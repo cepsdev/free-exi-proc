@@ -41,10 +41,17 @@ exi_op(
         SE(_*_);
         SE("note");
     }
-);*/
+);
 exi_op(
     match_terminals{
         SE("name");
         SE("name");
+    }
+);*/
+
+exi_op(
+    match_terminals{
+        SD;
+        SD;
     }
 );
