@@ -26,14 +26,6 @@
 
 using namespace v2g_guru_exi;
 
-namespace v2g_guru_exi{
-    static Ism4ceps_plugin_interface* plugin_master = nullptr;
-    static const std::string version_info = "v2g-guru-exi v0.1";
-    static constexpr bool print_debug_info{true};
-    static Processor exi_processor; 
-}
-
-
 namespace cepsplugin{
     using namespace std;
     using namespace ceps::ast;
@@ -45,6 +37,21 @@ namespace cepsplugin{
     ceps::ast::node_t plugin_entrypoint_object(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t plugin_entrypoint_operation(ceps::ast::node_callparameters_t params);
 }
+
+static  map<string, node_t (*)(Struct&) > ops{ 
+        {"match_terminals", [](Struct& s) -> node_t{
+            auto& ch{children(s)};
+            if (ch.size() < 2) return nullptr;
+            auto t1{read_value<Grammar::Terminal>(ch[0])};
+            auto t2{read_value<Grammar::Terminal>(ch[1])};
+            if(t1 && t2) {
+                bool result{};
+                return ast_rep(result);   
+            }         
+            return nullptr;
+            }  
+        } 
+    };
 
 extern void dispatch_method_under_test(ceps::ast::Struct& method,ceps::ast::Struct& result);
 
@@ -69,18 +76,15 @@ node_t cepsplugin::plugin_entrypoint_object(node_callparameters_t params){
 }
 
 ceps::ast::node_t cepsplugin::plugin_entrypoint_operation(ceps::ast::node_callparameters_t params){
-
     auto data = get_first_child(params);   
     if (!is<Ast_node_kind::structdef>(data)) return mk_undef();
     auto& ceps_struct = *as_struct_ptr(data);
-    if (name(ceps_struct) == "match_terminals"){
-        bool result{};
 
-        return ast_rep<bool>(result);
-    }
-
-
-    return mk_undef();
+    auto fit{ops.find(name(ceps_struct))};
+    if (fit == ops.end()) return mk_undef();
+    auto r{fit->second(ceps_struct)};
+    if (!r) return mk_undef();
+    return r;
 }
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)

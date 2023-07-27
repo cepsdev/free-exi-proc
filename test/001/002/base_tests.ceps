@@ -26,7 +26,7 @@ GrammarAction
 XMLEntity
     qname, 
     uri;
-
+/*
 exi_obj(
  SE(_*_)
 );
@@ -41,7 +41,7 @@ exi_op(
         SE(_*_);
         SE("note");
     }
-);
+);*/
 exi_op(
     match_terminals{
         SE("name");
