@@ -49,9 +49,12 @@ exi_op(
     }
 );*/
 
-exi_op(
-    match_terminals{
-        SD;
-        SD;
-    }
-);
+scenario{
+    title{"Two identical terminals should match.";};  
+    exi_op(
+        match_terminals{
+            SD;
+            SD;
+        }
+    );
+};

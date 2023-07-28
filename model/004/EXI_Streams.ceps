@@ -1,0 +1,33 @@
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+
+label __4 title = "4. EXI Streams";
+
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+
+001 [Definition:] An EXI stream is an EXI header followed by an EXI body.
+002 [Definition:] The EXI body carries the content of the document, while the
+003 EXI header communicates the options used for encoding the EXI body.
+004 Section 5. EXI Header describes the EXI header.
+006
+007 [Definition:] The building block of an EXI body is an EXI event. An EXI body
+008 consists of a sequence of EXI events representing an EXI document or an EXI
+009 fragment.
+010
+011 The EXI events permitted at any given position in an EXI stream are
+012 determined by the EXI grammar. As is the case with XML, the events occur
+013 with nesting pairs of matching start element and end element events where 
+014 where any pair does not intersect with another except when it is fully
+015 contained in the other. The EXI grammar incorporates knowledge of the XML
+016 grammar and may be augmented and refined using schema information and
+017 fidelity options. The EXI grammar is formally specified in section 8.
+018 EXI Grammars.
+019
+020
+
+");
+};

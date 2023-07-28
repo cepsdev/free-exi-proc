@@ -2,52 +2,47 @@ label __1 title = "1. Introduction";
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
 
+witness{
 docinfo_se(
 
 "
-
-The Efficient XML Interchange (EXI) format is a very compact, high performance XML representation
-that was desigend to work well for a broad range of applications. It simultaneously improves
-performance and significantly reduces bandwidth requirements without compromising efficient
-usse of other resources such as battery life, code size, processing power, and memory.
-
-EXI uses a grammar-driven approach that achieves very efficient encodings using a straightforward
-encodeing algorithm ans a small set of datatype representations. Consequently, EXI processors are
-relatively simple ans can be implmented on devices with limited capacity.
-
-EXI is schema \"informed\", meaning that it can utilize available schema information to improve
-compactness and performance, but does not depend on accurate, complete or current schemas to work.
-It supports arbitrary schema extensions and deviations and also works very effectively with 
-partial schemas or in the absence of any schema. The language, or format, for schema information.
-
+--------------------------------------------------------------------------------
+001 The Efficient XML Interchange (EXI) format is a very compact, high 
+002 performance XML representation that was designed to work well for a broad
+003 range of applications. It simultaneously improves performance and
+004 significantly reduces bandwitdt requirements without compromising efficient
+005 use of other resources such as battery life, code size, processing power,
+006 and memory.
+007
+008 EXI uses a grammar-driven approach that achieves very efficient encodings 
+009 using a straightforward encoding algorithm and a small set of datatype
+010 representations. Consequently, EXI processors are relatively simple and
+011 can be implemented on devices with limited capacity.
+012
+013 EXI is schema 'informed', meaning that it can utilize available schema
+014 information to improve compactness and performance, but does not depend on
+015 accurate, complete or current schemas to work. It supports arbitrary schema
+016 extensions and deviations and also works very efficiently with partial 
+017 schemas or in absence of any schema. The format itself also does not depend
+018 on any particular schema language, or format, for schema information.
+019
+020 [Definition:] A program module called an EXI processor, whether it is
+021 software or hardware, is used by application programs to encode their 
+022 structured data accessible. The former and latter aforementioned roles
+023 are called [Definition:] EXI stream encoder and [Definition] EXI
+024 stream decoder, respectively. This document not only specifies the
+025 EXI format, but also defines errors that EXI processors are required to
+026 detect and behave upon.
+027
+028 The primary goal of this document is to define the EXI format completely
+029 without leaving ambiguity so as to make it feasible for implementations
+030 to interoperate. As such, the document lends itself to describing the
+031 design and features of the format in a systematic manner, often 
+032 declaratively with relatively few prosaic annotations and examples.
+033 Those readers who prefer a step-by-step introduction to the EXI format
+034 design and features are suggested to start with the non-normative
+035 [EXI Primer].
 ");
-
-Definition{
-    docinfo_se(
-
-    "
- A program module called an EXI processor, whether it is software or hardware,
- is used by application programs to encode their structured data into EXI
- streams and/or to decode EXI streams to make the structured data accessible.
- The former and latter aforementioned roles of EXI processors are called");
- Definition{
-    docinfo_se("EXI stream encoder ");
- };
- docinfo_se("and");
- Definition{
-    docinfo_se("EXI stream decoder,");
- };
- docinfo_se(" respectively. This document not only specifies the EXI format,
- but also defines errors that EXI processors are required to detect and behave upon. 
- 
- The primary goal of this document is to define the EXI format completely without
- leaving ambiguity so as to make it feasible for implementations to interoperate.
- As such, the document lends itself to describing the design and features of the
- format in a systematic manner, often declaratively with relatively few prosaic
- annotations and examples. Those readers who prefer a step-by-step Introduction
- to the EXI format design and features are suggested to start with the non-normative
- [EXI Primer].
- ");
 };
 
  sm{

@@ -1,0 +1,47 @@
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+
+label __2 title = "2. Design Principles";
+
+docinfo_se(
+"
+    --------------------------------------------------------------------------------
+    001 The following design principles were used to guide the development of EXI 
+    002 and encourage consistent design decisions. They are listed here to provide
+    003 insight into the EXI design reationale and to anchor discussions on 
+    004 desirable EXI traits.
+    005
+    006 General:
+    007
+    008 One of [the] primary objectives of EXI ist to maximize the number of
+    009 systems, devices and applications that ban communicate using XML data.
+    010 Specialized approaches optimized for specific use cases should be avoided.
+    011
+    012 Minimal:
+    013
+    014 To reach the broadest set of small, mobile and embedded applications,
+    015 simple, elegant approaches are preferred to large, analytical or complex
+    016 ones.
+    017
+    018 Efficient:
+    019 
+    020 EXI must be competitve with hand-optimized binary formats sot it can be used
+    021 by applications that require this level of efficiency.
+    022 
+    023 Flexible:
+    024
+    025 EXI must deal flexibly and efficiently with documents that contain arbitrary
+    026 schema extensions or deviate from their schema. Documents that contain
+    027 schema deviations should not cause encoding to fail.
+    028
+    029 Interoperable:
+    030
+    031 EXI must integrate well with existing XML technologies, minimizing the 
+    032 changes required to those technologies. It must be compatible with the XML
+    033 Information Set [XML Information Set], without significant subsetting or
+    034 supersetting, in order to maintain interoperability with existing and
+    035 prospective XML specifications.
+");
+};
