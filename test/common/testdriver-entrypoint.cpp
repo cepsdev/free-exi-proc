@@ -97,6 +97,5 @@ extern "C" void init_plugin(IUserdefined_function_registry* smc)
   cepsplugin::plugin_master = smc->get_plugin_interface();
   cepsplugin::plugin_master->reg_ceps_phase0plugin("exi_obj", cepsplugin::plugin_entrypoint_object);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("exi_op", cepsplugin::plugin_entrypoint_operation);
-
 }					
 				

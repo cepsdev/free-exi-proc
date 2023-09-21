@@ -10,7 +10,7 @@ docinfo_se(
 001 The Efficient XML Interchange (EXI) format is a very compact, high 
 002 performance XML representation that was designed to work well for a broad
 003 range of applications. It simultaneously improves performance and
-004 significantly reduces bandwitdt requirements without compromising efficient
+004 significantly reduces bandwitdth requirements without compromising efficient
 005 use of other resources such as battery life, code size, processing power,
 006 and memory.
 007

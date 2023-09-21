@@ -92,7 +92,13 @@ docinfo_se(
 );
 };
 
-exegesis{};
+exegesis{
+    label __1__2__ex_1; 
+    witness_ref{ id(__1__2);lines(72 .. 74);};
+    docinfo_se("For UTF-8 this means the 'usual' ordering, i.e. the lexicographic order as induced by the '<'-relation on bytes. 
+    No locale aware collation (see https://unicode.org/reports/tr10/).");
+};
+
 
 kind GrammarNonterminal;
 kind GrammarTerminal;
@@ -129,7 +135,8 @@ EXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal
 EXIConcept_Grammar_NoDanglingLHS NoDanglingLHS;
 
 label __1__2__CheckEXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal 
- title = "Concept: Grammar_EachLHSContainsExactlyOneNonTerminal"; witness_ref{ id(__1__2);line(13);};
+ title = "Concept: Grammar_EachLHSContainsExactlyOneNonTerminal"; 
+ witness_ref{ id(__1__2);line(13);};
 
 macro CheckEXIConcept_Grammar_EachLHSContainsExactlyOneNonTerminal
 {

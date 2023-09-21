@@ -26,7 +26,8 @@ namespace v2g_guru_exi{
     class Grammar::Terminal{
         private:
             bool wild_card_uri() const { return !qname.uri; }                
-            bool wild_card_local_name() const {return !qname.local_name;}                
+            bool wild_card_local_name() const {return !qname.local_name;}
+            bool wild_card_local_name_only() const {return !qname.local_name && qname.uri;}                
             bool wild_card() const {return wild_card_uri() && wild_card_local_name(); }                
         public:
             using ev_type_t = uint16_t;
