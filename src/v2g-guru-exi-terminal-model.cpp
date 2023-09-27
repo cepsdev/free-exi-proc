@@ -17,11 +17,13 @@
 */
 #include "v2g-guru-exi.h"
 #include "free-exi-terminal.h"
+#include "v2g-guru-exi-model-adapter.h"
+
 #include <unordered_map>
 
 namespace v2g_guru_exi{
 
-    static void build_term_default(node_t, Grammar::Terminal::qname_t&, Grammar::Terminal::content_t&){
+    static void build_term_default(node_t, Grammar::Terminal&){
 
     }
 
@@ -29,33 +31,51 @@ namespace v2g_guru_exi{
     static std::string term_sym_kind{"GrammarTerminal"};
     
     static std::unordered_map<Grammar::Terminal::ev_type_t, 
-                              void (*)(node_t, Grammar::Terminal::qname_t&, Grammar::Terminal::content_t&)> 
+                              void (*)(node_t, Grammar::Terminal&)> 
      factories_pure_terminal
      {
         {{},build_term_default}
-
      }; 
     static std::unordered_map<Grammar::Terminal::ev_type_t, 
-                              void (*)(node_t, Grammar::Terminal::qname_t&, Grammar::Terminal::content_t&)> 
-     factories_parameterized_terminal
-     {
-        {{},build_term_default}
+                              void (*)(node_t, Grammar::Terminal&)> 
+     factories_parameterized_terminal;
 
-     }; 
-    
+    void init_model_structures(){
+        factories_pure_terminal = {
+            {{},build_term_default},
+            {ev_type_encoding["ED"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::ED;} },
+            {ev_type_encoding["SD"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::SD;} },
+            {ev_type_encoding["SE"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::SE;} },
+            {ev_type_encoding["EE"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::EE;} },
+            {ev_type_encoding["AT"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::AT;} },
+            {ev_type_encoding["CH"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::CH;} },
+            {ev_type_encoding["NS"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::NS;} },
+            {ev_type_encoding["CM"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::CM;} },
+            {ev_type_encoding["PI"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::PI;} },
+            {ev_type_encoding["DT"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::DT;} },
+            {ev_type_encoding["ER"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::ER;} },
+            {ev_type_encoding["SC"], [] (node_t, Grammar::Terminal& t) -> void {t.ev_type = Grammar::Terminal::SC;} }
+        };
+    }
+    template<> node_t ast_rep(Grammar::Terminal t){
+        return mk_undef("gagag");
+    }
+
     Grammar::Terminal::Terminal(grammar_elem_t rep_arg) {
-        //std::cerr << *rep_arg << "\n";
         string err_prefix = "Failed to construct Grammar::Terminal::Terminal: ";
         if (!rep_arg) throw std::invalid_argument{"Terminal(null)"};
         if (is<Ast_node_kind::symbol>(rep_arg)){
             auto& sym{as_symbol_ref(rep_arg)};
-            if (kind(sym) != term_sym_kind) throw std::invalid_argument{err_prefix+" unknown kind '"+kind(sym)+"'"};
+            if (kind(sym) != term_sym_kind) 
+             throw std::invalid_argument{err_prefix+" unknown kind '"+kind(sym)+"'"};
             auto ev_type_it {ev_type_encoding.find( ceps::ast::name(sym))};
-            if (ev_type_it == ev_type_encoding.end()) throw std::invalid_argument{err_prefix+" unknown event type '"+ceps::ast::name(sym)+"'"};
+            if (ev_type_it == ev_type_encoding.end()) 
+             throw std::invalid_argument{err_prefix+" unknown event type '"+ceps::ast::name(sym)+"'"};
             ev_type = ev_type_it->second;
             auto factory_it{factories_pure_terminal.find(ev_type)};
-            if (factory_it == factories_pure_terminal.end()) throw std::runtime_error{err_prefix+" no factory found for '"+ceps::ast::name(sym)+"'"};
-
+            if (factory_it == factories_pure_terminal.end()) 
+             throw std::runtime_error{err_prefix+" no factory found for '"+ceps::ast::name(sym)+"'"};
+            factory_it->second(rep_arg,*this);
         }
          else if (
             is<Ast_node_kind::func_call>(rep_arg) && 

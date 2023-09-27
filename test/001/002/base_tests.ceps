@@ -26,6 +26,18 @@ GrammarAction
 XMLEntity
     qname, 
     uri;
+
+"!!!!!!!!!!!!!!!!!!!!!!";
+
+exi_obj(
+ SE
+);
+
+exi_obj(
+ SD
+);
+
+
 /*
 exi_obj(
  SE(_*_)
@@ -47,7 +59,7 @@ exi_op(
         SE("name");
         SE("name");
     }
-);*/
+);
 
 scenario{
     title{"Two identical terminals should match.";};  
@@ -57,4 +69,4 @@ scenario{
             SD;
         }
     );
-};
+};*/

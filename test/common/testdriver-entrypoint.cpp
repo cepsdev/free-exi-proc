@@ -70,6 +70,16 @@ node_t cepsplugin::plugin_entrypoint_object(node_callparameters_t params){
             if (is_a_symbol_with_arguments(a, sym_name, sym_kind, arg_s_args)){
                 auto term{read_value<Grammar::Terminal>(a)};
                 if (term)  cout << sym_kind << '\n';
+            } else if (is<Ast_node_kind::symbol>(a)){
+                auto& sym{as_symbol_ref(a)};
+                auto& k{kind(sym)};
+                auto& n{name(sym)};
+                if(k == "GrammarTerminal")
+                {
+                    auto op_term{read_value<Grammar::Terminal>(a)};
+                    if (!op_term) return mk_undef();
+                    return ast_rep(*op_term);
+                }
             }
     }
     return mk_undef();
@@ -94,6 +104,7 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint_operation(ceps::ast::node_callpa
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
+  v2g_guru_exi::init_model_structures();
   cepsplugin::plugin_master = smc->get_plugin_interface();
   cepsplugin::plugin_master->reg_ceps_phase0plugin("exi_obj", cepsplugin::plugin_entrypoint_object);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("exi_op", cepsplugin::plugin_entrypoint_operation);

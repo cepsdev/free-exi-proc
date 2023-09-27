@@ -16,11 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-
 namespace v2g_guru_exi{
     using namespace ceps::ast;
     using namespace std;
-
 
     class Processor{
         EventStream event_stream;

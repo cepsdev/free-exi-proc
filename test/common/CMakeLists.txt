@@ -38,7 +38,8 @@ add_library(test_driver SHARED
             src/v2g-guru-exi-terminal.cpp
             src/free-exi-grammar-concepts.cpp
             src/free-exi-proc-stringtable.cpp
-            src/v2g-guru-exi-terminal-model.cpp           
+            src/v2g-guru-exi-terminal-model.cpp    
+            src/free-exi-proc-base.cpp    
            )
 
 target_link_libraries(test_driver cepscore)					

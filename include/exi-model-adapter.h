@@ -1,5 +1,5 @@
 /*
-    free-ewxi-proc - an EXI (= "Efficient XML Interchange") processor
+    v2g-guru-exi - an EXI (= "Efficient XML Interchange") processor
     Copyright (C) 2023 Tomas Prerovsky <cepsdev@hotmail.com>
 
     This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#pragma once
-#include "free-exi-terminal.h"
-#include "v2g-guru-exi-model-adapter.h"
 
+#define exi_comment(s)
+#define exi_model_interface(T) T 
 namespace v2g_guru_exi{
-    template<> optional<Grammar::Terminal> fetch<Grammar::Terminal>(node_t s)
-    {
-        return Grammar::Terminal{s};
-    }
-
-    template<> node_t ast_rep(Grammar::Terminal t);
-
+    void init_model_structures();
 }

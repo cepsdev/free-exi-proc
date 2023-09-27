@@ -29,6 +29,7 @@ namespace v2g_guru_exi{
     using namespace std;
 
     template<typename T> optional<T> fetch(node_t);
+    template<typename T> node_t ast_rep(T);
 
     template<typename T> 
         optional<T> read_value(node_t rep){
@@ -36,9 +37,6 @@ namespace v2g_guru_exi{
         }
     template<typename T> node_t ast_rep (T entity);
 
-    template<> node_t ast_rep(bool b){
-        return mk_int_node(b ? 1 : 0);
-    }
-
+    template<> node_t ast_rep(bool b);
 }
 
