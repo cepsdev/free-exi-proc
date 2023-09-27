@@ -39,6 +39,22 @@ std::unordered_map<std::string, Grammar::Terminal::ev_type_t> ev_type_encoding{
     {"SC", Grammar::Terminal::SC}
 };
 
+std::unordered_map<Grammar::Terminal::ev_type_t, std::string> ev_type_encoding{ 
+    {Grammar::Terminal::INVALID, {}},
+    {Grammar::Terminal::SD, "SD"},
+    {Grammar::Terminal::ED, "ED"},
+    {Grammar::Terminal::SE, "SE"},
+    {Grammar::Terminal::EE, "EE"},
+    {Grammar::Terminal::AT, "AT"},
+    {Grammar::Terminal::CH, "CH"},
+    {Grammar::Terminal::NS, "NS"},
+    {Grammar::Terminal::CM, "CM"},
+    {Grammar::Terminal::PI, "PI"},
+    {Grammar::Terminal::DT, "DT"},
+    {Grammar::Terminal::ER, "ER"},
+    {Grammar::Terminal::SC, "SC"}
+};
+
 bool operator == (Grammar::Terminal const & lhs, Grammar::Terminal const & rhs){
     if (!lhs.valid() || !rhs.valid()) return false;
     if ( is<Ast_node_kind::symbol>(lhs.get_rep()) && is<Ast_node_kind::symbol>(rhs.get_rep()) ){

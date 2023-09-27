@@ -45,6 +45,8 @@ namespace v2g_guru_exi{
             static constexpr ev_type_t ER{DT+1};
             static constexpr ev_type_t SC{ER+1};
 
+            bool qualified{};
+
             struct qname_t{
                 exi_comment(
                     witness_ref{
