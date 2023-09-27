@@ -92,12 +92,47 @@ docinfo_se(
 );
 };
 
+macro equality_test{
+   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+};
+
 exegesis{
     label __1__2__ex_1; 
     witness_ref{ id(__1__2);lines(72 .. 74);};
     docinfo_se("For UTF-8 this means the 'usual' ordering, i.e. the lexicographic order as induced by the '<'-relation on bytes. 
     No locale aware collation (see https://unicode.org/reports/tr10/).");
 };
+
+exegesis{
+    label __1__2__ex_2; 
+    witness_ref{ id(__1__2);lines(33 .. 37);};
+};
+
+macro qnames_equivalent {
+    equality_test{
+        a{arglist.qname.at(0).content().uri;arglist.qname.at(0).content().local_name;};
+        a{arglist.qname.at(1).content().uri;arglist.qname.at(1).content().local_name;};
+    };
+};
+
+fact{
+qnames_equivalent{
+    qname{ uri{uri_1;}; local_name{name_1;};prefix{prefix_1;}; };
+    qname{ uri{uri_1;}; local_name{name_1;};prefix{prefix_1;}; };
+};};
+
+fact{
+qnames_equivalent{
+    qname{ uri{uri_1;}; local_name{name_1;};prefix{prefix_1;}; };
+    qname{ uri{uri_1;}; local_name{name_1;};prefix{prefix_2;}; };
+};};
+
+non_fact{
+qnames_equivalent{
+    qname{ uri{uri_1;}; local_name{name_1;};prefix{prefix_1;}; };
+    qname{ uri{uri_1;}; local_name{name_2;};prefix{prefix_2;}; };
+};};
+
 
 
 kind GrammarNonterminal;
