@@ -68,12 +68,12 @@ node_t cepsplugin::plugin_entrypoint_object(node_callparameters_t params){
 	    vector<node_t> arg_s_args; // arg's args
         for(auto a: args)
             if (is_a_symbol_with_arguments(a, sym_name, sym_kind, arg_s_args)){
-                auto term{read_value<Grammar::Terminal>(a)};
-                if (term)  cout << sym_kind << '\n';
+                auto op_term{read_value<Grammar::Terminal>(a)};
+                if (op_term) return ast_rep(*op_term);
+         
             } else if (is<Ast_node_kind::symbol>(a)){
                 auto& sym{as_symbol_ref(a)};
                 auto& k{kind(sym)};
-                auto& n{name(sym)};
                 if(k == "GrammarTerminal")
                 {
                     auto op_term{read_value<Grammar::Terminal>(a)};

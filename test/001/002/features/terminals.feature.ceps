@@ -1,0 +1,74 @@
+macro verdict{
+result{
+  if(force_int(arglist.at(0))){
+        label Passed title = "" type="check";
+  } else {
+         label Failed title = "" type="error";
+  }
+};
+};
+
+GrammarTerminal SD,ED,SE,EE,AT,CH,NS,CM,PI,DT,ER,SC;
+
+terminals{
+ SD;ED;SE;EE;AT;CH;NS;CM;PI;DT;ER;SC;
+};
+
+
+Scenario{
+    title{"All terminals can be unqualified(in extension of the spec).";};
+    Given{
+        root.terminals.content().symbol("GrammarTerminal");
+    };
+    Then{
+       verdict{ equality_test{
+         test{
+            for(e:root.terminals.content().symbol()){
+              exi_obj(e);
+            }
+         };
+         test{
+            for(e:root.terminals.content().symbol()){
+              e;
+            }
+         };
+        };
+       };
+    };
+};
+
+Scenario{
+    title{"All qname-terminals can be of the form TERMINAL(*),TERMINAL(uri:*), TERMINAL(uri:local_name).";};
+    Given{
+        SE;AT;
+    };
+    Then{
+       verdict{ equality_test{
+         test{
+            exi_obj(SE("uri":"local_name"));
+            exi_obj(AT("uri":"local_name"));
+            exi_obj(SE(_*_));
+            exi_obj(AT(_*_));
+            exi_obj(SE("uri":_*_));
+            exi_obj(AT("uri":_*_));
+         };
+         test{
+            SE("uri":"local_name");
+            AT("uri":"local_name");
+            SE(_*_);
+            AT(_*_);
+            SE("uri":_*_);
+            AT("uri":_*_);
+         };
+        };
+       };
+    };
+};
+
+
+Summary{
+ for( e : root.Scenario){
+  e.title.content();
+  e.Then.result.content();
+ }
+};

@@ -2,6 +2,6 @@
 #!/bin/bash
 
 LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH ceps \
- model/* $1 --pe --format ansi\
+ model/* $1 --pe --format ansi --doc-option no-macros \
  --pluginlibtest_driver.so						
 					

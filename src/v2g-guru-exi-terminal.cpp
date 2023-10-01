@@ -39,7 +39,7 @@ std::unordered_map<std::string, Grammar::Terminal::ev_type_t> ev_type_encoding{
     {"SC", Grammar::Terminal::SC}
 };
 
-std::unordered_map<Grammar::Terminal::ev_type_t, std::string> ev_type_encoding{ 
+std::unordered_map<Grammar::Terminal::ev_type_t, std::string> ev_type_encoding_rev{ 
     {Grammar::Terminal::INVALID, {}},
     {Grammar::Terminal::SD, "SD"},
     {Grammar::Terminal::ED, "ED"},
@@ -155,6 +155,9 @@ string Grammar::Terminal::name() const {
 
 using namespace std;
 optional<Grammar::Terminal::content_t> Grammar::Terminal::get_content() const{
+    if (! (content.value || content.inherited_uri || content.inherited_name )) return {};
+    return content;
+
     if (!valid()) return {};
     if (!get_rep()) return {};
     
