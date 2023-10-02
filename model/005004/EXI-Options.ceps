@@ -1,0 +1,246 @@
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+
+label __5__4 title = "5.4 EXI Options";
+
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+001 [Definition:] The fifth part of the EXI header is the EXI Options, which
+002 provides a way to specify the options used to encode the body of the EXI 
+003 stream.
+004 [Definition:] The EXI Options are represented as an EXI Options document,
+005 which is an XML document encoded using the EXI format described in this
+006 specification. This results in a very compact header format that can be
+007 read and written with very little additional software.
+008 
+009 The presence of EXI Options in its entirety is optional in EXI header,
+010 and it is predicated on the value of the presence bit that follows the
+011 Distinguishing Bits. When EXI Options are present in the header, an
+012 EXI Processor MUST observe the specified options to process the EXI
+013 stream that follows. Otherwise, an EXI Processor may obtain the EXI
+014 options using another mechanism. There are no fallback option values 
+015 provided by this specification for use in the absence of the whole
+016 EXI Options part.
+017
+018 EXI processors MAY provide external means for applications or users to
+019 specify EXI Options when the EXI Options document is absent. Such EXI
+020 processors are typically used in controlled systems where the knowledge
+021 about the effective EXI Options is shared prior to the exchange of 
+022 EXI streams. The mechanisms to communicate out-of-band EXI Options
+023 and their representation are implementation dependent.
+024
+025 The following table describes the EXI options that may be specified
+026 in the EXI Options document.
+");
+
+table{
+    label __5__1__table title = "Table 5-1. EXI Options in Options Document";
+    header{th{"EXI Option";}; th{"Description";}; th{"Default Value";};};
+    tr{td{"alignment";};td{"Alignment of event codes and content items";};td{"bit-packed";};};
+    tr{td{"compression";};td{"EXI compression is used to achieve better compactness";};td{"false";};};
+    tr{td{"strict";};td{"Strict interpretation of schemas is used to achieve better compactness";};td{"false";};};
+    tr{td{"fragment";};td{"Body is encoded as an EXI fragment instead of an EXI document";};td{"false";};};
+    tr{td{"preserve";};td{"Specifies whether the support for the preservation of comments, pis, etc. is each enabled";};td{"LL false";};};
+    tr{td{"selfContained";};td{"Enables self-contained elements";};td{"false";};};
+    tr{td{"schemaId";};td{"Identify the schema information, if any, used to encode the body";};td{"no default value";};};
+    tr{td{"blockSize";};td{"Specifies the block size used for EXI compression";};td{"1,000,000";};};
+    tr{td{"valueMaxLength";};td{"Specifies the maimum string length of value content items to be considered for addition to the string table";};td{"unbounded";};};
+    tr{td{"valuePartitionCapacity";};td{"Specifies the total capacity of value partitions in a string table";};td{"unbounded";};};
+    tr{td{"[user defined meta-data]";};td{"User defined meta-data may be added";};td{"no default value";};};
+};
+
+docinfo_se(
+"
+027 Appendix C XML Schema for EXI Options Document provides an XML 
+028 Schema describing the EXI Options document. This schema is 
+029 designed to produce smaller headers for option combinations used
+030 when compactness is critical.
+031
+032 The EXI Options document is represented as an EXI body informed
+033 by the above mentioned schema using the default options 
+034 specified by the following XNL document. An EXI Options 
+035 document consists only of an EXI body, and MUST NOT start with
+036 an EXI header.
+037
+038 Header options used for encoding the EXI Options document
+039 <header xmlns=\"http://www.w3.org/2009/exi\">
+040   <strict/>
+041 </header>
+042
+043 Note that this specification does not require EXI processors
+044 to read and process the schema prescribed for EXI options
+045 document (C XML Schema for EXI Options Document), in order
+046 to process EXI options documents. EXI processors MUST use
+047 the schema-informed grammars that stem form the schema in
+048 processing EXI options documents, beyond which there is no
+049 requirement as to the use of the schema, and implementations
+050 are free to use any methods to retrieve the instructions 
+051 that observe the grammars for processing EXI options 
+052 documents. Section 8.5 Schema-informed Grammars describes
+053 the system to derive schema-informed grammars from XML-
+054 Schemas.
+055
+056 Below is a brief description of each EXI option.
+057
+058 [Definition:] The alignment option is used to control the
+059 alignment of event codes and content items. The value is 
+060 one of bit-packed, byte-alignment, or pre-compression, of
+061 which bit-packed is the default value assumed when the
+062 \"alignment\" element is absent in the EXI Options document.
+063 The option values byte-alignment and pre-compression are
+064 effected when \"byte\" and \"pre-compress\" elemensts are
+065 present in the EXI Options document, respectively. When
+066 the value of compression option is set to true, alignment
+067 of the EXI Body is governed by the rules specified in 
+068 9. EXI Compression instead of the alignment option value.
+069 The \"alignment\" element MUST NOT appear in an exi
+070 options document when the \"compression\" element is
+071 present.
+072
+073 [Definition:] The alignment option value bit-packed
+074 indicates that the event codes and associated content
+075 are packed in bits without any padding in-between.
+076
+077 [Definition:] The alignment option value byte-
+078 alignment indicates that the event codes and associated
+079 content are aligned on byte boundaries. While byte-
+080 alignment generally results in EXI streams of larger
+081 sizes compared with their bit-packed equivalents, byte-
+082 alignment may provide a help in some use cases that
+083 involve frequent copying of large arrays of scalar
+084 data directly out of the stream. It can also make
+085 it possible to work with datat inlocated in the 
+086 stream.
+087
+088 [Definition:] The alignment option value pre-
+089 compression indicates that all steps involved in
+090 compression (see section 9. EXI Compression) are
+091 to be done with the exception of the final step
+092 of applying the DEFLATE algorithm. The primary
+093 use case of pre-compression is to avoid a 
+094 duplicate compression capability is built into 
+095 the transport protocol. In this case, pre-compression
+096 just prepares the stream for later compression.
+097
+098 [Definition:] The compression option is a Boolean
+099 used to increase compactness using additional computational
+100 resources. The default value \"false\" is assumed when the
+101 \"compression\" element is absent in the EXI Options document
+102 whereas its presence denotes the value \"true\". When set to
+103 true, the event codes and associated content are compressed
+104 according to 9. EXI Compression regardless of the alignment
+105 option value. As mentioned above, the \"compression\" 
+106 element MUST NOT appear in an EXI options document when the
+107 \"alignment\" element is present.
+108
+109 [Definition:] The strict option is a Boolean used to increase
+110 compactness by using a strict interpretation of the schemas 
+111 and omitting preservation of certain items, such as comments,
+112 processing instructions, and namespace prefixes.
+113 The default value \"false\" is assumed when the \"strict\"
+114 element is absent in the EXI Options document whereas its 
+115 presence denotes the value \"true\". When set to true,
+116 those productions that have NS, CM, PI, ER, and SC terminal
+117 symbols are omitted from the EXI grammars, and schema-informed
+118 element and type grammars are restricted to only permit items
+119 declared in the schemas. A note in section 8.5.4.4.2 Adding
+120 Productions when Strict is True describes some additional 
+121 restrictions consequential of the use of this option.
+122 The \"strict\" element MUST NOT appear in an EXI options
+123 document when one of \"dtd\",\"prefixes\",\"comments\",
+124 \"pis\" or \"selfContained\" element is present in the same 
+125 options document.
+126
+127 [Definition:] The fragment option is a Boolean that indicates 
+128 whether the EXI body is an EXI document or an EXI fragment.
+129 When set to true, the EXI body is an EXI fragment. Otherwise,
+130 the EXI body is an EXI document. The default value \"false\"
+131 is assumed when the \"fragment\" element is absent in the EXI
+132 Options document whereas its presence denotes the value \"true\".
+133
+134 [Definition:] The preserve option is a set of Booleans that can be
+135 set independently to each enable or disable a share of the format's
+136 capacity determining whether or how certain information items can
+137 be preserved in the EXI stream. Section 6.3 Fidelity Options
+138 describes the set of information items affected by the preserve
+139 option. The presence of \"dtd\", \"prefixes\",\"lexicalValues\",
+140 \"comments\", and \"pis\" in the EXI Options document each turns
+141 on fidelity Preserve.comments, Preserve.pis, Preserve.dtd, 
+142 Preserve.prefixes and Preserve.lexicalValues whereas the absence
+143 denotes turning each off. The elements \"dtd\", \"prefixes\", 
+144 \"comments\" and \"pis\" MUST NOT appear in an EXI options document
+145 when the \"strict\" element is present in the same options document.
+146 The element \"lexicalValues\", on the other hand, is permitted to
+147 occur in the presence of \"strict\" element.
+148 [Definition:] The selfContained option is Boolean used to enable
+149 the use of self-contained elements in the EXI stream. Self-contained
+150 elements may be read independently from the rest of the EXI body, 
+151 allowing them to be indexed for random access. The \"selfContained\"
+152 element MUST NOT appear in an EXI options document when one of 
+153 \"compression\", \"pre-compression\" or \"strict\" elemenbts are
+154 present in the same options document. The default value \"false\"
+155 is assumed when the \"selfContained\" element is absent from the
+156 EXI Options document whereas its presence denotes the value \"true\".
+157
+158 [Definition:] The schemaId option may be used to identify the schema 
+159 information used for processing the EXI body. When the \"schemaId\"
+160 element in the EXI options document contains the xsi:nil attribute
+161 with its value set to true, no schema information is used for processing
+162 the EXI body (i.e. a schema-less EXI stream). When the value of the
+163 \"schemaId\" element is empty, no user defined schema information is
+164 used for processing the EXI body; however, the built-in XML schema 
+165 types are available for use in the EXI body. When the schemaId option
+166 is absent (i.e., undefined), no statement is made about the schema
+167 information used to encode the EXI body and this information MUST be
+168 communicated out of band. This specification does not dictate the
+169 syntax or semantics of other values specified in this field. An 
+170 example schemaId scheme is the use of URI that is apt for globally
+171 identifying schema resources on the Web. The parties involved in
+172 the exchange are free to agree on the scheme of schemaId field that
+173 is appropriate for their use to uniquely identify the schema
+174 information.
+175
+176 [Definition:] The datatypeRepresentationMap option specifies an 
+177 alternate set of datatype representations for typed values in the
+178 EXI body as described in 7.4 Datatype Representation Map. When there
+179 are no \"datatypeRepresentationMap\" elements in the EXI Options
+180 document, no Datatype Representation Map is used for processing the
+181 EXI body. This option does not take effect when the value of the
+182 Preserve.lexicalValues fidelity option is true (see 6.3 Fidelity 
+183 Options), or when the EXI stream is a schema-less EXI stream.
+184
+185 [Definition:] The blockSize option specifies the block size used
+186 for EXI compression. When the \"blockSize\" element is absent in
+187 the EXI Options document, the default blocksize of 1,000,000 is used.
+188 The default blockSize is intentionally large but can be reduced for
+189 processing large documents on devices with limited memory.
+190
+191 [Definition:] The valueMaxLength option specifies the maximum 
+192 length of value content items to be considered for addition to
+193 the string table. The default value \"unbounded\" is assumed when
+194 the \"valueMaxLength\" element is absent in the EXI Options
+195 document.
+196 
+197 [Definition:] The valuePartitionCapacity option specifies the 
+198 maximum number of value content items in the string table at any
+199 given time. The default value \"unbounded\" is assumed when the
+200 \"valuePartitionCapacity\" element is absent in the EXI Options
+201 document. Section 7.3.3 Partitions Optimized for Frequent use of
+202 String Literals specifies the behavior of the string table when
+203 this capacity is reached.
+204
+205 [Definition:] The user defined meta-data conveys auxiliary 
+206 information that applications may use to facilitate 
+207 interpretation of the EXI stream. The user defined meta-data
+208 MUST NOT be interpreted in a way that alters or extends the 
+209 EXI data format defined in this specification. User defined 
+210 meta-data may be added to an EXI Options document just prior
+211 to the alignment option.
+
+");
+
+
+};
