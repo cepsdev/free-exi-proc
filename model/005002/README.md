@@ -1,0 +1,32 @@
+
+<pre>
+<span style="color: rgb(245,245,245);">witness{</span>
+ 📎 5.2 Distinguishing Bits
+
+--------------------------------------------------------------------------------
+001 [Definition:] The second part in the EXI header is the Distinguishing Bits,
+002 which is a two bit field of which the first bit contains the value 1 and 
+003 the second bit contains the value 0, as follows.
+
+ <span style="color: rgb(245,245,245);">DistinguishingBits{</span><span style="color: rgb(245,245,245);">1</span> <span style="color: rgb(245,245,245);">0</span> <span style="color: rgb(245,245,245);">}</span> 
+
+004 Unlike the optional EXI cookie that MAY occur to precede this field, the
+005 presence of Distinguishing Bits is REQUIRED in the EXI header. It is
+006 used to distinguish EXI streams form text XML documents in the absence
+007 of an EXI cookie. This two bit sequence is the minimum that suffices to
+008 distinguish EXI streams from XML documents since it is the minimum length
+009 bit pattern that cannot occur as the first two bits of a well-formed XML
+010 document represented in any one of the conventional charaber encodings,
+011 such as UTF-8, UTF-16, UTF-32, UCS-2, UCS-4, EBCDIC, ISO 8859, Shift-JIS
+012 and EUC, according to XML [XML 1.0] [XML 1.1]. Therefore, XML Processors
+013 that do not support EXI are expected to reject an EXI strem as early as 
+014 they read and process the first byte from the stream.
+015
+016 Systems that use EXI streams as well as XML documents can reliably look
+017 at the Distinguishing Bits to determine whether to interpret a 
+018 particular stream as XML or EXI.
+
+<span style="color: rgb(245,245,245);">}</span>
+
+</pre>
+
