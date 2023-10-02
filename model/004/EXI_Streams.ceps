@@ -13,21 +13,165 @@ docinfo_se(
 002 [Definition:] The EXI body carries the content of the document, while the
 003 EXI header communicates the options used for encoding the EXI body.
 004 Section 5. EXI Header describes the EXI header.
-006
-007 [Definition:] The building block of an EXI body is an EXI event. An EXI body
-008 consists of a sequence of EXI events representing an EXI document or an EXI
-009 fragment.
-010
-011 The EXI events permitted at any given position in an EXI stream are
-012 determined by the EXI grammar. As is the case with XML, the events occur
-013 with nesting pairs of matching start element and end element events where 
-014 where any pair does not intersect with another except when it is fully
-015 contained in the other. The EXI grammar incorporates knowledge of the XML
-016 grammar and may be augmented and refined using schema information and
-017 fidelity options. The EXI grammar is formally specified in section 8.
-018 EXI Grammars.
-019
-020 
-
+005 [Definition:] The building block of an EXI body is an EXI event. An EXI
+006 body consists of a sequence of EXI events representing an EXI document or
+007 an EXI fragment.
+008 
+009 The EXI events permitted at any given positionin an EXI stream are determined
+010 by the EXI grammar. As is the case with XML, the events occur with nesting
+011 pairs of matching start element and end element events wehre any pair does
+012 not intersect with another except when it is fully contained in the other.
+013 The EXI grammar incorporates knowledge of the XML grammar and may be augmented
+014 and refined using schema information and fidelity options. The EXI grammar is
+015 formally specified in section 8. EXI Grammars.
+016 
+017 An EXI body can represent an EXI document with a single root elemet or an EXI
+018 fragment with zero or more root elements.
+019 [Definition:] EXI documents are EXI bodies with a single root element that 
+020 conform to the Built-in Document Grammar (See 8.4.1 Built-in Document Grammar)
+021 or Schema-informed Document Grammar (See 8.5.1 Schema-informed Document
+022 Grammar). 
+023 [Definition:] EXI fragments are EXI bodies with zero or more root elements 
+024 that conform to the Built-in Fragment Grammar (See 8.4.2 Built-in Fragment 
+025 Grammar) or Schema-informed Fragment Grammar (See 8.5.2 Schema-informed  
+026 Fragment Grammar).
+027
+028 [Definition:] When schema information is available to describe the contents 
+029 of an EXI body, such an EXI stream is a schema-informed EXI stream and the 
+030 EXI body is interpreted according to the Schema-informed Document Grammar 
+031 (See 8.5.1 Schema-informed Document Grammar) or Schema-informed Fragment 
+--------------------------------------------------------------------------------
+032 Grammar (See 8.5.2 Schema-informed Fragment Grammar). 
+033 [Definition:] Otherwise,  an EXI stream is a schema-less EXI stream, and the 
+034 EXI body is interpreted according to the Built-in Document Grammar (See 
+035 8.4.1 Built-in Document Grammar) or Built-in Fragment Grammar ( See 8.4.2 
+036 Built-in Fragment Grammar).
+037
+038 The following table summarizes the EXI event types and associated event 
+039 content that occur in an EXI stream.
+040 [Definition:] The content of an event consists of content items, and the 
+041 content items appear in an EXI stream in the order they are shown in the 
+042 table following their respective event codes that each marks the start of 
+043 an event.
+044 In addition, the table includes the gramamr notation used to represent 
+045 each event in this specification. Each event in an EXI stream participates
+046 in a mapping system that relates events to XML Informationitems so that an 
+047 EXI document or an fragment as a whole serves to represent an XML 
+048 Information Set.
+049 The table shows XML information items relevant to each EXI event. Appendix B
+050 Infoset apping describes the mapping system in detail. 
 ");
+
+table{
+label __T4_1 title = "Table 4-1. EXI events";
+header{ th{"EXI Event Type";}; th{"Event Content(Content Items)";}; th{"Grammar Notation (Terminal Symbols)";}; th{"Information Item";}; };
+tr{td{"Start Document";};td{};td{SD;};td{"B.1 Document Information Item";};};
+tr{td{"End Document";};td{};td{ED;};td{"B.1 Document Information Item";};};
+tr{td{"Start Element";};td{qname{};};td{SE(qname{});SE(_*_); SE(uri:_*_);};td{"B.2 Element Information Items";};};
+tr{td{"End Element";};td{};td{EE;};td{"B.2 Element Information Items";};};
+tr{td{"Attribute";};td{qname{};value{};};td{AT(qname{});AT(_*_); AT(uri:_*_);};td{"B.3 Attribute Information Item";};};
+tr{td{"Characters";};td{value{};};td{CH;};td{"B.6 Character Information Item";};};
+tr{td{"Namespace Declaration";};td{uri{};prefix{};local_element_ns{};};td{NS;};td{"B.11 Namespace Information Item";};};
+tr{td{"Comment";};td{text{};};td{CM;};td{"B.7 Comment Information Item";};};
+tr{td{"Processing Instruction";};td{name{};text{};};td{PI;};td{"B.4 Processing Instructio Information Item";};};
+tr{td{"DOCTYPE";};td{name{};public{};system{};text{};};td{DT;};td{"B.8 Document Type Declaration Information Item";};};
+tr{td{"Entity Reference";};td{name{};};td{ER;};td{"B.5 Unexpanded Entity Reference Information Item";};};
+tr{td{"Self Contained";};td{};td{SC;};td{};};
 };
+
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+051 Section 6. Encoding EXI Streams describes the algorithm used to encode 
+052 events in the EXI stream. As indicated in the table above, there are
+053 some event types that carry content with their event instances while
+054 other event types function as markers without content.
+055
+056 SE events may be followed by a series of NS events. Each NS event either
+057 associates a prefix with an URI, assigns a default namespace, or in the
+058 case of a namespace declaration with an empty URI, rescinds one of such
+059 associations in effect at the point of its occurrence. The effect of the
+060 association of disassociation cuased by a NS evet stays in effect until
+061 the corresponding EE event occurs.
+062
+063 Like XML, the namespace of a particular element may be specified by a
+064 namespace declaration preceding the element or a local namespace
+065 declaration following the element name. When the namespace is specified 
+066 by a local namespace declaration, the local-element-ns flag of the 
+067 associated NS event is set to true and the prefix of the element is set to 
+068 the prefix of that NS event. When the namespace is specified by a previous 
+069 namespace declaration, the local-element-ns flag of all local NS events is 
+070 false and the prefix of the element is set according to the prefix component 
+071 of the element qname. The series of NS events associated with a particular 
+072 element may include at most one NS event with its local-element-ns flag set 
+073 to true. The uri of a NS event with its local-element-ns flag set to true 
+074 MUST match the uri of the associated SE event.
+075
+076 The namespace of elements and attributes is specified as part of SE and AT 
+077 events and hence namespace declarations can be omitted from the EXI stream 
+078 if preservation of prefixes is not required by the applications. As 
+079 prescribed by Table B-2 and Table B-11 [namespace attributes] representing 
+080 namespace declarations are mapped to NS events and SHOULD NOT be 
+081 represented by AT events. This also implies that the following AT events
+082 SHOULD NOT occur in EXI streams: 
+083 (1) AT events with qname whose uri is \"http://www.w3.org/2000/xmlns\"; 
+084 (2) AT events with qname which has empty uri (\"\") and local names either 
+085 of the form \"xmlns\" or \"xmlns:*\", where \"*\" represents a string with
+086 zero or more characters.
+087
+088 An SE event may be followed by a SC event, indicating the elemet is 
+089 self-contained and can be read independently fron the rest of the EXI 
+090 body. Applications may use self-contained elements to index portions of the 
+091 EXI body for random access.
+092
+093 The representation of event codes which identify the event type and start 
+094 each event is described in 6.2 Representing Event Codes. Each item in the 
+095 event content has a datatype representation associated with it as shown in 
+096 the following table. The content of each event, if any, is encoded as a 
+097 sequence of items each of which being encoded according to its datatype
+098 representation in order starting with the first item followed by 
+099 subsequent items.
+");
+
+table{
+label __T4_2 title = "Table 4-2. Datatype representation of event content items";
+header{ th{"Content Item";}; th{"Used in";}; th{"Datatype representation";}; };
+tr{td{name{};};td{PI;DT;ER;};td{"7.1.10 String";};};
+tr{td{prefix{};};td{NS;};td{"7.1.10 String";};};
+tr{td{local_element_ns{};};td{NS;};td{"7.1.2 Boolean";};};
+tr{td{public{};};td{DT;};td{"7.1.10 String";};};
+tr{td{qname{};};td{SE;AT;};td{"7.1.7 QName";};};
+tr{td{system{};};td{DT;};td{"7.1.10 String";};};
+tr{td{text{};};td{CM;PI;DT;};td{"7.1.10 String";};};
+tr{td{uri{};};td{NS;};td{"7.1.10 String";};};
+tr{td{value{};};td{CH;AT;};td{"According to the schema datatype (see 7, Representing Event Content) if any is in effect, otherwise 7.1.10 String";};};
+
+
+
+};
+
+
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+100 The datatype representation used for each value content item dependes on the 
+101 schema datatype if any thtat is in effect for that value. The String 
+102 datatype representation (see 7.1.10 String) is used for values that do not
+103 have an associated schema datatype, canno be or are opted not t be 
+104 represented by their associated datatype representations, or occur in mixed
+105 content. Section 7.Representing Event Content describes how each of the 
+106 types listed above are encoded in an EXI stream.
+107
+108 Note:
+109
+110 The syntax and semantics of the NS event are designed to minimize the 
+111 overhead required for representing namespace prefices in EXI streams 
+112 without introducing significant complexity. In the common case where each 
+113 namespace is bound to a single prefix, this design reduces the overhead for 
+114 representing all element and attribut namespace prefixes to zero bits.
+"
+);
+
+};
+
+
