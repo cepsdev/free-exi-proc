@@ -5,6 +5,20 @@ DocgenStringPrintNoEscape docinfo_se;
 docinfo_se(
 
 "
+--------------------------------------------------------------------------------
+001 Each event code is represented by a sequence of 1 to 3 parts that uniquely
+002 identify an event. Event code parts are encoded in order starting with the
+003 first part followed by subsequent parts.
+004
+005 The i-th part of an event code is encoded as an n-bit unsigned integer 
+006 (7.1.9 n-bit Unsigned Integer), where n is ceil(log_2(m)) an m is the
+007 number of distinct values used as the i-th part of its own and all its 
+008 sibling event codes in the current grammar. Two event codes are siblings
+009 at the i-th part if and only if they share the same values in all preceding
+010 parts. All event codes are siblings at the first part.
+011
+012 If there is only one distinct value for a given part, the part is omitted
+013 (i.e., encoded in log_2 1 bits = 0 bits = 0 bytes).
 "
 
 );
