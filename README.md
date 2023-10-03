@@ -14,8 +14,8 @@ The meaning of the term "truly open" includes:
 
 ## Installation
 ### Requirements
-- Unixish OS
-- recent C++ compiler (e.g. g++ version >= 9)
+- Unix*ish* OS
+- recent*ish* C++ compiler (e.g. g++ version >= 9)
 - cmake
 - https://github.com/cepsdev/machines4ceps
 ### Build
