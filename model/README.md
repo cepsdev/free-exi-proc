@@ -1,4 +1,7 @@
 # Model
+> It's not the destination, It's the journey.
+>  
+> -- <cite>Ralph Waldo Emerson</cite>
 
 ## [1.Introduction](001/)
 ### [1.1 History and Design](001001/)
