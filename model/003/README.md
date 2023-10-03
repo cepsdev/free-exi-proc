@@ -1,0 +1,41 @@
+
+<pre>
+<span style="color: rgb(245,245,245);">witness{</span>
+ 📎 3. Basic Concepts
+
+    --------------------------------------------------------------------------------
+
+    001 EXI achieves broad generality, flexibility, and performance, by unifying
+    002 concepts form formal language theory and information theory into a single, 
+    003 relatively simple algorithm. The algorithm uses a grammar to determine what
+    004 is likely to occur at any given point in an XML document and encodes the
+    005 most likely alternatives in fewer bits. The fully generalized algorithm
+    006 works for any language that can be described by a grammar (e.g. XML, JAVA,
+    007 HTTP, etc.); however, EXI is optimized specifically for XML languages.
+    008
+    009 The built-in EXI grammars accept any XML document or fragment and may be
+    010 augmented with productions derived from schemas or other sources of
+    011 information about what is likely to occur in a set of XML documents.
+    012 When schemas are used, EXI also supports a user-customizable set of
+    013 Datatype Representations for efficiently representing typed values.
+    014 Though use of any schema languages including XML Schemas [XML Schema
+    015 Structures] [XML Schema Datatypes], RELAX NG schemas [ISO/IEC 19757-
+    016 2-2008], DTDs [XML 1.0] [XML 1.1] is permitted, EXI grammars and 
+    017 datatype representations need to be given bindings for each schema 
+    018 language used. This specification only defines how EXI grammars
+    019 and datatype representations relate to XNL Schema.
+    020
+    021 The EXI stream encoder uses the grammar to map a stream of XNL information
+    022 items onto a smaller, lower entropy, stream of events.
+    023
+    024 The EXI stream encoder then represents the stream of events using a set of
+    025 simple variable length codes called event codes. Event codes are similar
+    026 to Huffman codes [Huffman Coding], but are much simpler to compute and 
+    027 maintain. They are encoded directly as a sequence of values, or if 
+    028 additional compression is desired, they are passed to the EXI compression
+    029 algorithm, which replaces frequently occuring event patterns to further
+    030 reduce size.
+
+<span style="color: rgb(245,245,245);">}</span>
+
+</pre>
