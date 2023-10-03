@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for i in `ls -d model/0*`
+do
+ if [ -d $i ] ; then
+  ceps `ls $i/*.ceps` --pe --format ansi | aha | tail -n +10 | sed 's/<\/body>//' | sed 's/<\/html>//' > $i/README.md
+ fi
+done

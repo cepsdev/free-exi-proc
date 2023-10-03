@@ -1,4 +1,3 @@
-
 <pre>
 <span style="color: rgb(245,245,245);">witness{</span>
  📎 5.3 EXI Format Version
@@ -81,4 +80,5 @@
 <span style="color: rgb(245,245,245);">}</span>
 
 </pre>
+
 
