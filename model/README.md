@@ -11,6 +11,10 @@
 ### [5.2 Distinguishing Bits](005002/)
 ### [5.3 EXI Format Version](005003/)
 ### [5.3 EXI Cookie](005003/)
-### [5.4.EXI Options](005004/)
+### [5.4 EXI Options](005004/)
+## [6. Encoding EXI Streams](006/)
+### [6.1 Determining Event Codes](006001/)
+### [6.2 Representing Event Codes](005002/)
+### [6.3 Fidellkity Options](006003/)
 
 
