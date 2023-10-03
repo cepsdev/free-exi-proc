@@ -8,38 +8,49 @@ Witness{
 
  docinfo_se(
 
-  "The structure of an EXI stream is described by the EXI grammars, which are 
-  formally specified in section 8.EXI Grammars. Each grammar defines which
-  events are permitted to occur at any given point in the EXI stream and provides
-  a pre-assigned event code for each one.
-
-  For example, the grammar productions below describe the events that occur in a
-  schema-informed EXI stream after the Start-Document (SD) event provided there
-  are four global elements defined in the schema an assign an event code for each
-  one. See 8.5.1 Schema-informed Document Grammar for the process used for generating
-  the grammar productions below from the schema.
-
-  Example 6-1. Example productions with event codes
-
-   Syntax                               Event Code
-     DocContent
-      SE(\"A\") DocEnd                    0
-      SE(\"B\") DocEnd                    1
-      SE(\"C\") DocEnd                    2
-      SE(\"D\") DocEnd                    3
-      SE(*) DocEnd                        4
-      DT DocContent                       5.0
-      CM DocContent                       5.1.0
-      PI DocContent                       5.1.1
-
-  At the point on an EXI stream where the above grammar productions are in effect,
-  the event code of Start Element \"A\" (i.e. SE(\"A\")) is 0. The event code of a
-  DOCTYPE(DT) event at this point in the stream is 5.0, and so on.
+  "
+--------------------------------------------------------------------------------
+001 The structure of an EXI stream is described by the EXI grammars, which are 
+002 formally specified in section 8.EXI Grammars. Each grammar defines which
+003 events are permitted to occur at any given point in the EXI stream and
+004 provides a pre-assigned event code for each one.
+005
+006 For example, the grammar productions below describe the events that occur 
+007 in a schema-informed EXI stream after the Start-Document (SD) event provided
+008 there are four global elements defined in the schema an assign an event code
+009 for each one. See 8.5.1 Schema-informed Document Grammar for the process 
+010 used for generating the grammar productions below from the schema.
+011
+012 Example 6-1. Example productions with event codes
+013
+014 Syntax                               Event Code
+015  DocContent
+016   SE(\"A\") DocEnd                    0
+017   SE(\"B\") DocEnd                    1
+018   SE(\"C\") DocEnd                    2
+019   SE(\"D\") DocEnd                    3
+020   SE(*) DocEnd                        4
+021   DT DocContent                       5.0
+022   CM DocContent                       5.1.0
+023   PI DocContent                       5.1.1
+024
+025 At the point in an EXI stream where the above grammar productions are in
+026 effect, the event code of Start Element \"A\" (i.e. SE(\"A\")) is 0.
+027 The event code of a DOCTYPE(DT) event at this point in the stream is 5.0, 
+028 and so on.
   "
 );
 };
+macro equal{
+   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+};
 
-Exegesis{
+exegesis{
+    label __6__1__ex_1; 
+    witness_ref{ id(__6__1);lines(12 .. 28);};
+};
+
+example_6_1{
     kind GrammarNonterminal;
     kind GrammarTerminal;
     kind GrammarName;
@@ -60,24 +71,36 @@ Exegesis{
             rhs{CM; DocContent; EventCode(5,1,0);};
             rhs{PI;DocContent; EventCode(5,1,1);};
    };
+
 };
 
-val g = root.Exegesis.last().content().Grammar;
-val list_of_event_codes = exi_proc(operation{extract_event_codes{g;};});
-val expected_event_codes = {
-    result{ {0;}; {1;}; {2;}; {3;}; {4;}; {5;0;}; {5;1;0;}; {5;1;1;}; };
+val g = root.example_6_1.Grammar;
+
+macro determine_event_code{
+   val found = 0;
+   for(r : arglist.at(0).Grammar.rhs){
+        val res = force_int(symbolic_equality(r.content().at(0), arglist.at(1)).diff.equal.content());
+        if(res && !found){
+            let found = 1;
+            r.content().at(2);
+        }
+    }
+    if (!found) { undef; }
 };
 
-
-val res = symbolic_equality(list_of_event_codes,expected_event_codes);
-
-if (!as_int(res.diff.equal.content())){
-    label __6__1__extract_event_codes title = "6.1. (extract_event_codes) Equality test failed" type="error";
-    res.diff.reason;
-}
-
-
-
+fact{
+  equal{   
+    determine_event_code{ kind GrammarTerminal; GrammarTerminal SE; g;SE("A");};
+    EventCode(0);
+  };
+};
+    
+fact{
+  equal{   
+    determine_event_code{ kind GrammarTerminal; GrammarTerminal DT; g;DT;};
+    EventCode(5,0);
+  };
+};
 
 
 
