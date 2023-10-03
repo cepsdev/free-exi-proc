@@ -39,7 +39,7 @@
 033 Those readers who prefer a step-by-step introduction to the EXI format
 034 design and features are suggested to start with the non-normative
 035 [EXI Primer].
-</pre>
+
 <span style="color: rgb(245,245,245);">}</span>
 <span style="color:purple;"></span><span style="font-weight:bold;color:purple;">State Machine </span><span style="color: rgb(245,245,245);"></span><span style="font-style:italic;color: rgb(245,245,245);"></span><span style="font-weight:bold;font-style:italic;color: rgb(245,245,245);">EXI processor</span>
  <span style="color: rgb(175,175,135);"></span><span style="font-weight:bold;color: rgb(175,175,135);">States:</span>
@@ -62,4 +62,4 @@
    <span style="color:teal;">ProcessData</span> --▶<span style="color:teal;">WaitForData</span>      
    <span style="color:teal;">WaitForData</span> -<span style="color: rgb(0,175,255);">DecodeStream</span>-▶<span style="color:teal;">ProcessData</span> 
 
-
+</pre>
