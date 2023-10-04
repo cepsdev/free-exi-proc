@@ -17,7 +17,7 @@
 ### [5.4 EXI Options](005004/)
 ## [6. Encoding EXI Streams](006/)
 ### [6.1 Determining Event Codes](006001/)
-### [6.2 Representing Event Codes](005002/)
+### [6.2 Representing Event Codes](006002/)
 ### [6.3 Fidelity Options](006003/)
 
 
