@@ -1,0 +1,69 @@
+label __6__3 title = "6.3 Fidelity Options";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+--------------------------------------------------------------------------------
+001 Some XML applications do not require the entire XML feature set and would
+002 prefer to eliminate the overhead associated with unused features. For 
+003 example, the SOAP 1.2 specification [SOAP 1.2] probibits the use of XML 
+004 processing instructions. In addition, there are many data-exchange use
+005 cases that do not require XML comments or DTDs.
+006
+007 The preserve option in EXI Options comprises a set of fidelity options, each
+008 of which independently enables or disables the format's capacity for the
+009 preservation (or preservation level) of a certain type of information item.
+010 Applications can use the preserve option to specify the set of Fidelity
+011 options they require. As specified in section 8.3 Pruning Unneeded 
+012 Productions, EXI processors MUST use these fidelity options to prune
+013 productions that match the associated events form the grammars, improving
+014 compactness and processing efficiency.
+015
+016 The table below lists the fidelity options supported by this version of
+017 the EXI specification and describes the effect setting these options has
+018 on the EXI stream.
+");
+
+table{
+label __6__3__table title="Fidelity options";
+header{
+ th{"Fidelity option";};th{"Effect";};};
+ tr{
+  td{Preserve.comments;};
+  td{"CM events can be preserved";};
+ };
+ tr{
+  td{Preserve.pis;};
+  td{"PI events can be preserved";};
+ };
+ tr{
+  td{Preserve.dtd;};
+  td{"DT and ER events can be preserved";};
+ };
+ tr{
+  td{Preserve.prefixes;};
+  td{"NS events and namespace prefixes can be preserved";};
+ };
+ tr{
+  td{Preserve.lexicalValues;};
+  td{"Lexical orm of element and attribute values can be preserved in value content items";};
+ };
+};
+
+docinfo_se(
+"
+019 When qualified names [Namespaces in XML 1.0] [Namespaces in XML 1.1] are used
+020 in the values of AT or CH events in an EXI Stream, the Preserve.prefixes 
+021 fidelity option SHOULD be turned on to eneable the preservaion of the NS prefix
+022 declarations sed by these values. Note, in particular among other cases, that
+023 this practice applies to the use of xsi:type attributes in EXI streams When
+024 Preserve.lexicalValues fidelity option is set to true.
+025
+026 See section 4. EXI Streams for the definition of EXI event types and their
+027 associated content items.
+")
+;
+
+
