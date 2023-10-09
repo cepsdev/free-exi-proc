@@ -1,0 +1,244 @@
+label __7 title = "7. Representing Event Content";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+--------------------------------------------------------------------------------
+001 The event code of each event in an EXI body is represented as a sequence of
+002 n-bit unsigned integers (7.1.9 n-bit Unsigned Integer). See section 6.2
+003 Representing Event Codes for the descripion of the event code representation.
+004 The content items of an event are represented according to their datatype
+005 representations (see Table 4-2). In the absence of an associated datatype
+006 representation, attribute and character values are represented as String
+007 (7.1.10 String).
+008
+008 [Definition:] EXI defines a minimal set of datatype representations called
+009 Built-in EXI datatype representations that define how content items as
+010 well as the parts of an event code are represented in EXI streams. When the
+011 Preserve.lexicalValues option is false, values are represented using EXI 
+012 datatype representations (see 7.1 Built-in EXI Datatype Representations)
+013 or user-defined datatype representations (see 7.4 Datatype Representation
+014 Map) associated with the schema datatypes. Otherwise, values are 
+015 represented as Strings with restricted character sets (see Table 7-2 below).
+016
+017 The following Table 7-1 lists the built-in EXI datatype representations,
+018 associated EXI datatype identifiers and the XML Schema built-in datatypes
+019 each EXI datatype representation is used to represent by default. When that
+020 default association is in effect, datatypes derived from the XML Schema
+021 datatypes are also represented according to the associated built-in EXI 
+022 datatype representation. For example, a value of XML Schema datatype
+023 xsd:int is represented according to the same built-in EXI Datatype
+024 representation as a value of Schema datatype xs:integer. Although
+025 xsd:int is derived indirectly from xsd:integer and also further from
+026 xsd:decimal, a value xsd:int is processed as an instance of 
+027 xsd:integer because xsd:integer is closer to xsd:int than xsd:decimal
+028 is in the datatype inheritance hierarchy.
+");
+
+table{
+label __7__1__table title="Table 7-1. Built-in EXI Datatype Representations";
+header{
+ th{"Built-in EXI Datatype Representation";};
+ th{"EXI Datatype ID";};
+ th{"XML Schema Datatypes";};
+ };
+ tr{
+  td{Binary;};
+  td{exi:base64Binary; exi:hexBinary;};
+  td{base64Binary; hexBinary;};
+ };
+ tr{
+  td{Boolean;};
+  td{exi:boolean;};
+  td{boolean;};
+ };
+ tr{
+  td{Date-Time;};
+  td{table{
+   tr{td{exi:dateTime;}; td{dateTime;};};
+   tr{td{exi:time;}; td{time;};};
+   tr{td{exi:date;}; td{date;};};
+   tr{td{exi:gYearMonth;}; td{gYearMonth;};};
+   tr{td{exi:gYear;}; td{gYear;};};
+   tr{td{exi:gMonthDay;}; td{gMonthDay;};};
+   tr{td{exi:gDay;}; td{gDay;};};
+   tr{td{exi:gMonth;}; td{gMonth;};};
+  };};
+ };
+ tr{
+  td{Decimal;};
+  td{exi:decimal;};
+  td{decimal;};
+ };
+ tr{
+  td{Float;};
+  td{exi:double;};
+  td{float;double;};
+ };
+ tr{
+  td{Integer;};
+  td{exi:integer;};
+  td{integer;};
+ };
+ tr{
+  td{String;};
+  td{exi:string;};
+  td{string;"anySimpleType and all types directly derived by union.";} ;
+ }; 
+ tr{
+  td{"n-Bit Unsigned Integer";};
+  td{};
+  td{"Not associated with any datatype directly, but used by Integer datatype representation for some bounded integers (see 7.1.5 Integer)";};
+ };
+ tr{
+  td{List;};
+  td{};
+  td{"All types directly derived by list, including NMTOKENS, IDREFS and ENTITIES";};
+ };  
+ tr{
+  td{QName;};
+  td{};
+  td{"xsi:type attribute values when Preserve.lexicalValues option values is false";};
+ }; 
+};
+
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+029 Each EXI datatype identifier above is a qnmae that uniquely identifies one
+030 of the built-in EXI datatype representations. EXI datatype identifiers
+031 are used in Datatype Representation Maps to change the datatype 
+032 representations used for specific schema datatypes and their sub-types.
+033 Only built-in EXI datatype representations that have been assigned
+034 identifiers are usable in Datatype Representation Maps.
+035
+036 When the Preserve.lexicalValues option is true, all values are represented
+037 as Strings. The table below defines restricted character sets for
+038 several of the built-in EXI datatypes. Each value that would have
+039 otherwise been represented by one of these datatypes is instead
+040 represented as a String with the associated restricted character set,
+041 regardless of the actual pattern facets, if any, specified in the
+042 definitions of the schema datatypes.
+");
+
+table{
+label __7__2__table title="Table 7-2. Restricted Character Sets for Built-in EXI Datatype Representations";
+header{
+ th{"EXI Datatype ID";};
+ th{"Restricted Character Set";};
+ };
+ tr{
+  td{exi:base64Binary;};
+  td{"{#x9, #xA, #xD, #x20, +, /, [0-9], =, [A-Z], [a-z]}";};
+ };
+ tr{
+  td{exi:hexBinary;};
+  td{"{#x9, #xA, #xD, #x20, [0-9], [A-F], [a-f]}";};
+ };
+ tr{
+  td{exi:boolean;};
+  td{"{#x9, #xA, #xD, #x20, 0, 1 , a, e, f, l, r, s , t, u}";};
+ };
+ tr{
+  td{
+    table{
+     tr{td{exi:dateTime;};};
+     tr{td{exi:time;};};
+     tr{td{exi:date;};};
+     tr{td{exi:gYearMonth;};};
+     tr{td{exi:gYear;};};
+     tr{td{exi:gMonthday;};};
+     tr{td{exi:gDay;};};
+     tr{td{exi:gMonth;};};
+    };
+  };
+  td{"{#x9, #xA, #xD, #x20,+,-,., [0-9],;, T, Z}";};
+ };
+ tr{
+  td{exi:decimal;};
+  td{"{#x9, #xA, #xD, #x20, +,-, ., [0-9]}";};
+ };
+ tr{
+  td{exi:double;};
+  td{"{#x9, #xA, #xD, #x20, +,-, ., [0-9], E,F,I,N,a,e}";};
+ };
+ tr{
+  td{exi:integer;};
+  td{"{#x9, #xA, #xD, #x20, +,-, [0-9]}";};
+ };
+ tr{
+  td{exi:string;};
+  td{"no restricted character set";};
+ };
+};
+
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+043 The restricted character set for the EXI List datatype representation is the
+044 restricted character set of the EXI datatype representation of the List item
+045 type.
+046
+047 The restricted character set for a value that would be represented as an EXI
+048 enumeration is the restricted character set of the EXI datatype
+049 representation of the enumeration base type.
+050
+051 The rules used to represent values of String depend on the content items to
+052 which the values belong. There are certain content items whose value 
+053 representation involve the use of string tables while other content items
+054 are represented using the encoding rule described in 7.1.10 String without
+055 involvement of string tables. The content items that use string tables and
+056 how wach of such content items uses string tables to represent their values
+057 are described in 7.3 String Table.
+058
+059 Schemas can provide one or more enumerated values for datatypes. When the
+060 Preserve.lecxicalValues is false, EXI exploits those pre-defined values
+061 when they are available to represent values of such datatypes in a more
+062 efficient manner than would hae done otherwise wihtout using pre-defined
+063 values. The encoding rule for representing enumerated values is described
+064 in 7.2 Enumerations. Datatypes that are directly derived from another by
+065 union and their subtypes are always represented as String regardless of
+066 the availability of enumerated values. Representation of values which the
+067 datatype is either a list datatype, or one of QName, Notation or a 
+068 datatype derived therefrom by restriction are also not affected by 
+069 enumerated values if any.
+");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
