@@ -1,0 +1,22 @@
+label __7__1__9 title = "7.1.9. n-bit Unsigned Integer";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+001 When the value of the compression option is false and the bit-packed
+002 alignment is used, the n-bit Unsigned Integer datatype representation is
+003 an unsigned binary integer using n bits. Otherwise, it is an unsigned
+004 integer using the minimum number of bytes required to store n bits. Bytes 
+005 are ordered with the least significant byte first.
+006
+007 The n-bit unsigned integer is used for representing event codes, the prefix
+008 component of QNames (see 7.1.7 QName) and certain value content items, as
+009 described in respective relevant parts of this document. As described in 
+010 section 7.1.5 Integer, integers with a bounded range size m equal to 4096
+011 or smaller are represented as n-bit unsigned integers with n being 
+012 ceil(log_2 m), as an offset from the minimum value range.
+");
+};

@@ -1,0 +1,16 @@
+<pre>
+📎 7.1.11 List
+
+<span style="color: rgb(245,245,245);">witness{</span>
+
+--------------------------------------------------------------------------------
+001 Values of type List are encoded as a length prefixed sequence of values.
+002 The length is encoded as an Unsigned Integer (see 7.1.6 Unsigned 
+003 Integer) and each value is encoded according to its type (see 7.
+004 Representing Event Content).
+
+<span style="color: rgb(245,245,245);">}</span>
+
+</pre>
+
+

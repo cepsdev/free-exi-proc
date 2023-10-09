@@ -1,0 +1,14 @@
+label __7__1__11 title = "7.1.11 List";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+001 Values of type List are encoded as a length prefixed sequence of values.
+002 The length is encoded as an Unsigned Integer (see 7.1.6 Unsigned 
+003 Integer) and each value is encoded according to its type (see 7.
+004 Representing Event Content).
+");
+};
