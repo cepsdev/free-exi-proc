@@ -1,0 +1,10 @@
+label __7__4 title = "7.4 Datatype Representation Map";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+");
+};

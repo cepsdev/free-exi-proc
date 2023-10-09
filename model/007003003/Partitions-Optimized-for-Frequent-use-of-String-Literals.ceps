@@ -1,0 +1,10 @@
+label __7__3__3 title = "7.3.3 Partitions Optimized for Frequent use of String Literals";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+");
+};

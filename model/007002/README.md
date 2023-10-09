@@ -1,0 +1,25 @@
+<pre>
+📎 7.2 Enumerations
+
+<span style="color: rgb(245,245,245);">witness{</span>
+
+--------------------------------------------------------------------------------
+001 When the Preserve.lexicalValues option is false, enumerated values are
+002 encoded as n-bit Unsigned Integers (7.1.9 n-bit Unsigned Integer) where
+003 n = ceil(log_2 m) and m is the number of itmes in the enumerated type.
+004 The unsigned integer value assigned to each item corresponds to its
+005 ordinal position in the enumeration in schema-order starting with
+006 position zero (0). When there are more than one item that represent the
+007 same value in the enumeration, such value can be represented using the
+008 ordinal position of any items that represent the value.
+009
+010 Exceptions are for schema union datatypes, list datatypes, as well as
+011 QName or Notation and types derived therefrom by restrictio. The values
+012 of such types are processed by their respective built-in EXI datatype
+013 representations instead of being represented as enumerations.
+
+<span style="color: rgb(245,245,245);">}</span>
+
+</pre>
+
+
