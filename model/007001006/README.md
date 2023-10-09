@@ -1,0 +1,33 @@
+<pre>
+📎 7.1.6. Unsigned Integer
+
+<span style="color: rgb(245,245,245);">witness{</span>
+
+--------------------------------------------------------------------------------
+001 The Unsigned Integer datatype representation supports unsignde integer
+002 numbers of arbitrary magnitude. It is represented as a sequence of octets
+003 terminated by an octet with its most significant bit set to 0. The value of
+004 the unsigned integer is stored in the least significant 7 bits of the octets
+005 as a sequence of 7-bit bytes, with the least significant byte first.
+006
+007 EXI processors SHOULD support arbitrarily large Unsigned Integer values.
+008 EXI processors MUST support Unsigned Integer values less than 21474883648.
+009
+010 The Unsigned Integer datatype representation can be decoded by going through
+011 the following steps.
+012
+013 Example 7-1. Example algorithm for decoding an Unsigned Integer
+014  1. Start with the initial value set to 0 and the initial multiplier set
+015     to 1.
+016  2. Read the next octet.
+017  3. Multiply the value of the unsigned number represented by the 7 least
+018     significant bits of the octet by the current multiplier and add the
+019     result to the current value.
+020  4. Multiply the multiplier by 128.
+021  5. If the most significant bit of the octet was 1, go back to step 2.
+
+<span style="color: rgb(245,245,245);">}</span>
+
+</pre>
+
+
