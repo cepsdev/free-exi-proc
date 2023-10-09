@@ -1,0 +1,14 @@
+label __7__1 title = "7.1. Built-in EXI Datatype Representations";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+001 The following sections describe the built-in EXI datatype representations
+002 used for representing event codes and content items in EXI streams. Unless
+003 stated, individual items in an EXI stream are packed into bytes most
+004 significant bit first.
+");
+};

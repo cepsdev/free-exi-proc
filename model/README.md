@@ -20,5 +20,11 @@
 ### [6.2. Representing Event Codes](006002/)
 ### [6.3. Fidelity Options](006003/)
 ## [7. Representing Event Content](007/)
+### [7.1. Built-in EXI Datatype Representations](007001/)
+#### [7.1.1. Binary](007001001/)
+#### [7.1.2. Boolean](007001002/)
+#### [7.1.3. Decimal](007001003/)
+#### [7.1.4. Float](007001004/)
+#### [7.1.5. Integer](007001005/)
 
 

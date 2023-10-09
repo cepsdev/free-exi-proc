@@ -1,0 +1,44 @@
+<pre>
+📎 7.1.4. Float
+
+<span style="color: rgb(245,245,245);">witness{</span>
+
+--------------------------------------------------------------------------------
+001 The Float datatype representation is two consecutive Integers (see 7.1.5 
+002 Integer). The first Integer represents the mantissa of the floating point
+003 number and the secong Integer represents the base-10 exponent of the
+004 floating pont number. The range of the mantissa is -(2^63) to 2^63 -1
+005 and the range of the exponent is -(2^14-1) to 2^14 -1. Mantissa or exponent
+006 values outside of the respective accepted range MUST NOT be used in the
+007 Float datatype representation. Values typed as Float with a mantissa or
+008 exponent outside the accepted range are represented as untyped values,
+009 processed by an alternative production of available that ban be used to
+010 represent untyped values. Examples of such productions are those whose
+011 terminal symbol on the right-hand side is AT(qname) [untyped value]. 
+012 AT(*)[untyped value] or CH [untyped value] (See 8.5.4.4.1 Adding
+013 Productions when Strict is False).
+014
+015 The exponent value -(2^14) is used to indicate one of the special values:
+016 infinity, negative infinity and not-a-number (NaN). An exponent value 
+017 -(2^14) with mantissa values 1 and -1 represents positive infinity (INF)
+018 and negative infinity (-INF). An exponent value -(2^14) with any other
+019 mantissa value represents NaN.
+020
+021 The Float datatype representation can be decoded by going through the
+022 following  steps.
+023
+024 1. Retrieve the mantissa value using the procedure described in 7.1.5
+025    Integer.
+026 2. Retrieve the exponent value using the procedure described in 7.1.5
+027    Integer.
+028 3. If the exponent value is -(2^14), the mantissa value 1 repreents INF,
+029    the mantissa value -1 represents -INF and any other mantissa value 
+030    represents NaN. If the exponent value is not -(2^14), the float value
+031    is m x 10^e where m is the manissa and e is the exponent obtained in
+032    the preceding steps.
+
+<span style="color: rgb(245,245,245);">}</span>
+
+</pre>
+
+

@@ -1,0 +1,34 @@
+<pre>
+📎 7.1.5. Integer
+
+<span style="color: rgb(245,245,245);">witness{</span>
+
+--------------------------------------------------------------------------------
+001 The Integer datatype representation supports signed integer numbers of 
+002 arbitrary magnitude. The specific representation used depends on the facet
+003 values of the associated schema datatype as follows.
+004
+005 If the associated schema datatype is directly or indirectly derived from 
+006 xsd:integer and the bounded range determined by its minInclusive; 
+007 minExclusive, maxInclusive, maxExclusive facets has 4096 or fewer values,
+008 the value is represented as n-bit Unsigned Integer offset from the minimum
+009 value in the range where n is ceil(lg_2 m) and m is the bounded range of the
+010 schema datatype.
+011
+012 Otherwise, if the associated schema datatype is directly or indirectly
+013 derived from xsd:integer and the minInclusive or minExclusive facets
+014 specify a lower bound greater than or equal to zero (0), the value is 
+015 represented as an Unsigned Integer.
+016
+017 Otherwise, the value is represented as a Boolean sign (see 7.1.2 Boolean)
+018 followed by an Unsigned Integer (see 7.1.6 Unsigned Integer). A sign value
+019 of zero (0) is used to represent positive integers and a sign value of one
+020 (1) is used to represent negative integers. For non-negative values, the
+021 Unsigned Integer holds the magnitude of the value. For negative values,
+022 the Unsighned Integer holds the magnitude of the value minus 1.
+
+<span style="color: rgb(245,245,245);">}</span>
+
+</pre>
+
+

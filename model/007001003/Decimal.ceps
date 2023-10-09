@@ -1,0 +1,25 @@
+label __7__1__3 title = "7.1.3. Decimal";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+001 The Decimal datatype representation is a Boolean sign (see 7.1.2 Boolean)
+002 followed by two Unsigned Integers (see 7.1.9 n-bit Unsigned Integer). A sign
+003 valuf of zero (0) is used to represent positive Decimal values and a sign
+004 value of one (1) is used to represent negative Decimal values. The first
+005 Unsigned Integer represents the integral portion of the Decimal value. The
+006 second Unsigned Integer represents the fracional portion of the Decimal value
+007 with the digits in reverse order to preserve leading zeros.
+008
+009 Note:
+010
+011 Some implementers may assume and try to find a parallel between Decimal and
+012 7.1.5 Integer datatype representations. However, note that there are enough
+013 discrepancies that may make sharing implementation codes between the two more
+014 involved then some would have presumed. In particular 7.1.5 Integer cannot 
+015 represent minus zero.
+");
+};

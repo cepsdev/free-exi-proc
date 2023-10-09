@@ -1,0 +1,13 @@
+label __7__1__1 title = "7.1.1. Binary";
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+witness{
+docinfo_se(
+"
+--------------------------------------------------------------------------------
+001 The Binary datatype representation is a length-prefixed sequence of octets
+002 representing the binary content. The length is represented as an Unsigned
+003 Integer (see 7.1.6 Unsigned Integer).
+");
+};
