@@ -37,6 +37,7 @@ add_library(v2g-guru-exi-plugin SHARED
            src/free-exi-grammar-concepts.cpp
            src/free-exi-proc-stringtable.cpp
            src/v2g-guru-exi-terminal-model.cpp
+           src/free-exi-proc-stream.cpp
 
            )
 

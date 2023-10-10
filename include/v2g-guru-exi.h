@@ -360,5 +360,6 @@ namespace v2g_guru_exi{
 }
 
 #include "v2g-guru-exi-grammar-prod.h"
+#include "free-exi-proc-stream.h"
 
 extern std::optional<bool> equality(ceps::ast::Nodebase_ptr lhs, ceps::ast::Nodebase_ptr rhs);

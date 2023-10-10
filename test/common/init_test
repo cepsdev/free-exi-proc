@@ -4,3 +4,8 @@ ln $1/propaedeutics propaedeutics --symbolic
 ln $1/rebuild_test rebuild_test --symbolic
 ln $1/testdriver-entrypoint.cpp testdriver-entrypoint.cpp --symbolic
 ln $1/build_test build_test --symbolic
+ln $1/../../src src --symbolic
+ln $1/../../include include --symbolic
+ln $1/../../../ceps ceps --symbolic
+ln $1/../../../machines4ceps machines4ceps --symbolic
+ln $1/../../../log4ceps log4ceps --symbolic
