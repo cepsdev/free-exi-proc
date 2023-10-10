@@ -6,5 +6,121 @@ witness{
 docinfo_se(
 "
 --------------------------------------------------------------------------------
+001 By default, each typed value in an EXI stream is represented using its 
+002 default built-in EXI datatype representation (see Table 7-1). However,
+003 [Definition:] EXI processors MAY provide the capability to specify
+004 alternate built-in EXI datatype representations or user-defined
+005 representations for specific schema datatypes. This capability is called a
+006 Datatype Representation Map.
+007
+008 Note:
+009  This feature is relevant only to simple types in the schema. EXI does 
+010  not provide a way for applications to infuse custom representations
+011  of structured data bound to complex types into the format.
+012
+013 EXI processors that support Datatype Representation Maps MAY provide
+014 implementatio specific means to define and install user-defined datatype
+015 representations. EXI processors MAY also provide implementation specific
+016 means for applications or users to specify alternate built-in EXI
+017 datatype representations or user-defined datatype representations for 
+018 representing specific schema datatypes. As with the default EXI datatype
+019 representations, alternate datatype representations are used for the
+020 associated XML Schema types sepcified in the Datatype Representation Map
+021 and XML Schema datatypes derived from those datatypes. When there are buili-
+022 in or user-defined datatype representations associated with more than one
+023 XML Schema datatype in the type hierarchy of a particular datatype, the
+024 closest ancestor with an associated datatype representation is used to
+025 determine the EXI datatype representation. For XML Schema datatypes with
+026 enumerated values, the encoding rule described in 7.2 Enumerations is used
+027 as the representation when he closest ancestor datatype with an associated
+028 datatype representationhas no enumerated values.
+029
+030 When an EXI processor encodes an EXI stranm using a Datatype Representation
+031 Map and the EXI Options part of the header is present, the EXI options part
+032 MUST specify all alternate datatype representations used in the EXI stream.
+033 An EXI processor that attempts to decode an EXI stream that specifies a
+034 user-defined datatype representation in the EXI header that does not 
+035 recognize MAY report a warning, but this is not an error. However, when
+036 an EXI processor encounters a typed value that was encoded by a user-
+037 defined datatype representation that it does not support, it MUST report
+038 an error.
+039
+040 The EXI options header, when it appears in an EXI stream, MUST include a 
+041 \"datatypeRepresentationMap\" element for each schema datatype of which
+042 the descendant datatypes derived by restriction as well as itself are
+043 not represented using the default built-in EXI datatype representation.
+044 The \"datatypeRepresentationMap\" element includes two child elements.
+045 The qname of the first child element identifies the schema datatype
+046 that is not represented using the default built-in EXI Datatype
+047 representation and the qname of the second child element identifies
+048 the alternate built-in EXI datatype representation or user-defined
+049 datatype representation used to represent that type. Built-in EXI
+050 datatype representations are identified by the type identifiers in 
+051 Table 7-1.
+052
+053 For example, the following \"datatypeRepresentationMap\" element indicates
+054 all values of type xsd:decimal are represented using the built-in
+055 exi:string datatype representation. In addition, all datatypes directly
+056 or indirectly derived from xsd:decimal by restriction that do not have a
+057 closer ancestor in the type hierarchy with an associated datatype
+058 representation are represented using exi:string.
+059
+060 Example 7-2. datatypeRepresentationMap indicating all Decimal values
+061 are representedusing built-in String datatype representation
+062
+063 <exi:datatypeRepresentationMap xmlns:xsd=
+064                         \"http://www..w3.org/2001/XMLSchema\">
+065  <xsd:decimal/>
+066  <exi:string/>
+067 </exi:datatypeRepresentationMap>
+068
+069 It is the responsibility of an EXI processor to interface with a 
+070 particular implementation of built-in EXI datatype representations
+071 or user-defined datatype representations properly. In the example
+072 above, an EXI processor may need to provide a string value of the 
+073 data being processed that is typed as xsd:decimal in order to interface
+074 with an implementation of built-in String datatype representation.
+075 In such a case, some EXI processors may have started with a decimal
+076 value and such processors may well translate the value into a string
+077 before passing the datat to the implementation of built-in String
+078 datatype representation while other EXI processors may already have a 
+079 stirng value of the datat so that it can pass the value directly to the
+080 nimplementation of built-in String datatype representation without any
+081 translation.
+082
+083 As another example, the following \"datatypeRepresentationMap\" element
+084 indicates all values of the user-defined simple type geo:geometricSurface
+085 and the datatypes derived from it by restriction are represented using
+086 the user-defined datatype representation geo:geometricInterpolator:
+087
+088 Example 7-3. datatypeRepresentationMap illustrating a user-defined type
+089 represented by a user-defined datatype representation
+090 <exi:datatypeRepresentationMap 
+091                     xmlns:geo=\"http:/example.com/Geometry\">
+092     <geo:geometricSurface/>
+093     <geo:geometricInterpolator/>
+094 </exi:datatypeRepresentationMap>
+095
+096 Note:
+097
+098 EXI only defines a way to indicate the use of user-defined datatype
+099 representations for representing values of specific datatypes.
+100 Datatype representations are referred to by their respective qnames
+101 in \"datattypeRepresentationMap\" elements. A datatype representation
+102 is omnipresent only if its qname is one of those that represent built-in
+103 EXI datatype representations. For datatype representations of other
+104 qnames, EXI does not provide nor suggest a method by which they are 
+105 identified and shared between EXI Processors. This suggests that the use
+106 of user-defined (i.e. custom) datatype representations needs to be
+107 restrained by weighing alternatives and considering the consequences
+108 of each in pros and cons, in order to avoid unruly proliferation of
+109 documents that use such datatype representations. Those applications
+110 that ever find Datatype Representation Map useful should make sure that
+111 they exchange such documents only among the parties that are pr-known
+112 or discovered to be able to process the user-defined datatype 
+113 representations that are in use. Otherwise, if it is not for certain if
+114 a receiver understands the particular user-defined datatype 
+115 representations, the sender should never attempt to send documents that
+116 use user-defined datatype representations to that recipient.
 ");
 };
