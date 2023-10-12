@@ -1,0 +1,42 @@
+#!/bin/bash
+
+cat <<EOM > temp.ceps
+
+for(e:root.Scenario){
+    print("Scenario{\n");
+    print("  ", "title{");
+    print("   \"",text(e.title.content()),"\";" );
+    print("  ", "};\n");
+    print("  ", "Then{result{");
+
+    print("   ",e.Then.result.content().at(1),";" );
+    print("  ", "};};\n");
+
+    print("  ","refs{\n");
+    for(w:e.refs.witness){
+        print("    ","witness{\n");
+        for(ref:w.ref){
+          print("      ","ref{\n");
+          for(id:ref.id){
+            print("        ","id{\n");
+            print("           ", id.content(), ";\n");
+            print ("        ","};\n");
+          }
+          print("      ","};\n");
+        }
+        print("    ","};\n");
+    }
+    print("  ","};\n");
+    print("};\n");
+}
+
+EOM
+# ceps model/*/*.ceps  `find test/ | grep feature.ceps`  temp.ceps 
+
+for e in `find test | grep feature.ceps`
+do
+ path=${e%/*}
+ file_name=${e##*/}
+ result=${e%feature.ceps}evaluated.ceps
+ LD_LIBRARY_PATH=$path/../bin:$LD_LIBRARY_PATH ceps `find model/0* | grep ceps` $e  temp.ceps --pluginlibtest_driver.so > $result
+done

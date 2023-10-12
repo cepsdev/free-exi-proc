@@ -10,6 +10,8 @@ result{
 };
 };
 
+kind GrammarTerminal;
+
 GrammarTerminal SD,ED,SE,EE,AT,CH,NS,CM,PI,DT,ER,SC;
 
 terminals{

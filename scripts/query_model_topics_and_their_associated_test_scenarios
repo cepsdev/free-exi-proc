@@ -42,7 +42,7 @@ for (w: root.witness){
                     }
                 }
             print("\n");
-            if (sce.Then.result.content().at(1) == 0){
+            if (sce.Then.result.content().at(0) == 0){
                 print("Test Verdict: &#x2717; \n" );
             } else { 
                 print("Test Verdict: :heavy_check_mark:\n");
@@ -53,9 +53,5 @@ for (w: root.witness){
 }
 
 EOM
-ceps model/*/*.ceps  `find test/ | grep feature.ceps`  temp.ceps 
+ceps model/*/*.ceps  `find test/ | grep evaluated.ceps`  temp.ceps 
 
-for e in in `find test/ | grep feature.ceps`
-do
- echo $e
-done
