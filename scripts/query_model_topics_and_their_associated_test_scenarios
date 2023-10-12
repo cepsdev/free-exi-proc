@@ -1,0 +1,61 @@
+#!/bin/bash
+
+cat <<EOM > temp.ceps
+
+val witnesses = 0;
+for (w: root.witness){
+    let witnesses = witnesses +1;
+}
+val scenarios = 0;
+for (w: root.Scenario){
+    let scenarios = scenarios + 1;
+}
+
+print("# Witnesses vs. Test Scenarios\n");
+print("## Some Statistics\n");
+print("
+| Variable    | Value |
+| -------- | ------- |
+| Number of Witnesses  |",witnesses," |\n",
+"| Number of Scenarios  |",scenarios," |",
+"
+
+");
+
+for (w: root.witness){
+    val lbld = 0;
+    for(lb : w.lbl) {
+        print("## ", lb.content(),"\n");
+        let lbld = 1;
+    }
+    if (lbld){
+        for (r : w.refs.ref){
+            for (sce: root.Scenario){
+                for (rr : sce.refs.witness.ref){
+                    if( text(rr.id.content()) == text(r.id.content()) )
+                    {
+                        print("### Scenario: ",text(sce.title.content()),"\n");
+                        for(sec: r.section.loc){
+                            print("Section of the witness: lines from ", 
+                                   sec.from.content()," to ", sec.to.content(),"\n" );
+                        }
+                    }
+                }
+            print("\n");
+            if (sce.Then.result.content().at(1) == 0){
+                print("Test Verdict: &#x2717; \n" );
+            } else { 
+                print("Test Verdict: :heavy_check_mark:\n");
+            } 
+            }//sce
+        }
+    }
+}
+
+EOM
+ceps model/*/*.ceps  `find test/ | grep feature.ceps`  temp.ceps 
+
+for e in in `find test/ | grep feature.ceps`
+do
+ echo $e
+done

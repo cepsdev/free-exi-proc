@@ -84,6 +84,13 @@
 079 hierarchy, it is referring to the hierarchy of types derived from another by 
 080 extension or restriction.
 
+ <span style="color: rgb(245,245,245);">refs{</span>  <span style="color: rgb(245,245,245);">ref{</span>   <span style="color: rgb(245,245,245);">id{</span><span style="color:teal;">BasicFormOfTerminals</span>   <span style="color: rgb(245,245,245);">}</span>   
+   <span style="color: rgb(245,245,245);">section{</span>    <span style="color: rgb(245,245,245);">loc{</span>     <span style="color: rgb(245,245,245);">from{</span><span style="color: rgb(245,245,245);">39</span>     <span style="color: rgb(245,245,245);">}</span>     
+     <span style="color: rgb(245,245,245);">to{</span><span style="color: rgb(245,245,245);">53</span>     <span style="color: rgb(245,245,245);">}</span>     
+    <span style="color: rgb(245,245,245);">}</span>    
+   <span style="color: rgb(245,245,245);">}</span>   
+  <span style="color: rgb(245,245,245);">}</span>  
+ <span style="color: rgb(245,245,245);">}</span> 
 <span style="color: rgb(245,245,245);">}</span>
 
 <span style="color: rgb(245,245,245);"></span><span style="font-weight:bold;color: rgb(245,245,245);">Macro </span><span style="color: rgb(245,245,245);"></span><span style="font-style:italic;color: rgb(245,245,245);"></span><span style="font-weight:bold;font-style:italic;color: rgb(245,245,245);">equality_test:</span>

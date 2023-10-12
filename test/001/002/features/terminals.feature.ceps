@@ -2,8 +2,10 @@ macro verdict{
 result{
   if(force_int(arglist.at(0))){
         label Passed title = "" type="check";
+        1;
   } else {
-         label Failed title = "" type="error";
+        label Failed title = "" type="error";
+        0;
   }
 };
 };
@@ -17,6 +19,14 @@ terminals{
 
 Scenario{
     title{"All terminals can be unqualified(in extension of the spec).";};
+    refs{
+     witness{
+      ref{
+       id{BasicFormOfTerminals;};
+      };
+     };
+    };    
+
     Given{
         root.terminals.content().symbol("GrammarTerminal");
     };
@@ -39,6 +49,14 @@ Scenario{
 
 Scenario{
     title{"All qname-terminals can be of the form TERMINAL(*),TERMINAL(uri:*), TERMINAL(uri:local_name).";};
+    refs{
+      witness{
+         ref{
+            id{BasicFormOfTerminals;};
+         };
+      };
+    };    
+
     Given{
         SE;AT;
     };

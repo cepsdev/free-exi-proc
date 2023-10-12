@@ -4,6 +4,7 @@ DocgenStringPrintNoEscape docinfo_se;
 witness{
 
 label __1__2 title = "1.2 Notational Conventions and Terminology";
+lbl{"1.2 Notational Conventions and Terminology";};
 
 docinfo_se(
 "
@@ -90,6 +91,12 @@ docinfo_se(
 080 extension or restriction.
 "
 );
+ refs{
+  ref{
+    id{BasicFormOfTerminals;};
+    section{ loc{from{39;}; to{53;};}; };
+  };
+ };
 };
 
 macro equality_test{
