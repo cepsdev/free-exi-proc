@@ -14,16 +14,15 @@ The meaning of the term "truly open" includes:
 
 ## Installation
 ### Requirements
+#### Standalone EXI processor
 - Unix*ish* OS
 - recent*ish* C++ compiler (e.g. g++ version >= 9)
 - cmake
+
+#### Executable Specification and Feature tests
 - https://github.com/cepsdev/machines4ceps
 
-#### Requirements for building documents and statistics
+#### Building documents and statistics
 - [aha](https://github.com/theZiz/aha) (not the band)
 - gnuplot
 
-### Build
-- ./rebuild_all.sh 
-### Test
-- ./run_primer_encode_example.sh 
