@@ -20,8 +20,8 @@ The meaning of the term "truly open" includes:
 - https://github.com/cepsdev/machines4ceps
 
 #### Requirements for building documents and statistics
-- aha (not the band)
-- gnu plot
+- [aha](https://github.com/theZiz/aha) (not the band)
+- gnuplot
 
 ### Build
 - ./rebuild_all.sh 
