@@ -19,7 +19,7 @@ The meaning of the term "truly open" includes:
 - recent*ish* C++ compiler (e.g. g++ version >= 9)
 - cmake
 
-#### Executable Specification and Feature tests
+#### Executable Specification and Tests
 - https://github.com/cepsdev/machines4ceps
 
 #### Building documents and statistics
