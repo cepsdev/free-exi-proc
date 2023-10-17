@@ -18,6 +18,11 @@ The meaning of the term "truly open" includes:
 - recent*ish* C++ compiler (e.g. g++ version >= 9)
 - cmake
 - https://github.com/cepsdev/machines4ceps
+
+#### Requirements for building documents and statistics
+- aha (not the band)
+- gnu plot
+
 ### Build
 - ./rebuild_all.sh 
 ### Test
