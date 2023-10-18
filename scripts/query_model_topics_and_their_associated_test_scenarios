@@ -29,6 +29,7 @@ for (w: root.witness){
         let lbld = 1;
     }
     if (lbld){
+        print("### Coverage\n");
         for (r : w.refs.ref){
             for (sce: root.Scenario){
                 for (rr : sce.refs.witness.ref){

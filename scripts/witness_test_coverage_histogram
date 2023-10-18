@@ -1,0 +1,5 @@
+#!/bin/bash
+ceps model/$1/*.ceps `find test/ | grep feature.ceps`  scripts/gen_wit_test_data.ceps > temp.dat
+ceps model/$1/*.ceps `find test/ | grep feature.ceps`  scripts/gen_wit_test_gnuplot_script.ceps > temp.gp
+gnuplot -c temp.gp
+mv output.png diagrams/$1_witness_testcoverage_histogramm.png

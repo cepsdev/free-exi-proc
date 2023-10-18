@@ -5,7 +5,7 @@ witness{
 
 label __1__2 title = "1.2 Notational Conventions and Terminology";
 lbl{"1.2 Notational Conventions and Terminology";};
-
+lbl2{"001002";};
 docinfo_se(
 "
     --------------------------------------------------------------------------------
@@ -91,6 +91,7 @@ docinfo_se(
 080 extension or restriction.
 "
 );
+ lines{80;};
  refs{
   ref{
     id{BasicFormOfTerminals;};

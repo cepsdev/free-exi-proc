@@ -1,0 +1,85 @@
+
+/*witness{
+    lines{
+        20;
+    };
+    refs{
+        ref{
+            id{BasicFormOfTerminals;};
+            section{ loc{from{9;}; to{13;};}; };
+        };
+    };
+};
+
+Scenario{
+    refs{
+     witness{
+      ref{
+       id{BasicFormOfTerminals;};
+      };
+      ref{
+       id{BasicFormOfTerminals;};
+      };
+
+     };
+    };    
+};
+
+Scenario{
+    refs{
+     witness{
+      ref{
+       id{BasicFormOfTerminals;};
+      };
+     };
+    };    
+};
+*/
+
+refs_in_witness{
+    for(e : root.witness.refs){
+     for(ee : e.ref){
+        entry{
+            ee.id;
+            from{ee.section.loc.from.content();};
+            to{ee.section.loc.to.content();};
+        };
+     }
+    }
+
+};
+
+plot_data{
+    val n = root.witness.lines.content();
+    for(line: 1 .. n){
+        entry{
+         line{line;};
+         tests{
+            val tests = 0;
+            for (sigl:root.refs_in_witness.entry){
+                if (sigl.from.content() <= line && sigl.to.content() >= line ){
+                    for(sc:root.Scenario){
+                        val sc_match = 0;
+                        for(sigl2:sc.refs.witness.ref.id){
+                            if ( !sc_match && text(sigl2.content()) == text(sigl.id.content())){
+                                let tests=tests+1;
+                                let sc_match = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            tests;
+         };
+        };
+    }
+};
+
+
+print("Line\tTests\n");
+for(entry : root.plot_data.entry){
+    print(entry.line.content(),"\t", entry.tests.content(), "\n" ); 
+}
+
+
+
