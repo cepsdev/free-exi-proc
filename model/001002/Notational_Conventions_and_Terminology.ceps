@@ -22,6 +22,18 @@ docinfo_se(
 011 represented in italics. Grammar productions are represented as follows:
 012 
 013 LeftHandSide: Terminal NonTerminal
+");
+docinfo_se(
+"
+013E001 The ceps specification uses distinct symbols to distinguish between terminal
+013E002 and nonterminal symbols:
+013E003
+013E004 GrammarTerminal Terminal;
+013E005 GrammarNonterminal NonTerminal;
+");
+
+docinfo_se(
+"
 014 
 015 A set of one or more grammar productions that share the same left-hand side 
 016 non-terminal symbol are often presented together annotated with event codes that 
