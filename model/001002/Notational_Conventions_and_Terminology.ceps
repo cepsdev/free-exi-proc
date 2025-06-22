@@ -106,9 +106,9 @@ docinfo_se(
 043E003
 043E004 SE(uri:*) equals SE(uri:_*_); Remark : is an operator wth lower precedence than *
 043E005
-043E004 AT(*) equals AT(_*_); 
-043E005
-043E006 AT(uri:*) equals AT(uri:_*_);
+043E006 AT(*) equals AT(_*_); 
+043E007
+043E008 AT(uri:*) equals AT(uri:_*_);
 ");
 docinfo_se(
 "
