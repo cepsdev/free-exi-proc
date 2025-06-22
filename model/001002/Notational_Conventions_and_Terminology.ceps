@@ -96,7 +96,22 @@ docinfo_se(
 051                        event with any qname
 052 AT (uri:*)             The terminal symbol that matches an attribute (AT)
 053                        event with any local-name in namespace uri.
-054 
+054
+");
+docinfo_se(
+"
+043E001 The ceps specification uses the following notation
+043E002 
+043E003 SE(*) equals SE(_*_); Remark: _ is an identifier and * the multiplication operator
+043E003
+043E004 SE(uri:*) equals SE(uri:_*_); Remark : is an operator wth lower precedence than *
+043E005
+043E004 AT(*) equals AT(_*_); 
+043E005
+043E006 AT(uri:*) equals AT(uri:_*_);
+");
+docinfo_se(
+"
 055 Several prefixes are used throughout this document to designate certain 
 056 namespaces.
 057 The bindings shown below are assumed, however, any prefixes can be used in 
