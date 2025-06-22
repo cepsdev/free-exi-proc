@@ -31,7 +31,6 @@ docinfo_se(
 013E004 GrammarTerminal Terminal;
 013E005 GrammarNonterminal NonTerminal;
 ");
-
 docinfo_se(
 "
 014 
@@ -49,6 +48,29 @@ docinfo_se(
 026 
 027  Terminal_n NonTerminal_n    EventCode_n 
 028 
+");
+docinfo_se(
+"
+020E001 The ceps specification employs the following notation:
+020E002
+020E003  GrammarNonterminal LeftHandSide, NonTerminal_1, NonTerminal_2,
+020E004                     NonTerminal_3, NonTerminal_n;
+020E005  GrammarTerminal Terminal_1, Terminal_2, Terminal_3,Terminal_n;
+020E006  GrammarTerminal Terminal_1, Terminal_2, Terminal_3,Terminal_n;
+020E007  GrammarAnnotation EventCode;
+020E008
+020E009
+020E010  Grammar{
+020E011   lhs{LeftHandSide;};
+020E012   rhs{Terminal_1; NonTerminal_1;EventCode(1); };
+020E013   rhs{Terminal_2; NonTerminal_2;EventCode(2); };
+020E014   rhs{Terminal_3; NonTerminal_3;EventCode(3); };
+020E015   rhs{Terminal_n; NonTerminal_n;EventCode(n); };          
+020E016 };
+");
+
+docinfo_se(
+"
 029 Section 8.1 Grammar Notation introduces additional notations for describing 
 030 productions and event codes in grammars. Those additional notations facilitate 
 031 concise representation of the EXI grammar system.
