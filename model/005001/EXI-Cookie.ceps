@@ -15,7 +15,7 @@ docinfo_se(
 005 octet, as follows:
 ");
 EXICookie{
-    "$"; "E";"X";"I";
+    "$EXI";
 };
 docinfo_se(
 "
@@ -30,4 +30,78 @@ docinfo_se(
 ");
 
 
+};
+
+exegesis{
+  OblectamentaDataLabel EXICookieString;
+  OblectamentaCodeLabel write_cookie_loop, write_cookie_loop_exit;
+  write_cookie{
+    
+    ldi64(ARG0);                    // push destination address on stack
+    lea(EXICookieString);           // push address of EXI cookie on compute stack
+    ldi64(0);                       // i = 0
+    write_cookie_loop;              // ARG0 | EXICookieString | i 
+    duptopi192;                     // ARG0 | EXICookieString | i | ARG0 | EXICookieString | i
+    duptopi64;                      // ARG0 | EXICookieString | i | ARG0 | EXICookieString | i | i
+    swpi64b128;                     //...  ARG0 | i | EXICookieString | i   
+    addi64;
+    ldsi8;                          // ... ARG0 | i | EXICookieString[i]
+    duptopi8;                       // ... ARG0 | i | EXICookieString[i] | EXICookieString[i]
+    dbg_print_data(0);dbg_print_cs_and_regs(0);
+    swpi16i128;                     // ... | EXICookieString[i] | EXICookieString[i] | ARG0 | i 
+    dbg_print_data(0);dbg_print_cs_and_regs(0);halt;
+    addi64;
+    stsi8;                          // buffer[i] = EXICookieString[i] //
+    bzeroi8(write_cookie_loop);
+    ldi64(1);
+    addi64;                         // i = i + 1
+    buc(write_cookie_loop);
+    write_cookie_loop_exit;
+    dbg_print_data(0);dbg_print_cs_and_regs(0);
+    halt;
+    ret;    
+  };
+};
+
+oblectamenta{
+ global{
+   data{
+     OblectamentaDataLabel EXICookieString;
+     EXICookieString;root.witness.EXICookie.content();
+     0;
+   };
+ };
+};
+
+oblectamenta{
+ global{
+   data{
+     OblectamentaDataLabel buffer;
+     buffer;"----------------------";         
+   };
+ };
+};
+
+sm{
+    S;
+    states{Initial;A;};
+    Actions{
+        do{
+            OblectamentaDataLabel buffer;
+            OblectamentaCodeLabel write_code_proc;
+            oblectamenta{text{asm{
+                lea(buffer);
+                sti64(ARG0);
+                call(write_code_proc);                
+                halt;
+                write_code_proc;
+                root.exegesis.write_cookie.content(); 
+            };};};
+        };
+    };
+    t{Initial;A;do;};
+};
+
+Simulation{
+ Start{S;};
 };
