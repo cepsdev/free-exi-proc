@@ -40,25 +40,22 @@ exegesis{
     ldi64(ARG0);                    // push destination address on stack
     lea(EXICookieString);           // push address of EXI cookie on compute stack
     ldi64(0);                       // i = 0
-    write_cookie_loop;              // ARG0 | EXICookieString | i 
+    write_cookie_loop;              // ARG0 | EXICookieString | i
     duptopi192;                     // ARG0 | EXICookieString | i | ARG0 | EXICookieString | i
     duptopi64;                      // ARG0 | EXICookieString | i | ARG0 | EXICookieString | i | i
     swpi64b128;                     //...  ARG0 | i | EXICookieString | i   
     addi64;
     ldsi8;                          // ... ARG0 | i | EXICookieString[i]
     duptopi8;                       // ... ARG0 | i | EXICookieString[i] | EXICookieString[i]
-    dbg_print_data(0);dbg_print_cs_and_regs(0);
-    swpi16i128;                     // ... | EXICookieString[i] | EXICookieString[i] | ARG0 | i 
-    dbg_print_data(0);dbg_print_cs_and_regs(0);halt;
+    swpi16i128;                     // ... | EXICookieString[i] | EXICookieString[i] | ARG0 | i
     addi64;
-    stsi8;                          // buffer[i] = EXICookieString[i] //
-    bzeroi8(write_cookie_loop);
+    stsi8;                          // buffer[i] = EXICookieString[i]
+    bzeroi8(write_cookie_loop_exit);
     ldi64(1);
     addi64;                         // i = i + 1
     buc(write_cookie_loop);
     write_cookie_loop_exit;
-    dbg_print_data(0);dbg_print_cs_and_regs(0);
-    halt;
+    discardtopi64;discardtopi64;discardtopi64;
     ret;    
   };
 };
@@ -92,7 +89,8 @@ sm{
             oblectamenta{text{asm{
                 lea(buffer);
                 sti64(ARG0);
-                call(write_code_proc);                
+                call(write_code_proc);
+                dbg_print_data(0);                
                 halt;
                 write_code_proc;
                 root.exegesis.write_cookie.content(); 
