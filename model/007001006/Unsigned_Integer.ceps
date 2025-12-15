@@ -6,7 +6,7 @@ witness{
 docinfo_se(
 "
 --------------------------------------------------------------------------------
-001 The Unsigned Integer datatype representation supports unsignde integer
+001 The Unsigned Integer datatype representation supports unsigned integer
 002 numbers of arbitrary magnitude. It is represented as a sequence of octets
 003 terminated by an octet with its most significant bit set to 0. The value of
 004 the unsigned integer is stored in the least significant 7 bits of the octets
@@ -29,3 +29,67 @@ docinfo_se(
 021  5. If the most significant bit of the octet was 1, go back to step 2.
 ");
 };
+
+OblectamentaDataLabel input_unsigned_int_0;
+OblectamentaDataLabel input_unsigned_int_1;
+OblectamentaDataLabel input_unsigned_int_128;
+
+oblectamenta{
+ global{
+  data{
+    1;
+    input_unsigned_int_0;
+    as_uint8(0);           // |000000000|
+    input_unsigned_int_1;
+    as_uint8(1);           // |000000001|
+    input_unsigned_int_128;
+    as_uint8(128);
+    as_uint8(1);           // |100000000|00000001|
+  };
+ };
+};
+
+sm{
+ DecodeUnsignedInteger;
+ states{Initial;Decode;};
+ Actions{
+  doDecode{
+   val input = input_unsigned_int_1;
+   oblectamenta{
+    text{asm{
+     OblectamentaCodeLabel loop;
+     val value = R1; // Decoded value stored in R1. 
+                     // We take advantage of the fact that symbols are values. #
+                     // Which allows us to alias register names.
+     val multiplier = R2; // Multiplier resides in R2.
+     
+     witness{start; lbl{__7__1__6;}; lines{014 .. 015;}; }; // Means that the following lines up and until the closing "end" implement the referenced witness
+     ldi64(0);       
+     sti64(value);   
+     ldi64(1);
+     sti64(multiplier);
+     witness{end;};
+     invariant{value == 0; multiplier == 1; bitwidth(value) == 64;};
+     val encoded_value_addr = R3;
+     val encoded_value_idx = R4;
+     val encoded_value_current_byte = R5;
+     lea(input);
+     sti64(encoded_value_addr);
+     ldi64(0);
+     sti64(encoded_value_idx);
+     loop;
+     ldi64(encoded_value_addr);
+     ldi64(encoded_value_idx);
+     addi64;
+     ldsi8;
+     sti8(encoded_value_current_byte);
+
+     dbg_print_cs_and_regs(0);
+     dbg_print_data(0);
+
+    };};
+   };
+  };
+ };
+ t{Initial;Decode;doDecode;};
+};// sm EncodeUnsignedInteger
