@@ -2,7 +2,7 @@ exegesis{
 
 OblectamentaDataLabel input_unsigned_int_0;
 OblectamentaDataLabel input_unsigned_int_1;
-OblectamentaDataLabel input_unsigned_int_128;
+OblectamentaDataLabel input_unsigned_int_128, input_unsigned_int_256, input_unsigned_int_16384, input_unsigned_int_2097152;
 
 oblectamenta{
  global{
@@ -15,48 +15,82 @@ oblectamenta{
     input_unsigned_int_128;
     as_uint8(128);
     as_uint8(1);           // |100000000|00000001|
+    input_unsigned_int_256;
+    as_uint8(128);
+    as_uint8(2);           // |100000000|00000010|
+    input_unsigned_int_16384;
+    as_uint8(128);
+    as_uint8(128);
+    as_uint8(1);           // |100000000|100000000|00000001|
+    input_unsigned_int_2097152;
+    as_uint8(128);
+    as_uint8(128);
+    as_uint8(128);
+    as_uint8(1);           // |100000000|100000000|100000000|00000001|
   };
  };
 };
 
 sm{
- DecodeUnsignedInteger;
+ DecodeUnsignedIntegerui64;
  states{Initial;Decode;};
  Actions{
   doDecode{
-   val input = input_unsigned_int_1;
+   val input = input_unsigned_int_2097152;
    oblectamenta{
     text{asm{
      OblectamentaCodeLabel loop;
-     val value = R1; // Decoded value stored in R1. 
-                     // We take advantage of the fact that symbols are values. #
-                     // Which allows us to alias register names.
-     val multiplier = R2; // Multiplier resides in R2.
+     OblectamentaCodeLabel loop_exit;
      
-     witness{start; lbl{__7__1__6;}; lines{014 .. 015;}; }; // Means that the following lines up and until the closing "end" implement the referenced witness
-     ldi64(0);       
-     sti64(value);   
-     ldi64(1);
-     sti64(multiplier);
-     witness{end;};
-     invariant{value == 0; multiplier == 1; bitwidth(value) == 64;};
+     val value = RES; // Decoded value stored in RES. 
+                     // We take advantage of the fact that symbols are values.
+                     // Which allows us to alias register names.
+     val multiplier_lg = R2; // Multiplier resides in R2.
      val encoded_value_addr = R3;
      val encoded_value_idx = R4;
      val encoded_value_current_byte = R5;
+     
+     ldi64(0);       
+     sti64(value);          // value = 0   
+     ldi64(0);
+     sti64(multiplier_lg); // multiplier = lg(1) = 0 (we shift)
+     invariant{value == 0; multiplier_lg == 0; bitwidth(value) == 64;};
      lea(input);
      sti64(encoded_value_addr);
      ldi64(0);
      sti64(encoded_value_idx);
-     loop;
+    loop;
      ldi64(encoded_value_addr);
      ldi64(encoded_value_idx);
      addi64;
      ldsi8;
-     sti8(encoded_value_current_byte);
-
-     dbg_print_cs_and_regs(0);
-     dbg_print_data(0);
-
+     ui8toui64;
+     ldi64(127);
+     andi64;
+     sti64(encoded_value_current_byte); //encoded_value_current_byte = encoded_value_addr[encoded_value_idx]
+     ldi32(multiplier_lg);
+     ldi64(encoded_value_current_byte);
+     shli64;
+     ldi64(value);
+     addi64;
+     sti64(value);
+     ldi32(128);
+     ldi64(encoded_value_addr);
+     ldi64(encoded_value_idx);
+     addi64;
+     ldsi8;
+     ui8toui32;
+     blt(loop_exit);
+     ldi64(encoded_value_idx);
+     ldi64(1);
+     addi64;
+     sti64(encoded_value_idx);
+     ldi32(multiplier_lg);
+     ldi32(7);
+     addi32;
+     sti32(multiplier_lg);
+     buc(loop);
+    loop_exit;
     };};
    };
   };
