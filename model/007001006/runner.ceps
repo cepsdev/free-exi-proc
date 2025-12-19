@@ -1,3 +1,9 @@
+
+root.exegesis.content(); // pull exegesis stuff
+
 Simulation{
- Start{DecodeUnsignedInteger;};
+ Start{
+    // start all state machines found in global scope in document order
+    for(e:root.sm){e.content().at(0);} // for all sm{ id;...} : id
+};
 };
