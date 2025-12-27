@@ -1,4 +1,94 @@
 exegesis{
+built_in_data_type_representations{
+ unsigned_int{
+  decode{
+    uint64{
+     interface{ 
+       args{
+        buffer{ARG0;};
+       };
+      };
+    };
+  };
+ };
+};
+};
+
+exegesis{
+built_in_data_type_representations{
+ unsigned_int{
+  decode{
+    uint64{
+     impl_inline{
+   oblectamenta{
+    text{asm{
+
+      
+     OblectamentaCodeLabel loop;
+     OblectamentaCodeLabel loop_exit;
+     val input_buffer = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content();
+     input_buffer;
+     val value = RES; // Decoded value is stored in RES. 
+                     // We take advantage of the fact that symbols are values.
+                     // Which allows us to alias register names.
+     val multiplier_lg = R2; // Multiplier resides in R2.
+     val encoded_value_addr = input_buffer;
+     val encoded_value_idx = R4;
+     val encoded_value_current_byte = R5;
+     
+     ldi64(0);       
+     sti64(value);          // value = 0   
+     ldi64(0);
+     sti64(multiplier_lg); // multiplier = lg(1) = 0 (we shift)
+     invariant{value == 0; multiplier_lg == 0; bitwidth(value) == 64;};
+     //lea(input);
+     //sti64(encoded_value_addr);
+     ldi64(0);
+     sti64(encoded_value_idx);
+    loop;
+     ldi64(encoded_value_addr);
+     ldi64(encoded_value_idx);
+     addi64;
+     ldsi8;
+     ui8toui64;
+     ldi64(127);
+     andi64;
+     sti64(encoded_value_current_byte); //encoded_value_current_byte = encoded_value_addr[encoded_value_idx]
+     ldi32(multiplier_lg);
+     ldi64(encoded_value_current_byte);
+     shli64;
+     ldi64(value);
+     addi64;
+     sti64(value);
+     ldi32(128);
+     ldi64(encoded_value_addr);
+     ldi64(encoded_value_idx);
+     addi64;
+     ldsi8;
+     ui8toui32;
+     blt(loop_exit);
+     ldi64(encoded_value_idx);
+     ldi64(1);
+     addi64;
+     sti64(encoded_value_idx);
+     ldi32(multiplier_lg);
+     ldi32(7);
+     addi32;
+     sti32(multiplier_lg);
+     buc(loop);
+    loop_exit;
+     dbg_print_cs_and_regs(0);
+    };};
+   };
+
+     };
+   };
+ };
+};
+};
+};
+
+exegesis{
 
 OblectamentaDataLabel input_unsigned_int_0;
 OblectamentaDataLabel input_unsigned_int_1;
@@ -36,63 +126,13 @@ sm{
  states{Initial;Decode;};
  Actions{
   doDecode{
+   OblectamentaDataLabel  input_unsigned_int_2097152;
    val input = input_unsigned_int_2097152;
-   oblectamenta{
-    text{asm{
-     OblectamentaCodeLabel loop;
-     OblectamentaCodeLabel loop_exit;
-     
-     val value = RES; // Decoded value stored in RES. 
-                     // We take advantage of the fact that symbols are values.
-                     // Which allows us to alias register names.
-     val multiplier_lg = R2; // Multiplier resides in R2.
-     val encoded_value_addr = R3;
-     val encoded_value_idx = R4;
-     val encoded_value_current_byte = R5;
-     
-     ldi64(0);       
-     sti64(value);          // value = 0   
-     ldi64(0);
-     sti64(multiplier_lg); // multiplier = lg(1) = 0 (we shift)
-     invariant{value == 0; multiplier_lg == 0; bitwidth(value) == 64;};
-     lea(input);
-     sti64(encoded_value_addr);
-     ldi64(0);
-     sti64(encoded_value_idx);
-    loop;
-     ldi64(encoded_value_addr);
-     ldi64(encoded_value_idx);
-     addi64;
-     ldsi8;
-     ui8toui64;
-     ldi64(127);
-     andi64;
-     sti64(encoded_value_current_byte); //encoded_value_current_byte = encoded_value_addr[encoded_value_idx]
-     ldi32(multiplier_lg);
-     ldi64(encoded_value_current_byte);
-     shli64;
-     ldi64(value);
-     addi64;
-     sti64(value);
-     ldi32(128);
-     ldi64(encoded_value_addr);
-     ldi64(encoded_value_idx);
-     addi64;
-     ldsi8;
-     ui8toui32;
-     blt(loop_exit);
-     ldi64(encoded_value_idx);
-     ldi64(1);
-     addi64;
-     sti64(encoded_value_idx);
-     ldi32(multiplier_lg);
-     ldi32(7);
-     addi32;
-     sti32(multiplier_lg);
-     buc(loop);
-    loop_exit;
-    };};
-   };
+   oblectamenta{text{asm{
+    lea(input);
+    sti64(root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content());
+    root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.impl_inline.oblectamenta.text.asm.content();
+   };};};
   };
  };
  t{Initial;Decode;doDecode;};
