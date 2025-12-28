@@ -7,6 +7,11 @@ built_in_data_type_representations{
        args{
         buffer{ARG0;};
        };
+       ev{
+        kind Event;
+        Event DecodeVarUIntToUint64;
+        DecodeVarUIntToUint64;
+       };
       };
     };
   };
@@ -20,17 +25,16 @@ built_in_data_type_representations{
   decode{
     uint64{
      impl_inline{
-   oblectamenta{
-    text{asm{
-
-      
+     oblectamenta{text{asm{
+      //Multiple 'tricks' used here to make the code more readable.
+      // 1. Code parts are pulled from different locations via document path expressions, i.e. expressions of the form root.A.B...
+      // 2. values defined via val are actually evaluated during compile time 
+      // 3. values can be symbols, this allows us to rename registers with a telling name, e.g. val input = R5 allows us to use 'input' everywhere where R5 is allowed.
+     val input_buffer = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content();
      OblectamentaCodeLabel loop;
      OblectamentaCodeLabel loop_exit;
-     val input_buffer = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content();
-     input_buffer;
+
      val value = RES; // Decoded value is stored in RES. 
-                     // We take advantage of the fact that symbols are values.
-                     // Which allows us to alias register names.
      val multiplier_lg = R2; // Multiplier resides in R2.
      val encoded_value_addr = input_buffer;
      val encoded_value_idx = R4;
@@ -41,8 +45,6 @@ built_in_data_type_representations{
      ldi64(0);
      sti64(multiplier_lg); // multiplier = lg(1) = 0 (we shift)
      invariant{value == 0; multiplier_lg == 0; bitwidth(value) == 64;};
-     //lea(input);
-     //sti64(encoded_value_addr);
      ldi64(0);
      sti64(encoded_value_idx);
     loop;
@@ -78,10 +80,9 @@ built_in_data_type_representations{
      buc(loop);
     loop_exit;
      dbg_print_cs_and_regs(0);
-    };};
-   };
+    };};};
 
-     };
+     };//impl_inline
    };
  };
 };
@@ -121,6 +122,7 @@ oblectamenta{
  };
 };
 
+
 sm{
  DecodeUnsignedIntegerui64;
  states{Initial;Decode;};
@@ -135,6 +137,18 @@ sm{
    };};};
   };
  };
- t{Initial;Decode;doDecode;};
+ t{Initial;Decode;root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.ev.content();doDecode;};
 };// sm EncodeUnsignedInteger
+
+sm{
+  TestDecoder;
+  Actions{
+   doTest1{
+    oblectaments{text{asm{};};};
+   };
+  };
+  states{Initial;Final;};
+  t{Initial;Final;doTest1;};
+};
+
 };
