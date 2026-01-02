@@ -1,4 +1,6 @@
 # A Truly Free EXI Processor
+## Status
+Under Construction - Release planned for Q2 2026.
 ## Goals
 - Complete implementation of an EXI "Efficient XML Interchange" processor (https://www.w3.org/TR/exi/), 
 - in modern, idiomatic and portable C++,
