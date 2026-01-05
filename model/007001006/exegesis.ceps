@@ -28,34 +28,40 @@ built_in_data_type_representations{
      oblectamenta{text{asm{
       //Multiple 'tricks' used here to make the code more readable.
       // 1. Code parts are pulled from different locations via document path expressions, i.e. expressions of the form root.A.B...
-      // 2. values defined via val are actually evaluated during compile time 
-      // 3. values can be symbols, this allows us to rename registers with a telling name, e.g. val input = R5 allows us to use 'input' everywhere where R5 is allowed.
-     val input_buffer = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content();
-     OblectamentaCodeLabel loop;
-     OblectamentaCodeLabel loop_exit;
+      // 2. values defined via val are actually evaluated during compile time this allows us ... 
+      // 3. ... to give registers a telling name, e.g. val input = R5 allows us to use 'input' everywhere where R5 is allowed.
+      
+      // Pull interface declaratin, in this case the name of the register which holds the pointer to the input buffer
+      val input_buffer = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content();
 
-     val value = RES; // Decoded value is stored in RES. 
-     val multiplier_lg = R2; // Multiplier resides in R2.
-     val encoded_value_addr = input_buffer;
-     val encoded_value_idx = R4;
-     val encoded_value_current_byte = R5;
+      // labels we gonna use
+      OblectamentaCodeLabel loop;
+      OblectamentaCodeLabel loop_exit;
+      
+      // Give regisers we use telling names
+      val value = RES; // Decoded value is stored in RES. 
+      val multiplier_lg = R2; // Multiplier (lg stands for logarithm with respect to basis 2) resides in R2.
+      val encoded_value_addr = input_buffer;
+      val encoded_value_idx = R4;
+      val encoded_value_current_byte = R5;
      
-     ldi64(0);       
-     sti64(value);          // value = 0   
-     ldi64(0);
-     sti64(multiplier_lg); // multiplier = lg(1) = 0 (we shift)
-     invariant{value == 0; multiplier_lg == 0; bitwidth(value) == 64;};
-     ldi64(0);
-     sti64(encoded_value_idx);
+      ldi64(0);              // |      
+      sti64(value);          // value = 0   
+      ldi64(0);              // |
+      sti64(multiplier_lg);  // multiplier = lg(1) = 0 
+      invariant{value == 0; multiplier_lg == 0; bitwidth(value) == 64;};
+     
+      ldi64(0);                 // |
+      sti64(encoded_value_idx); // encoded_value_idx = 0
     loop;
-     ldi64(encoded_value_addr);
-     ldi64(encoded_value_idx);
-     addi64;
-     ldsi8;
-     ui8toui64;
-     ldi64(127);
-     andi64;
-     sti64(encoded_value_current_byte); //encoded_value_current_byte = encoded_value_addr[encoded_value_idx]
+      ldi64(encoded_value_addr);         // |
+      ldi64(encoded_value_idx);          // |
+      addi64;                            // |
+      ldsi8;                             // |
+      ui8toui64;                         // |
+      ldi64(127);                        // |
+      andi64;                            // |
+      sti64(encoded_value_current_byte); // encoded_value_current_byte = 0x7f & encoded_value_addr[encoded_value_idx]
      ldi32(multiplier_lg);
      ldi64(encoded_value_current_byte);
      shli64;
