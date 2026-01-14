@@ -7,6 +7,10 @@ built_in_data_type_representations{
        args{
         buffer{ARG0;};
        };
+       res{
+         value{RES;};
+         consumed_bytes{R0;};
+       };
        ev{
         kind Event;
         Event DecodeVarUIntToUint64;
@@ -18,6 +22,8 @@ built_in_data_type_representations{
  };
 };
 };
+kind Event;
+Event DecodeVarUIntToUint64Successful;
 
 exegesis{
 built_in_data_type_representations{
@@ -32,6 +38,7 @@ built_in_data_type_representations{
       // 3. ... to give registers a telling name, e.g. val input = R5 allows us to use 'input' everywhere where R5 is allowed.
       
       // Pull interface declaratin, in this case the name of the register which holds the pointer to the input buffer
+      
       val input_buffer = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content();
 
       // labels we gonna use
@@ -85,7 +92,6 @@ built_in_data_type_representations{
      sti32(multiplier_lg);
      buc(loop);
     loop_exit;
-     dbg_print_cs_and_regs(0);
     };};};
 
      };//impl_inline
@@ -100,6 +106,7 @@ exegesis{
 OblectamentaDataLabel input_unsigned_int_0;
 OblectamentaDataLabel input_unsigned_int_1;
 OblectamentaDataLabel input_unsigned_int_128, input_unsigned_int_256, input_unsigned_int_16384, input_unsigned_int_2097152;
+OblectamentaDataLabel global_msg_buffer;
 
 oblectamenta{
  global{
@@ -124,6 +131,7 @@ oblectamenta{
     as_uint8(128);
     as_uint8(128);
     as_uint8(1);           // |100000000|100000000|100000000|00000001|
+    global_msg_buffer; for(i : 1 .. 64){0;}
   };
  };
 };
@@ -134,27 +142,85 @@ sm{
  states{Initial;Decode;};
  Actions{
   doDecode{
-   OblectamentaDataLabel  input_unsigned_int_2097152;
-   val input = input_unsigned_int_2097152;
    oblectamenta{text{asm{
-    lea(input);
-    sti64(root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content());
+    val buffer_addr = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.args.buffer.content();
+
+    msg{
+      OblectamentaMsgReadDirective read;
+      read;global_msg_buffer;
+      buffer{
+        OblectamentaMessageTag i64;
+        i64;
+        sti64(buffer_addr);
+      };
+    };
     root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.impl_inline.oblectamenta.text.asm.content();
+    DecodeVarUIntToUint64Successful(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        value{
+          ldi64(RES);
+          i64;          
+        };
+      }
+    );
    };};};
   };
  };
  t{Initial;Decode;root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.ev.content();doDecode;};
 };// sm EncodeUnsignedInteger
 
+Event UInt64DecodeTestSuccessful;
+Event UInt64DecodeTestFail;
+
 sm{
   TestDecoder;
+  val evDoDecodeUint64 = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.ev.content();
   Actions{
    doTest1{
-    oblectaments{text{asm{};};};
+    oblectamenta{text{asm{
+      evDoDecodeUint64(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        buffer{
+         lea(input_unsigned_int_256);
+         i64;
+        };
+      });
+    };};};
    };
-  };
-  states{Initial;Final;};
-  t{Initial;Final;doTest1;};
+   doTest1Check{
+    oblectamenta{text{asm{
+      OblectamentaCodeLabel ok;
+      msg{
+        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
+        read; global_msg_buffer;
+        value{
+          i64;
+          sti64(R0);          
+        };
+      };//msg
+      
+      ldi64(R0);
+      ldi64(256);
+      beqi64(ok);
+      dbg_print_cs_and_regs(0);halt;
+      UInt64DecodeTestFail;
+      halt;
+      ok;
+      UInt64DecodeTestSuccessful;
+    };};};
+   }; //doTest1Check
+
+  };//Actions
+  states{Initial;WaitForResult;Check;CheckOK;CheckNOK;Final;};
+  t{Initial;WaitForResult;doTest1;};
+  t{WaitForResult;Check;DecodeVarUIntToUint64Successful;doTest1Check;};
+  t{Check;CheckOK;UInt64DecodeTestSuccessful;};
+  t{Check;CheckNOK;UInt64DecodeTestFail;};
+
 };
 
 };
