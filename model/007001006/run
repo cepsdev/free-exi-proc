@@ -1,2 +1,2 @@
 #!/bin/bash
-ceps witness.ceps exegesis.ceps runner.ceps
+ceps witness.ceps exegesis.ceps tests.ceps runner.ceps

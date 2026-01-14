@@ -1,3 +1,8 @@
+label __7__1__6__exegesis title = "7.1.6. Unsigned Integer (Exegesis)";
+
+kind Event;
+Event DecodeVarUIntToUint64Successful;
+
 exegesis{
 built_in_data_type_representations{
  unsigned_int{
@@ -22,8 +27,6 @@ built_in_data_type_representations{
  };
 };
 };
-kind Event;
-Event DecodeVarUIntToUint64Successful;
 
 exegesis{
 built_in_data_type_representations{
@@ -99,44 +102,11 @@ built_in_data_type_representations{
  };
 };
 };
+
 };
 
 exegesis{
-
-OblectamentaDataLabel input_unsigned_int_0;
-OblectamentaDataLabel input_unsigned_int_1;
-OblectamentaDataLabel input_unsigned_int_128, input_unsigned_int_256, input_unsigned_int_16384, input_unsigned_int_2097152;
 OblectamentaDataLabel global_msg_buffer;
-
-oblectamenta{
- global{
-  data{
-    1;
-    input_unsigned_int_0;
-    as_uint8(0);           // |000000000|
-    input_unsigned_int_1;
-    as_uint8(1);           // |000000001|
-    input_unsigned_int_128;
-    as_uint8(128);
-    as_uint8(1);           // |100000000|00000001|
-    input_unsigned_int_256;
-    as_uint8(128);
-    as_uint8(2);           // |100000000|00000010|
-    input_unsigned_int_16384;
-    as_uint8(128);
-    as_uint8(128);
-    as_uint8(1);           // |100000000|100000000|00000001|
-    input_unsigned_int_2097152;
-    as_uint8(128);
-    as_uint8(128);
-    as_uint8(128);
-    as_uint8(1);           // |100000000|100000000|100000000|00000001|
-    global_msg_buffer; for(i : 1 .. 64){0;}
-  };
- };
-};
-
-
 sm{
  DecodeUnsignedIntegerui64;
  states{Initial;Decode;};
@@ -169,58 +139,6 @@ sm{
   };
  };
  t{Initial;Decode;root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.ev.content();doDecode;};
+ t{Decode;Initial;};
 };// sm EncodeUnsignedInteger
-
-Event UInt64DecodeTestSuccessful;
-Event UInt64DecodeTestFail;
-
-sm{
-  TestDecoder;
-  val evDoDecodeUint64 = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.ev.content();
-  Actions{
-   doTest1{
-    oblectamenta{text{asm{
-      evDoDecodeUint64(
-      msg{
-        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
-        write; global_msg_buffer;
-        buffer{
-         lea(input_unsigned_int_256);
-         i64;
-        };
-      });
-    };};};
-   };
-   doTest1Check{
-    oblectamenta{text{asm{
-      OblectamentaCodeLabel ok;
-      msg{
-        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
-        read; global_msg_buffer;
-        value{
-          i64;
-          sti64(R0);          
-        };
-      };//msg
-      
-      ldi64(R0);
-      ldi64(256);
-      beqi64(ok);
-      dbg_print_cs_and_regs(0);halt;
-      UInt64DecodeTestFail;
-      halt;
-      ok;
-      UInt64DecodeTestSuccessful;
-    };};};
-   }; //doTest1Check
-
-  };//Actions
-  states{Initial;WaitForResult;Check;CheckOK;CheckNOK;Final;};
-  t{Initial;WaitForResult;doTest1;};
-  t{WaitForResult;Check;DecodeVarUIntToUint64Successful;doTest1Check;};
-  t{Check;CheckOK;UInt64DecodeTestSuccessful;};
-  t{Check;CheckNOK;UInt64DecodeTestFail;};
-
-};
-
 };

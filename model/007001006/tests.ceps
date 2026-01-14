@@ -1,0 +1,291 @@
+exegesis{
+
+OblectamentaDataLabel input_unsigned_int_0;
+OblectamentaDataLabel input_unsigned_int_1;
+OblectamentaDataLabel input_unsigned_int_128, input_unsigned_int_256, input_unsigned_int_16384, input_unsigned_int_2097152;
+OblectamentaDataLabel global_msg_buffer;
+
+oblectamenta{
+ global{
+  data{
+    1;
+    input_unsigned_int_0;
+    as_uint8(0);           // |000000000|
+    input_unsigned_int_1;
+    as_uint8(1);           // |000000001|
+    input_unsigned_int_128;
+    as_uint8(128);
+    as_uint8(1);           // |100000000|00000001|
+    input_unsigned_int_256;
+    as_uint8(128);
+    as_uint8(2);           // |100000000|00000010|
+    input_unsigned_int_16384;
+    as_uint8(128);
+    as_uint8(128);
+    as_uint8(1);           // |100000000|100000000|00000001|
+    input_unsigned_int_2097152;
+    as_uint8(128);
+    as_uint8(128);
+    as_uint8(128);
+    as_uint8(1);           // |100000000|100000000|100000000|00000001|
+    global_msg_buffer; for(i : 1 .. 64){0;}
+  };
+ };
+};
+
+Event UInt64DecodeTestSuccessful;
+Event UInt64DecodeTestFail;
+
+sm{
+  TestDecoder;
+  val evDoDecodeUint64 = root.exegesis.built_in_data_type_representations.unsigned_int.decode.uint64.interface.ev.content();
+  Actions{
+   doTest1{
+    oblectamenta{text{asm{
+      evDoDecodeUint64(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        buffer{
+         lea(input_unsigned_int_256);
+         i64;
+        };
+      });
+    };};};
+   };
+   doTest1Check{
+    oblectamenta{text{asm{
+      OblectamentaCodeLabel ok;
+      msg{
+        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
+        read; global_msg_buffer;
+        value{
+          i64;
+          sti64(R0);          
+        };
+      };//msg
+      
+      ldi64(R0);
+      ldi64(256);
+      beqi64(ok);
+      UInt64DecodeTestFail;
+      halt;
+      ok;
+      UInt64DecodeTestSuccessful;
+    };};};
+   }; //doTest1Check
+   doTest2{
+    oblectamenta{text{asm{
+      evDoDecodeUint64(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        buffer{
+         lea(input_unsigned_int_0);
+         i64;
+        };
+      });
+    };};};
+   };
+   doTest2Check{
+    oblectamenta{text{asm{
+      OblectamentaCodeLabel ok;
+      msg{
+        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
+        read; global_msg_buffer;
+        value{
+          i64;
+          sti64(R0);          
+        };
+      };//msg
+      
+      ldi64(R0);
+      ldi64(0);
+      beqi64(ok);
+      UInt64DecodeTestFail;
+      halt;
+      ok;
+      UInt64DecodeTestSuccessful;
+    };};};
+   }; //doTest2Check
+   doTest3{
+    oblectamenta{text{asm{
+      evDoDecodeUint64(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        buffer{
+         lea(input_unsigned_int_1);
+         i64;
+        };
+      });
+    };};};
+   };
+   doTest3Check{
+    oblectamenta{text{asm{
+      OblectamentaCodeLabel ok;
+      msg{
+        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
+        read; global_msg_buffer;
+        value{
+          i64;
+          sti64(R0);          
+        };
+      };//msg
+      
+      ldi64(R0);
+      ldi64(1);
+      beqi64(ok);
+      UInt64DecodeTestFail;
+      halt;
+      ok;
+      UInt64DecodeTestSuccessful;
+    };};};
+   }; //doTest3Check
+   doTest4{
+    oblectamenta{text{asm{
+      evDoDecodeUint64(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        buffer{
+         lea(input_unsigned_int_128);
+         i64;
+        };
+      });
+    };};};
+   };
+   doTest4Check{
+    oblectamenta{text{asm{
+      OblectamentaCodeLabel ok;
+      msg{
+        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
+        read; global_msg_buffer;
+        value{
+          i64;
+          sti64(R0);          
+        };
+      };//msg
+      
+      ldi64(R0);
+      ldi64(128);
+      beqi64(ok);
+      UInt64DecodeTestFail;
+      halt;
+      ok;
+      UInt64DecodeTestSuccessful;
+    };};};
+   }; //doTest4Check
+   doTest5{
+    oblectamenta{text{asm{
+      evDoDecodeUint64(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        buffer{
+         lea(input_unsigned_int_16384);
+         i64;
+        };
+      });
+    };};};
+   };
+   doTest5Check{
+    oblectamenta{text{asm{
+      OblectamentaCodeLabel ok;
+      msg{
+        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
+        read; global_msg_buffer;
+        value{
+          i64;
+          sti64(R0);          
+        };
+      };//msg
+      
+      ldi64(R0);
+      ldi64(16384);
+      beqi64(ok);
+      UInt64DecodeTestFail;
+      halt;
+      ok;
+      UInt64DecodeTestSuccessful;
+    };};};
+   }; //doTest5Check
+   doTest6{
+    oblectamenta{text{asm{
+      evDoDecodeUint64(
+      msg{
+        OblectamentaMsgDefDirective write;OblectamentaMessageTag i64;
+        write; global_msg_buffer;
+        buffer{
+         lea(input_unsigned_int_2097152);
+         i64;
+        };
+      });
+    };};};
+   };
+   doTest6Check{
+    oblectamenta{text{asm{
+      OblectamentaCodeLabel ok;
+      msg{
+        OblectamentaMsgReadDirective read;OblectamentaMessageTag i64;
+        read; global_msg_buffer;
+        value{
+          i64;
+          sti64(R0);          
+        };
+      };//msg
+      
+      ldi64(R0);
+      ldi64(2097152);
+      beqi64(ok);
+      UInt64DecodeTestFail;
+      halt;
+      ok;
+      UInt64DecodeTestSuccessful;
+    };};};
+   }; //doTest6Check
+
+  };//Actions
+  states{Initial;
+  
+  WaitForResult1;Check1;CheckOK1;CheckNOK1;
+  WaitForResult2;Check2;CheckOK2;CheckNOK2;
+  WaitForResult3;Check3;CheckOK3;CheckNOK3;
+  WaitForResult4;Check4;CheckOK4;CheckNOK4;
+  WaitForResult5;Check5;CheckOK5;CheckNOK5;
+  WaitForResult6;Check6;CheckOK6;CheckNOK6;
+
+  Final;};
+  
+  t{Initial;WaitForResult1;doTest1;};
+  t{WaitForResult1;Check1;DecodeVarUIntToUint64Successful;doTest1Check;};
+  t{Check1;CheckOK1;UInt64DecodeTestSuccessful;};
+  t{Check1;CheckNOK1;UInt64DecodeTestFail;};
+
+  t{CheckOK1;WaitForResult2;doTest2;};
+  t{WaitForResult2;Check2;DecodeVarUIntToUint64Successful;doTest2Check;};
+  t{Check2;CheckOK2;UInt64DecodeTestSuccessful;};
+  t{Check2;CheckNOK2;UInt64DecodeTestFail;};
+
+  t{CheckOK2;WaitForResult3;doTest3;};
+  t{WaitForResult3;Check3;DecodeVarUIntToUint64Successful;doTest3Check;};
+  t{Check3;CheckOK3;UInt64DecodeTestSuccessful;};
+  t{Check3;CheckNOK3;UInt64DecodeTestFail;};
+
+  t{CheckOK3;WaitForResult4;doTest4;};
+  t{WaitForResult4;Check4;DecodeVarUIntToUint64Successful;doTest4Check;};
+  t{Check4;CheckOK4;UInt64DecodeTestSuccessful;};
+  t{Check4;CheckNOK4;UInt64DecodeTestFail;};
+
+  t{CheckOK4;WaitForResult5;doTest5;};
+  t{WaitForResult5;Check5;DecodeVarUIntToUint64Successful;doTest5Check;};
+  t{Check5;CheckOK5;UInt64DecodeTestSuccessful;};
+  t{Check5;CheckNOK5;UInt64DecodeTestFail;};
+
+  t{CheckOK5;WaitForResult6;doTest6;};
+  t{WaitForResult6;Check6;DecodeVarUIntToUint64Successful;doTest6Check;};
+  t{Check6;CheckOK6;UInt64DecodeTestSuccessful;};
+  t{Check6;CheckNOK6;UInt64DecodeTestFail;};
+};
+
+};
